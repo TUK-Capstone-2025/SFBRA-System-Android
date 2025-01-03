@@ -1,13 +1,18 @@
 package com.example.sfbra_system_android
 
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.text.color
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
@@ -32,6 +37,13 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         // 액션바 색깔 변경
         supportActionBar?.setBackgroundDrawable(ContextCompat.getDrawable(this, R.color.my_primary))
+        // 액션바 글자색 변경
+        val title = SpannableString(supportActionBar?.title ?: "")
+        title.setSpan(ForegroundColorSpan(Color.WHITE), 0, title.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        supportActionBar?.title = title
+        // 햄버거 버튼 색상 변경
+        val arrowDrawable = toggle.drawerArrowDrawable
+        arrowDrawable.color = ContextCompat.getColor(this, R.color.white)
 
         toggle.syncState()
 
