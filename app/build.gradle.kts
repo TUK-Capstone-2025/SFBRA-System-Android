@@ -7,6 +7,8 @@ android {
     namespace = "com.example.sfbra_system_android"
     compileSdk = 34
 
+    viewBinding { enable = true }
+
     defaultConfig {
         applicationId = "com.example.sfbra_system_android"
         minSdk = 24
