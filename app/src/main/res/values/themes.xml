@@ -3,6 +3,12 @@
     <style name="Base.Theme.SFBRASystemAndroid" parent="Theme.Material3.DayNight">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">@color/my_primary</item>
+        <item name="colorPrimaryVariant">@color/my_primary_variant</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <!-- 하단 내비게이션 바 색상 변경 -->
+        <item name="android:navigationBarColor">@color/my_navigation_bar</item>
     </style>
 
     <style name="Theme.SFBRASystemAndroid" parent="Base.Theme.SFBRASystemAndroid" />

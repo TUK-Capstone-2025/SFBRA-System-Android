@@ -3,4 +3,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="mainColor">#0F429D</color>
+    <color name="my_primary">#0F429D</color> <!-- 액션바 -->
+    <color name="my_primary_variant">#0F429D</color> <!-- 상태바 -->
+    <color name="my_navigation_bar">#F3EDF7</color> <!-- 하단 네비게이션바 -->
 </resources>

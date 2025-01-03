@@ -1,10 +1,13 @@
 package com.example.sfbra_system_android
 
+import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
@@ -19,8 +22,17 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // API 레벨 26 이상에서만 실행
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // 시스템 내비게이션 바 버튼 색상 변경
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+        }
+
         toggle = ActionBarDrawerToggle(this, binding.drawer, R.string.drawer_open, R.string.drawer_close)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        // 액션바 색깔 변경
+        supportActionBar?.setBackgroundDrawable(ContextCompat.getDrawable(this, R.color.my_primary))
+
         toggle.syncState()
 
         // 좌측 사이드메뉴 클릭 리스너
