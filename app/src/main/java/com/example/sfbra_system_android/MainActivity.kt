@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.riding_record -> {
-                    replaceFragment(RidingRecordFragment())
+                    replaceFragment(RidingPathFragment())
                     true
                 }
                 R.id.home -> {

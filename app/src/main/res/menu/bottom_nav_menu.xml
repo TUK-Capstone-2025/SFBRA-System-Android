@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/my_profile" android:title=""
-        android:icon="@android:drawable/ic_menu_myplaces"/>
+        android:icon="@drawable/ic_my_profile"/>
 
     <item android:id="@+id/riding_record" android:title=""
-        android:icon="@android:drawable/ic_dialog_map"/>
+        android:icon="@drawable/ic_riding_path"/>
 
     <item android:id="@+id/home" android:title=""
-        android:icon="@android:drawable/ic_menu_compass"/>
+        android:icon="@drawable/ic_home"/>
 
     <item android:id="@+id/my_team" android:title=""
-        android:icon="@android:drawable/star_big_on"/>
+        android:icon="@drawable/ic_my_team"/>
 
     <item android:id="@+id/bicycle_lock" android:title=""
         android:icon="@android:drawable/ic_lock_lock"/>
