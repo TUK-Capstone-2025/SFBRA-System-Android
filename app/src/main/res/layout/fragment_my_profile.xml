@@ -1,14 +1,138 @@
-<?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MyProfileFragment">
+    android:padding="16dp">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
 
-</FrameLayout>
+        <!-- 프로필 이미지 -->
+        <ImageView
+            android:id="@+id/profile_image"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/circle_outline"
+            android:contentDescription="@string/profile_image_description"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_user" />
+
+        <!-- 닉네임 -->
+        <TextView
+            android:id="@+id/nickname_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="닉네임"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="4dp" />
+
+        <!-- 아이디 -->
+        <TextView
+            android:id="@+id/id_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Id: abcdefg"
+            android:textSize="14sp"
+            android:textColor="@color/gray_dark"
+            android:layout_marginBottom="16dp" />
+
+        <!-- 프로필 관리 카드 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/rounded_card"
+            android:padding="16dp"
+            android:layout_marginTop="20dp">
+
+            <TextView
+                android:id="@+id/profile_management_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="프로필 관리"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:layout_marginBottom="8dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/white"
+                android:layout_marginBottom="15dp" />
+
+            <!-- 사진 변경 -->
+            <TextView
+                android:id="@+id/change_avatar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="프로필 사진 변경"
+                android:textSize="18sp"
+                android:paddingVertical="8dp"
+                android:textColor="@color/white"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/white" />
+
+            <!-- 닉네임 변경 -->
+            <TextView
+                android:id="@+id/change_nickname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="닉네임 변경"
+                android:textSize="18sp"
+                android:paddingVertical="8dp"
+                android:textColor="@color/white"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/white" />
+
+            <!-- 아이디 변경 -->
+            <TextView
+                android:id="@+id/change_id"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="아이디 변경"
+                android:textSize="18sp"
+                android:paddingVertical="8dp"
+                android:textColor="@color/white"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/white" />
+
+            <!-- 비밀번호 변경 -->
+            <TextView
+                android:id="@+id/change_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="비밀번호 변경"
+                android:textSize="18sp"
+                android:paddingVertical="8dp"
+                android:textColor="@color/white"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

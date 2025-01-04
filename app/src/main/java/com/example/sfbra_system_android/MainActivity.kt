@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        title = "현재 위치: "
 
         // 뒤로가기 동작 처리
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {

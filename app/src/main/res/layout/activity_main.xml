@@ -29,7 +29,7 @@
 
     <!-- 사이드 네비게이션 뷰 -->
     <com.google.android.material.navigation.NavigationView
-        android:layout_width="200dp"
+        android:layout_width="250dp"
         android:layout_height="match_parent"
         android:id="@+id/main_drawer_view"
         android:layout_gravity="start"
