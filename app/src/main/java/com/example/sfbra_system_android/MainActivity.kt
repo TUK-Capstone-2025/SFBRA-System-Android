@@ -3,11 +3,15 @@ package com.example.sfbra_system_android
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +23,7 @@ import androidx.fragment.app.Fragment
 import com.example.sfbra_system_android.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+    private var doubleBackToExitPressedOnce = false
     lateinit var toggle: ActionBarDrawerToggle
     lateinit var binding: ActivityMainBinding
 
@@ -26,6 +31,26 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // 뒤로가기 동작 처리
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (supportFragmentManager.backStackEntryCount > 0) {
+                    supportFragmentManager.popBackStack()
+                } else {
+                    if (doubleBackToExitPressedOnce) {
+                        finish()
+                    } else {
+                        doubleBackToExitPressedOnce = true
+                        Toast.makeText(this@MainActivity, "'뒤로' 버튼을 한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
+
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            doubleBackToExitPressedOnce = false
+                        }, 3000)
+                    }
+                }
+            }
+        })
 
         // API 레벨 26 이상에서만 실행
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -104,7 +129,6 @@ class MainActivity : AppCompatActivity() {
     private fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
-            .addToBackStack(null) // 뒤로 가기 지원
             .commit()
     }
 }

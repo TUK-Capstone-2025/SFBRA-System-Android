@@ -10,6 +10,22 @@
         android:layout_height="match_parent"
         android:background="#D0D0D0" /> <!-- 임시 배경색 (지도 대신) -->
 
+    <!-- 연결 버튼 -->
+    <Button
+        android:id="@+id/connectButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|top"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp"
+        android:text="연결"
+        android:textSize="20sp"
+        android:backgroundTint="#0F429D"
+        android:textColor="#FFFFFF"
+        android:padding="10dp"
+        android:paddingStart="30dp"
+        android:paddingEnd="30dp"/>
+
     <!-- 주행시작 버튼 -->
     <Button
         android:id="@+id/startButton"
