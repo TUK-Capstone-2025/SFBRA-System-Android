@@ -1,5 +1,6 @@
 package com.example.sfbra_system_android
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -77,9 +78,13 @@ class MainActivity : AppCompatActivity() {
         binding.mainDrawerView.setNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.edit_profile -> true
-                R.id.setting -> true
-                else -> false
+                R.id.setting -> {
+                    startActivity(Intent(this, SettingActivity::class.java))
+                    true
                 }
+                R.id.logout -> true
+                else -> false
+            }
         }
 
         // 기본 프래그먼트를 항상 설정 (앱 실행 시마다)
