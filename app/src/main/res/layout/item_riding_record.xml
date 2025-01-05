@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?> <!-- 주행기록 리사이클러뷰 -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="12dp"
+    android:background="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    android:gravity="center_vertical">
+
+    <TextView
+        android:id="@+id/record_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="주행기록1"
+        android:textSize="16sp"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/record_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="(2024.11.25)"
+        android:textSize="14sp"
+        android:textColor="@color/gray_dark" />
+
+
+</LinearLayout>

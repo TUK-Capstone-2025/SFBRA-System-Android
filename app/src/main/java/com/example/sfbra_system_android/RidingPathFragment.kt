@@ -5,6 +5,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -17,43 +20,38 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class RidingPathFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_riding_path, container, false)
+        val view = inflater.inflate(R.layout.fragment_riding_path, container, false)
+
+        val recyclerView = view.findViewById<RecyclerView>(R.id.riding_records_recycler_view)
+
+        // RecyclerView 설정
+        recyclerView.layoutManager = LinearLayoutManager(context)
+
+        // DividerItemDecoration 추가
+        val dividerItemDecoration = DividerItemDecoration(
+            recyclerView.context,
+            LinearLayoutManager.VERTICAL
+        )
+        recyclerView.addItemDecoration(dividerItemDecoration)
+
+        recyclerView.adapter = RidingRecordAdapter(getRidingRecords())
+
+        return view
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment RidingPathFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            RidingPathFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    // 주행 기록 더미 데이터
+    private fun getRidingRecords(): List<RidingRecord> {
+        return listOf(
+            RidingRecord("주행기록1", "2024.11.25"),
+            RidingRecord("주행기록2", "2024.11.30"),
+            RidingRecord("주행기록3", "2024.12.03"),
+            RidingRecord("주행기록4", "2025.12.22"),
+            RidingRecord("주행기록5", "2025.01.05")
+        )
     }
 }
