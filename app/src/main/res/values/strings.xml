@@ -1,9 +1,9 @@
 <resources>
     <string name="app_name">SFBRA-System</string>
-    <string name="drawer_open">메뉴</string>
-    <string name="drawer_close">메뉴</string>
-    <string name="profile_image_description">프로필 이미지</string>
-    <string name="lock_button_description">자물쇠 버튼</string>
-    <string name="unlock_status">잠금해제 상태</string>
-    <string name="lock_status">잠금 상태</string>
+    <string name="drawer_open">Menu</string>
+    <string name="drawer_close">Menu</string>
+    <string name="profile_image_description">Profile Image</string>
+    <string name="lock_button_description">Lock button</string>
+    <string name="unlock_status">Lock Status</string>
+    <string name="lock_status">Unlock Status</string>
 </resources>
