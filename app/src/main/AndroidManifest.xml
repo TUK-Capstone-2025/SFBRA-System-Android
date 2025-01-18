@@ -13,16 +13,21 @@
         android:theme="@style/Theme.SFBRASystemAndroid"
         tools:targetApi="31">
         <activity
-            android:name=".SettingActivity"
-            android:exported="false" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="true">
+            android:name=".LoginActivity"
+            android:exported="true"
+            android:theme="@style/Base.Theme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".SettingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
         </activity>
     </application>
 
