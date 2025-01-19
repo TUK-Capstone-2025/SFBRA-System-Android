@@ -22,4 +22,10 @@
         <!-- 하단 내비게이션 바 색상 변경 -->
         <item name="android:navigationBarColor">@color/my_navigation_bar</item>
     </style>
+
+    <!-- 스플래시 테마 -->
+    <style name="Theme.MyApp.Splash" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- 스플래시 배경색 -->
+        <item name="android:windowBackground">@drawable/splash_background</item>
+    </style>
 </resources>
