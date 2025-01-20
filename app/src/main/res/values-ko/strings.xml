@@ -6,4 +6,5 @@
     <string name="lock_button_description">자물쇠 버튼</string>
     <string name="unlock_status">잠금해제 상태</string>
     <string name="lock_status">잠금 상태</string>
+    <string name="login_title">안전중심 자전거</string>
 </resources>

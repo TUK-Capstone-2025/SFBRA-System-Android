@@ -21,6 +21,9 @@
 
         <!-- 하단 내비게이션 바 색상 변경 -->
         <item name="android:navigationBarColor">@color/my_navigation_bar</item>
+
+        <!-- 상태바 색상 -->
+        <item name="android:statusBarColor">@color/gray_dark</item>
     </style>
 
     <!-- 스플래시 테마 -->
