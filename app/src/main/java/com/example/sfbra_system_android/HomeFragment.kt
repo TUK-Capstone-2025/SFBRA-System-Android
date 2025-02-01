@@ -36,7 +36,7 @@ class HomeFragment : Fragment() {
         return view
     }
 
-    // 🚀 블루투스 연결 함수
+    // 블루투스 연결 함수
     private fun connectBluetooth() {
         if (bluetoothAdapter == null) {
             // 블루투스를 지원하지 않는 기기의 경우
@@ -67,7 +67,7 @@ class HomeFragment : Fragment() {
             return
         }
 
-        // 임시로 페어링된 첫 번째 장치를 선택하여 연결(추후 수정)
+        // 임시로 페어링된 첫 번째 장치를 선택하여 연결(추후 수정) 장치 이름으로 연결해야 할듯
         val device = pairedDevices.first()
         val intent = Intent(requireContext(), BluetoothService::class.java)
         intent.putExtra("DEVICE_ADDRESS", device.address)
