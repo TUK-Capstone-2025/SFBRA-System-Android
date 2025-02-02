@@ -12,4 +12,23 @@
     </style>
 
     <style name="Theme.SFBRASystemAndroid" parent="Base.Theme.SFBRASystemAndroid" />
+
+    <!-- NoActionBar theme -->
+    <style name="Base.Theme.NoActionBar" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/my_primary</item>
+        <item name="colorPrimaryVariant">@color/my_primary_variant</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <!-- 하단 내비게이션 바 색상 변경 -->
+        <item name="android:navigationBarColor">@color/my_navigation_bar</item>
+
+        <!-- 상태바 색상 -->
+        <item name="android:statusBarColor">@color/gray_dark</item>
+    </style>
+
+    <!-- 스플래시 테마 -->
+    <style name="Theme.MyApp.Splash" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- 스플래시 배경색 -->
+        <item name="android:windowBackground">@drawable/splash_background</item>
+    </style>
 </resources>
