@@ -1,6 +1,7 @@
 package com.example.sfbra_system_android
 
 import android.Manifest
+import android.app.AlertDialog
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.content.Intent
@@ -13,6 +14,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 
@@ -67,10 +69,33 @@ class HomeFragment : Fragment() {
             return
         }
 
-        // 임시로 페어링된 첫 번째 장치를 선택하여 연결(추후 수정) 장치 이름으로 연결해야 할듯
-        val device = pairedDevices.first()
+        // "Bicycle_Arduino"(아두이노 블루투스 장치명)로 시작하는 장치만 필터링
+        val arduinoDevices = pairedDevices.filter { it.name.startsWith("Bicycle_Arduino") }
+
+        if (arduinoDevices.isEmpty()) {
+            // 아두이노 장치가 없는 경우
+            Toast.makeText(requireContext(), "연결 가능한 제품이 없습니다.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val deviceList = arduinoDevices.map { it.name to it.address }.toTypedArray()
+        val deviceNames = deviceList.map { it.first }.toTypedArray()
+
+        // 아두이노 검색 시 장치 선택 다이얼로그 표시
+        AlertDialog.Builder(requireContext())
+            .setTitle("연결할 장치를 선택해 주세요.")
+            .setItems(deviceNames) { _, which ->
+                val selectedDevice = deviceList[which]
+                connectToSelectedDevice(selectedDevice.second)
+            }
+            .setNegativeButton("취소", null)
+            .show()
+    }
+
+    // 선택한 장치와 연결
+    private fun connectToSelectedDevice(deviceAddress: String) {
         val intent = Intent(requireContext(), BluetoothService::class.java)
-        intent.putExtra("DEVICE_ADDRESS", device.address)
+        intent.putExtra("DEVICE_ADDRESS", deviceAddress)
         requireContext().startService(intent)
 
         Toast.makeText(requireContext(), "블루투스 연결 시도 중...", Toast.LENGTH_SHORT).show()
