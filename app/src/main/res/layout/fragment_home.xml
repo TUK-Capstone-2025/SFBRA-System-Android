@@ -4,11 +4,10 @@
     android:layout_height="match_parent">
 
     <!-- 지도 위치 -->
-    <View
+    <com.kakao.vectormap.MapView
         android:id="@+id/mapView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#D0D0D0" /> <!-- 임시 배경색 (지도 대신) -->
+        android:layout_height="match_parent" />
 
     <!-- 연결 버튼 -->
     <Button
