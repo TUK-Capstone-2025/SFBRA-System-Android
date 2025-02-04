@@ -40,7 +40,7 @@ class BluetoothService : Service() {
         return NotificationCompat.Builder(this, channelId)
             .setContentTitle("Bluetooth Service")
             .setContentText(content)
-            .setSmallIcon(R.drawable.ic_home) // 블루투스 아이콘 추가해야함
+            .setSmallIcon(R.drawable.ic_bluetooth) // 나중에 아이콘 크기변경 필요할 수 있음
             .build()
     }
 }
