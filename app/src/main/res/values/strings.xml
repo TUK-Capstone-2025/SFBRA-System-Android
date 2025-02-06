@@ -7,4 +7,5 @@
     <string name="unlock_status">Lock Status</string>
     <string name="lock_status">Unlock Status</string>
     <string name="login_title">Safety-Focused Bicycle</string>
+    <string name="kakao_map_key">5c6270ab005c295eca9dcb5eca51ba03</string>
 </resources>
