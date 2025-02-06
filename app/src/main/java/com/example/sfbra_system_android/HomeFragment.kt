@@ -19,23 +19,35 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
+import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.MapLifeCycleCallback
 import com.kakao.vectormap.MapView
+import com.kakao.vectormap.camera.CameraAnimation
+import com.kakao.vectormap.camera.CameraUpdate
+import com.kakao.vectormap.camera.CameraUpdateFactory
 
 class HomeFragment : Fragment() {
 
     private lateinit var mapView: MapView
+    private var kakaoMap: KakaoMap? = null
     private lateinit var connectButton: Button
     private lateinit var startButton: Button
     private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
+    private lateinit var fusedLocationClient: FusedLocationProviderClient // 위치 클라이언트
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
+
+        // 위치 서비스 초기화
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+
         mapView = view.findViewById(R.id.mapView) // 맵뷰
 
         // 카카오 맵 api로 지도 띄우기
@@ -51,7 +63,13 @@ class HomeFragment : Fragment() {
         }, object : KakaoMapReadyCallback() {
             override fun onMapReady(kakaoMap: KakaoMap) {
                 // 지도 준비 완료
+                this@HomeFragment.kakaoMap = kakaoMap // 카카오맵 객체 저장(프래그먼트 내에서 사용할 수 있도록)
                 Log.d("MapReady", "카카오 맵 로드 완료!")
+
+                // 기본 시작 위치(한국공대)
+                val initialPosition = LatLng.from(37.340179, 126.733591)
+                val cameraUpdate: CameraUpdate = CameraUpdateFactory.newCenterPosition(initialPosition)
+                kakaoMap.moveCamera(cameraUpdate) // 카메라 이동
             }
         })
 
@@ -62,9 +80,22 @@ class HomeFragment : Fragment() {
         }
 
         startButton = view.findViewById(R.id.startButton) // 주행시작 버튼
+        var isDriving = false // 주행 상태
         startButton.setOnClickListener {
-            // 주행시작 버튼 클릭 시 주행시작
-            checkGPSAndRequestPermission()
+            // 주행시작 or 주행종료 버튼 클릭 시
+            if (isDriving) {
+                startButton.text = "주행시작"
+                isDriving = false
+            } else {
+                // 주행 중이 아니면 주행 시작
+                // 주행 시작 전에 GPS 및 권한 확인
+                checkGPSAndRequestPermission { granted ->
+                    if (granted) {
+                        startButton.text = "주행종료"
+                        isDriving = true
+                    }
+                }
+            }
         }
 
         return view
@@ -156,12 +187,13 @@ class HomeFragment : Fragment() {
         }
 
 
-    private fun checkGPSAndRequestPermission() {
+    private fun checkGPSAndRequestPermission(callback: (Boolean) -> Unit) {
         val locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
         if (!requireContext().packageManager.hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS)) {
             // GPS를 지원하지 않는 기기의 경우
             Toast.makeText(requireContext(), "이 기기는 GPS를 지원하지 않습니다.", Toast.LENGTH_SHORT).show()
+            callback(false)
             return
         }
 
@@ -169,6 +201,7 @@ class HomeFragment : Fragment() {
         if (!isGPSEnabled) {
             // GPS가 비활성화 되어 있는 경우
             Toast.makeText(requireContext(), "GPS가 비활성화되어 있습니다. 활성화 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
+            callback(false)
             return
         }
 
@@ -182,6 +215,7 @@ class HomeFragment : Fragment() {
 
         // 모든 조건 충족 시 주행 시작
         startDriving()
+        callback(true)
     }
 
     // 위치 권한 요청 콜백
@@ -197,5 +231,27 @@ class HomeFragment : Fragment() {
     // 주행 시작 함수 (나중에 GPS 수신 로직 추가 예정)
     private fun startDriving() {
         Toast.makeText(requireContext(), "GPS 확인 완료. 주행을 시작합니다.", Toast.LENGTH_SHORT).show()
+        updateCurrentLocation() // 현재 위치 업데이트
+    }
+
+    // 현재 위치 업데이트, 지도 수정 함수
+    private fun updateCurrentLocation() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            return // 권한 없으면 실행 안 함
+        }
+
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            if (location != null) {
+                // 현재 위치 좌표 가져오기
+                val currentLatLng = LatLng.from(location.latitude, location.longitude)
+
+                // 카메라를 현재 위치로 이동(애니메이션 효과 포함)
+                kakaoMap?.moveCamera(CameraUpdateFactory.newCenterPosition(currentLatLng), CameraAnimation.from(1000, true, true))
+            } else {
+                Toast.makeText(requireContext(), "현재 위치를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 }
