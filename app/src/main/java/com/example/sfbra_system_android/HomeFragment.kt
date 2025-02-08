@@ -115,12 +115,20 @@ class HomeFragment : Fragment() {
     private fun connectBluetooth() {
         try {
             if (!BluetoothLEManager.initialize(requireContext())) {
+                // 해당 기기가 블루투스를 지원하지 않는 경우
                 Toast.makeText(requireContext(), "블루투스를 지원하지 않는 기기입니다.", Toast.LENGTH_SHORT).show()
                 return
             }
 
             if (!checkBluetoothPermissions()) {
+                // 앱의 블루투스 권한이 없는 경우
                 requestBluetoothPermissions()
+                return
+            }
+
+            if (bluetoothAdapter?.isEnabled == false) {
+                // 블루투스가 꺼져 있으면 활성화 요청
+                Toast.makeText(requireContext(), "블루투스가 비활성화 되어 있습니다.", Toast.LENGTH_SHORT).show()
                 return
             }
 
@@ -132,11 +140,12 @@ class HomeFragment : Fragment() {
                         Toast.makeText(requireContext(), "BLE 연결 성공!", Toast.LENGTH_SHORT).show()
                     },
                     onDataReceived = { data ->
-                        Log.d("BluetoothLE", "아두이노에서 받은 데이터: $data")
+                        Log.d("BluetoothLE", "데이터: $data")
                     }
                 )
             }
         } catch (e: SecurityException) {
+            // 예외 발생 시
             Log.e("Bluetooth", "블루투스 연결 중 예외 발생: ${e.message}")
             Toast.makeText(requireContext(), "블루투스 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
         }

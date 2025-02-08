@@ -28,12 +28,6 @@
         <meta-data
             android:name="com.kakao.sdk.AppKey"
             android:value="@string/kakao_map_key"/>
-        <service
-            android:name=".BluetoothService"
-            android:enabled="true"
-            android:exported="false"
-            android:foregroundServiceType="connectedDevice">
-        </service>
         <!-- 스플래시 화면 -->
         <activity
             android:name=".SplashActivity"

@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import java.util.*
 
@@ -23,7 +24,7 @@ object BluetoothLEManager {
     private val SERVICE_UUID = UUID.fromString("0000FFE0-0000-1000-8000-00805F9B34FB")
     private val CHARACTERISTIC_UUID = UUID.fromString("0000FFE1-0000-1000-8000-00805F9B34FB")
 
-    // 🔹 블루투스 초기화 함수
+    // 블루투스 초기화 함수
     @SuppressLint("ServiceCast")
     fun initialize(context: Context): Boolean {
         val bluetoothManager = context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
@@ -31,7 +32,7 @@ object BluetoothLEManager {
         return bluetoothAdapter != null
     }
 
-    // 🔹 BLE 스캔 시작 함수
+    // BLE 스캔 시작 함수
     @SuppressLint("MissingPermission")
     fun startScan(context: Context, onDeviceFound: (BluetoothDevice) -> Unit) {
         if (!hasBluetoothPermissions(context)) {
@@ -42,6 +43,12 @@ object BluetoothLEManager {
         if (isScanning || bluetoothAdapter == null) return
 
         val scanner = bluetoothAdapter!!.bluetoothLeScanner
+        if (scanner == null) {
+            Log.e("BluetoothLE", "블루투스가 비활성화되어 스캔할 수 없습니다.")
+            return
+        }
+
+        var isDeviceFound = false  // 장치를 찾았는지 여부
         val scanFilters = listOf(ScanFilter.Builder().build())
         val scanSettings = ScanSettings.Builder()
             .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
@@ -50,7 +57,8 @@ object BluetoothLEManager {
         scanCallback = object : ScanCallback() {
             override fun onScanResult(callbackType: Int, result: ScanResult?) {
                 result?.device?.let { device ->
-                    if (device.name?.startsWith("BicycleBT") == true) {  // 🔹 권한 체크 추가
+                    if (device.name?.startsWith("BicycleBT") == true) {
+                        isDeviceFound = true  // 장치 찾음
                         stopScan(context)
                         onDeviceFound(device)
                     }
@@ -62,12 +70,18 @@ object BluetoothLEManager {
             }
         }
 
-        scanner.startScan(scanFilters, scanSettings, scanCallback)  // 🔹 권한 체크 추가
+        scanner.startScan(scanFilters, scanSettings, scanCallback)
         isScanning = true
-        handler.postDelayed({ stopScan(context) }, 10000) // 10초 후 자동 중지
+        // 스캔 종료, 장치를 못찾을 경우 토스트 메세지
+        handler.postDelayed({
+            stopScan(context)
+            if (!isDeviceFound) {
+                Toast.makeText(context, "장치를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
+            }
+        }, 3000)  // 5초동안 못찾을 경우
     }
 
-    // 🔹 BLE 스캔 중지 함수
+    // BLE 스캔 중지 함수
     @SuppressLint("MissingPermission")
     fun stopScan(context: Context) {
         if (!hasBluetoothPermissions(context)) {
@@ -76,12 +90,12 @@ object BluetoothLEManager {
         }
 
         if (isScanning && bluetoothAdapter != null) {
-            bluetoothAdapter!!.bluetoothLeScanner.stopScan(scanCallback)  // 🔹 권한 체크 추가
+            bluetoothAdapter!!.bluetoothLeScanner.stopScan(scanCallback)  // 권한 체크
             isScanning = false
         }
     }
 
-    // 🔹 BLE 장치 연결 함수
+    // BLE 장치 연결 함수
     @SuppressLint("MissingPermission")
     fun connectToDevice(context: Context, device: BluetoothDevice, onConnected: () -> Unit, onDataReceived: (String) -> Unit) {
         if (!hasBluetoothPermissions(context)) {
@@ -121,7 +135,7 @@ object BluetoothLEManager {
         })
     }
 
-    // 🔹 BLE 연결 해제 함수
+    // BLE 연결 해제 함수
     @SuppressLint("MissingPermission")
     fun disconnect(context: Context) {
         if (!hasBluetoothPermissions(context)) {
@@ -129,11 +143,11 @@ object BluetoothLEManager {
             return
         }
 
-        bluetoothGatt?.close()  // 🔹 권한 체크 추가
+        bluetoothGatt?.close()  // 권한 체크
         bluetoothGatt = null
     }
 
-    // 🔹 블루투스 권한 확인 함수
+    // 블루투스 권한 확인 함수
     private fun hasBluetoothPermissions(context: Context): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED &&
