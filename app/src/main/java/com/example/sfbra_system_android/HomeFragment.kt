@@ -1,11 +1,8 @@
 package com.example.sfbra_system_android
 
 import android.Manifest
-import android.app.AlertDialog
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Build
@@ -109,6 +106,12 @@ class HomeFragment : Fragment() {
     override fun onPause() {
         super.onPause()
         mapView.pause() // 오류 방지를 위한 pause()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("HomeFragment", "홈 프래그먼트가 종료되었습니다.")
+        BluetoothLEManager.disconnect(requireContext())
     }
 
     // 블루투스 연결 함수

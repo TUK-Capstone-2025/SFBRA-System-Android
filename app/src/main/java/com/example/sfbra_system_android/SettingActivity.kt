@@ -22,9 +22,18 @@ class SettingActivity : AppCompatActivity() {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
         }
 
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)  // 액션바 뒤로가기 버튼 활성화
+        }
+
         supportFragmentManager
             .beginTransaction()
             .replace(android.R.id.content, SettingFragment())
             .commit()
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        finish() // 뒤로가기 버튼 클릭 시 액티비티 종료
+        return true
     }
 }
