@@ -86,8 +86,14 @@ class HomeFragment : Fragment() {
 
         startButton = view.findViewById(R.id.startButton) // 주행시작 버튼
         var isDriving = false // 주행 상태
+
         startButton.setOnClickListener {
             // 주행시작 or 주행종료 버튼 클릭 시
+            if (!isBluetoothConnected) {
+                Toast.makeText(requireContext(), "블루투스 연결이 필요합니다.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener // 블루투스 연결 안 됐으면 실행 안 함
+            }
+
             if (isDriving) {
                 startButton.text = "주행시작"
                 isDriving = false
