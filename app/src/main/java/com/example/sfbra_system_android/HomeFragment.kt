@@ -77,7 +77,7 @@ class HomeFragment : Fragment() {
         connectButton.setOnClickListener {
             if (isBluetoothConnected) {
                 // 연결해제버튼 상태일 때 클릭 시 블루투스 연결 해제
-                disconnectBluetooth()
+                showDisconnectDialog() // 연결 해제 팝업 함수
             } else {
                 // 연결버튼 클릭 시 블루투스 연결
                 connectBluetooth()
@@ -122,15 +122,28 @@ class HomeFragment : Fragment() {
         BluetoothLEManager.disconnect(requireContext())
     }
 
+    // 연결 버튼 텍스트 변경 함수
     private fun updateConnectButton() {
         connectButton.text = if (isBluetoothConnected) "연결 해제" else "연결"
     }
 
+    // 블루투스 연결 해제 함수
     private fun disconnectBluetooth() {
         BluetoothLEManager.disconnect(requireContext())
         Toast.makeText(requireContext(), "장치 연결 해제", Toast.LENGTH_SHORT).show()
         isBluetoothConnected = false
         updateConnectButton()
+    }
+
+    private fun showDisconnectDialog() {
+        val builder = android.app.AlertDialog.Builder(requireContext())
+        builder.setTitle("블루투스 연결 해제")
+            .setMessage("장치와의 블루투스 연결을 해제하시겠습니까?")
+            .setPositiveButton("예") { _, _ ->
+                disconnectBluetooth()  // 연결 해제
+            }
+            .setNegativeButton("아니요", null) // 아무 동작 없이 닫힘
+            .show()
     }
 
     // 블루투스 연결 함수
@@ -254,8 +267,8 @@ class HomeFragment : Fragment() {
 
     // 주행 시작 함수 (나중에 GPS 수신 로직 추가 예정)
     private fun startDriving() {
-        Toast.makeText(requireContext(), "GPS 확인 완료. 주행을 시작합니다.", Toast.LENGTH_SHORT).show()
         updateCurrentLocation() // 현재 위치 업데이트
+        Toast.makeText(requireContext(), "GPS 확인 완료. 주행을 시작합니다.", Toast.LENGTH_SHORT).show()
     }
 
     // 현재 위치 업데이트, 지도 수정 함수
