@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat.requestPermissions
@@ -39,12 +40,16 @@ class HomeFragment : Fragment() {
     private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
     private lateinit var fusedLocationClient: FusedLocationProviderClient // 위치 클라이언트
     private var isBluetoothConnected = false // 블루투스 연결 상태
+    private lateinit var warningText: TextView // 후방 위험 문구
+    private var isDriving = false // 주행 상태
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
+
+        warningText = view.findViewById(R.id.warningText) // 텍스트 뷰 id로 매칭
 
         // 위치 서비스 초기화
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
@@ -86,7 +91,6 @@ class HomeFragment : Fragment() {
         }
 
         startButton = view.findViewById(R.id.startButton) // 주행시작 버튼
-        var isDriving = false // 주행 상태
 
         startButton.setOnClickListener {
             // 주행시작 or 주행종료 버튼 클릭 시
@@ -185,6 +189,11 @@ class HomeFragment : Fragment() {
                     },
                     onDataReceived = { data ->
                         Log.d("BluetoothLE", "데이터: $data")
+
+                        // 주행중일 때만 데이터 처리
+                        if (isDriving) {
+                            handleBluetoothData(data)
+                        }
                     }
                 )
             }
@@ -195,6 +204,7 @@ class HomeFragment : Fragment() {
         }
     }
 
+    // 블루투스 권한 체크
     private fun checkBluetoothPermissions(): Boolean {
         return try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -209,6 +219,7 @@ class HomeFragment : Fragment() {
         }
     }
 
+    // 블루투스 권한 요청
     private fun requestBluetoothPermissions() {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -230,7 +241,7 @@ class HomeFragment : Fragment() {
         }
     }
 
-
+    // GPS 권한 체크 및 권한 요청
     private fun checkGPSAndRequestPermission(callback: (Boolean) -> Unit) {
         val locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
@@ -296,6 +307,17 @@ class HomeFragment : Fragment() {
             } else {
                 Toast.makeText(requireContext(), "현재 위치를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show()
             }
+        }
+    }
+
+    private fun handleBluetoothData(data: String) {
+        // 2m 이내 물체 접근 중 이벤트
+        if(!data.startsWith("2m:")) return // 임시 처리
+
+        if (data == "해당 데이터 문자열") { // 데이터 규격에 맞게 수정할 것
+            warningText.visibility = View.GONE
+        } else {
+            warningText.visibility = View.VISIBLE
         }
     }
 }

@@ -9,6 +9,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <!-- 후방 위험 문구 -->
+    <TextView
+        android:id="@+id/warningText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="⚠️ 2m 이내에 후방 접근 중!"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginStart="7dp"
+        android:layout_marginTop="7dp"
+        android:visibility="gone"/>
+
     <!-- 연결 버튼 -->
     <Button
         android:id="@+id/connectButton"
