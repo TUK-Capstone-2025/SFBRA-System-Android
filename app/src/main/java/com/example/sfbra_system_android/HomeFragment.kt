@@ -14,6 +14,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat.requestPermissions
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -35,6 +37,7 @@ class HomeFragment : Fragment() {
     private lateinit var startButton: Button
     private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
     private lateinit var fusedLocationClient: FusedLocationProviderClient // 위치 클라이언트
+    private var isBluetoothConnected = false // 블루투스 연결 상태
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -72,8 +75,13 @@ class HomeFragment : Fragment() {
 
         connectButton = view.findViewById(R.id.connectButton) // 연결버튼
         connectButton.setOnClickListener {
-            // 연결버튼 클릭 시 블루투스 연결
-            connectBluetooth()
+            if (isBluetoothConnected) {
+                // 연결해제버튼 상태일 때 클릭 시 블루투스 연결 해제
+                disconnectBluetooth()
+            } else {
+                // 연결버튼 클릭 시 블루투스 연결
+                connectBluetooth()
+            }
         }
 
         startButton = view.findViewById(R.id.startButton) // 주행시작 버튼
@@ -114,6 +122,17 @@ class HomeFragment : Fragment() {
         BluetoothLEManager.disconnect(requireContext())
     }
 
+    private fun updateConnectButton() {
+        connectButton.text = if (isBluetoothConnected) "연결 해제" else "연결"
+    }
+
+    private fun disconnectBluetooth() {
+        BluetoothLEManager.disconnect(requireContext())
+        Toast.makeText(requireContext(), "장치 연결 해제", Toast.LENGTH_SHORT).show()
+        isBluetoothConnected = false
+        updateConnectButton()
+    }
+
     // 블루투스 연결 함수
     private fun connectBluetooth() {
         try {
@@ -140,7 +159,9 @@ class HomeFragment : Fragment() {
 
                 BluetoothLEManager.connectToDevice(requireContext(), device,
                     onConnected = {
-                        Toast.makeText(requireContext(), "BLE 연결 성공!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "장치 연결 성공!", Toast.LENGTH_SHORT).show()
+                        isBluetoothConnected = true
+                        updateConnectButton()
                     },
                     onDataReceived = { data ->
                         Log.d("BluetoothLE", "데이터: $data")
