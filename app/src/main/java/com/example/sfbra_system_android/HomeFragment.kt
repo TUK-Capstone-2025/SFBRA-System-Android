@@ -29,6 +29,7 @@ import com.kakao.vectormap.camera.CameraAnimation
 import com.kakao.vectormap.camera.CameraUpdate
 import com.kakao.vectormap.camera.CameraUpdateFactory
 
+// 홈 화면
 class HomeFragment : Fragment() {
 
     private lateinit var mapView: MapView
