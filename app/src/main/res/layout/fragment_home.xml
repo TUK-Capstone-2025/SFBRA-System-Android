@@ -14,12 +14,16 @@
         android:id="@+id/warningText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="⚠️ 2m 이내에 후방 접근 중!"
+        android:text="⚠️ 후방 2m 이내 주의요망!"
         android:textSize="20sp"
         android:textStyle="bold"
-        android:layout_marginStart="7dp"
-        android:layout_marginTop="7dp"
-        android:visibility="gone"/>
+        android:textColor="#FFFFFF"
+        android:background="@drawable/rounded_red_background"
+        android:padding="12dp"
+        android:layout_marginTop="100dp"
+        android:gravity="center"
+        android:layout_gravity="top|center_horizontal"
+        android:visibility="gone" />
 
     <!-- 연결 버튼 -->
     <Button

@@ -15,8 +15,6 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat.requestPermissions
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -29,6 +27,9 @@ import com.kakao.vectormap.MapView
 import com.kakao.vectormap.camera.CameraAnimation
 import com.kakao.vectormap.camera.CameraUpdate
 import com.kakao.vectormap.camera.CameraUpdateFactory
+import kotlinx.coroutines.Job
+import org.json.JSONObject
+import kotlinx.coroutines.*
 
 // 홈 화면
 class HomeFragment : Fragment() {
@@ -42,6 +43,8 @@ class HomeFragment : Fragment() {
     private var isBluetoothConnected = false // 블루투스 연결 상태
     private lateinit var warningText: TextView // 후방 위험 문구
     private var isDriving = false // 주행 상태
+    private val receivedData = StringBuilder() // 데이터 누적을 위한 StringBuilder
+    private var blinkJob: Job? = null  // 깜빡임 효과를 위한 Job
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -102,15 +105,12 @@ class HomeFragment : Fragment() {
             if (isDriving) {
                 startButton.text = "주행시작"
                 isDriving = false
+                blinkJob?.cancel()
+                warningText.visibility = View.GONE
             } else {
                 // 주행 중이 아니면 주행 시작
                 // 주행 시작 전에 GPS 및 권한 확인
-                checkGPSAndRequestPermission { granted ->
-                    if (granted) {
-                        startButton.text = "주행종료"
-                        isDriving = true
-                    }
-                }
+                checkGPSAndRequestPermission()
             }
         }
 
@@ -183,12 +183,15 @@ class HomeFragment : Fragment() {
 
                 BluetoothLEManager.connectToDevice(requireContext(), device,
                     onConnected = {
-                        Toast.makeText(requireContext(), "장치 연결 성공!", Toast.LENGTH_SHORT).show()
-                        isBluetoothConnected = true
-                        updateConnectButton()
+                        Log.d("BluetoothLE", "장치 연결 성공!")
+                        requireActivity().runOnUiThread {
+                            Toast.makeText(requireActivity(), "장치 연결 성공!", Toast.LENGTH_SHORT).show()
+                            isBluetoothConnected = true
+                            updateConnectButton()
+                        }
                     },
                     onDataReceived = { data ->
-                        Log.d("BluetoothLE", "데이터: $data")
+                        Log.d("BluetoothLEMassage", "$data")
 
                         // 주행중일 때만 데이터 처리
                         if (isDriving) {
@@ -242,13 +245,12 @@ class HomeFragment : Fragment() {
     }
 
     // GPS 권한 체크 및 권한 요청
-    private fun checkGPSAndRequestPermission(callback: (Boolean) -> Unit) {
+    private fun checkGPSAndRequestPermission() {
         val locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
         if (!requireContext().packageManager.hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS)) {
             // GPS를 지원하지 않는 기기의 경우
             Toast.makeText(requireContext(), "이 기기는 GPS를 지원하지 않습니다.", Toast.LENGTH_SHORT).show()
-            callback(false)
             return
         }
 
@@ -256,7 +258,6 @@ class HomeFragment : Fragment() {
         if (!isGPSEnabled) {
             // GPS가 비활성화 되어 있는 경우
             Toast.makeText(requireContext(), "GPS가 비활성화되어 있습니다. 활성화 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
-            callback(false)
             return
         }
 
@@ -269,14 +270,18 @@ class HomeFragment : Fragment() {
         }
 
         // 모든 조건 충족 시 주행 시작
+        startButton.text = "주행종료"
+        isDriving = true
         startDriving()
-        callback(true)
+        return
     }
 
     // 위치 권한 요청 콜백
     private val requestLocationPermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
+                startButton.text = "주행종료"
+                isDriving = true
                 startDriving() // 권한 승인 시 주행 시작
             } else {
                 Toast.makeText(requireContext(), "위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
@@ -310,14 +315,55 @@ class HomeFragment : Fragment() {
         }
     }
 
+    // 블루투스 데이터 처리 함수
     private fun handleBluetoothData(data: String) {
-        // 2m 이내 물체 접근 중 이벤트
-        if(!data.startsWith("2m:")) return // 임시 처리
+        try {
+            // 수신된 데이터가 JSON 형식이 아닐 경우 여러 조각을 하나로 합침
+            val cleanedData = receivedData.append(data) // 수신된 데이터를 계속 누적
 
-        if (data == "해당 데이터 문자열") { // 데이터 규격에 맞게 수정할 것
-            warningText.visibility = View.GONE
-        } else {
-            warningText.visibility = View.VISIBLE
+            // 유효한 JSON 형식을 유지할 수 있도록 중간 데이터 처리
+            if (cleanedData.contains("}")) {
+                // 중간에 잘린 JSON을 찾아서 조합
+                val validJsonData = cleanedData.toString().substringBeforeLast("}") + "}"
+                receivedData.clear() // 이미 처리한 데이터는 지우고
+
+                // JSON 형식으로 파싱
+                val jsonObject = JSONObject(validJsonData)
+                Log.d("BluetoothLE", "수신된 데이터: $validJsonData") // 로깅 추가
+
+                // "WARNING" 키가 있는 경우만 처리
+                if (jsonObject.has("WARNING")) {
+                    val warningValue = jsonObject.getDouble("WARNING")
+                    Log.d("WarningMessage", "$warningValue")
+
+                    // -1이면 경고 숨김, 그 외에는 경고 표시
+                    requireActivity().runOnUiThread {
+                        if (warningValue == -1.0) {
+                            blinkJob?.cancel()
+                            warningText.visibility = View.GONE
+                        } else {
+                            warningText.visibility = View.VISIBLE
+                            startBlinkingWarningText()
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("BluetoothLE", "JSON 파싱 오류: ${e.message}")
+        }
+    }
+
+    // 텍스트 계속 깜빡이는 함수
+    private fun startBlinkingWarningText() {
+        blinkJob?.cancel() // 기존 Job이 있다면 취소
+        blinkJob = CoroutineScope(Dispatchers.Main).launch {
+            while (true) {
+                warningText.alpha = 1f
+                delay(500) // 0.5초 대기
+                warningText.alpha = 0f
+                delay(500) // 0.5초 대기
+
+            }
         }
     }
 }

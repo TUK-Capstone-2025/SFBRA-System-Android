@@ -24,6 +24,8 @@ object BluetoothLEManager {
     private val SERVICE_UUID = UUID.fromString("0000FFE0-0000-1000-8000-00805F9B34FB")
     private val CHARACTERISTIC_UUID = UUID.fromString("0000FFE1-0000-1000-8000-00805F9B34FB")
 
+    private val receivedData = StringBuilder() // 데이터 조각을 저장할 버퍼
+
     // 블루투스 초기화 함수
     @SuppressLint("ServiceCast")
     fun initialize(context: Context): Boolean {
@@ -48,7 +50,7 @@ object BluetoothLEManager {
             return
         }
 
-        var isDeviceFound = false  // 장치를 찾았는지 여부
+        var isDeviceFound = false
         val scanFilters = listOf(ScanFilter.Builder().build())
         val scanSettings = ScanSettings.Builder()
             .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
@@ -58,7 +60,7 @@ object BluetoothLEManager {
             override fun onScanResult(callbackType: Int, result: ScanResult?) {
                 result?.device?.let { device ->
                     if (device.name?.startsWith("BicycleBT") == true) {
-                        isDeviceFound = true  // 장치 찾음
+                        isDeviceFound = true
                         stopScan(context)
                         onDeviceFound(device)
                     }
@@ -72,13 +74,13 @@ object BluetoothLEManager {
 
         scanner.startScan(scanFilters, scanSettings, scanCallback)
         isScanning = true
-        // 스캔 종료, 장치를 못찾을 경우 토스트 메세지
+
         handler.postDelayed({
             stopScan(context)
             if (!isDeviceFound) {
                 Toast.makeText(context, "장치를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
             }
-        }, 3000)  // 5초동안 못찾을 경우
+        }, 3000)
     }
 
     // BLE 스캔 중지 함수
@@ -90,14 +92,19 @@ object BluetoothLEManager {
         }
 
         if (isScanning && bluetoothAdapter != null) {
-            bluetoothAdapter!!.bluetoothLeScanner.stopScan(scanCallback)  // 권한 체크
+            bluetoothAdapter!!.bluetoothLeScanner.stopScan(scanCallback)
             isScanning = false
         }
     }
 
     // BLE 장치 연결 함수
     @SuppressLint("MissingPermission")
-    fun connectToDevice(context: Context, device: BluetoothDevice, onConnected: () -> Unit, onDataReceived: (String) -> Unit) {
+    fun connectToDevice(
+        context: Context,
+        device: BluetoothDevice,
+        onConnected: () -> Unit,
+        onDataReceived: (String) -> Unit // 변경된 부분: 문자열을 넘겨줌
+    ) {
         if (!hasBluetoothPermissions(context)) {
             Log.e("BluetoothLE", "블루투스 권한이 없습니다.")
             return
@@ -119,7 +126,7 @@ object BluetoothLEManager {
                     val characteristic = gatt?.getService(SERVICE_UUID)?.getCharacteristic(CHARACTERISTIC_UUID)
                     characteristic?.let {
                         gatt.setCharacteristicNotification(it, true)
-                        Log.d("BluetoothLE", "특성 감지됨")
+                        Log.d("BluetoothLE", "BLE 감지됨")
                         onConnected()
                     }
                 }
@@ -127,9 +134,10 @@ object BluetoothLEManager {
 
             override fun onCharacteristicChanged(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?) {
                 characteristic?.value?.let {
-                    val receivedData = String(it)
-                    Log.d("BluetoothLE", "수신 데이터: $receivedData")
-                    onDataReceived(receivedData)
+                    val receivedDataChunk = String(it)
+
+                    // 문자열 데이터 수신 처리
+                    onDataReceived(receivedDataChunk)
                 }
             }
         })
@@ -143,7 +151,7 @@ object BluetoothLEManager {
             return
         }
 
-        bluetoothGatt?.close()  // 권한 체크
+        bluetoothGatt?.close()
         bluetoothGatt = null
     }
 
