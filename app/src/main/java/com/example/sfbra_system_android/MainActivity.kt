@@ -16,13 +16,9 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.text.color
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.example.sfbra_system_android.databinding.ActivityMainBinding
 import java.security.MessageDigest
@@ -30,10 +26,13 @@ import java.security.NoSuchAlgorithmException
 
 class MainActivity : AppCompatActivity() {
     private var doubleBackToExitPressedOnce = false
-    lateinit var toggle: ActionBarDrawerToggle
-    lateinit var binding: ActivityMainBinding
+    private lateinit var toggle: ActionBarDrawerToggle
+    private lateinit var binding: ActivityMainBinding
 
-    // 메인 액티비티
+    // 프래그먼트 저장용 맵
+    private val fragmentMap = mutableMapOf<String, Fragment>()
+    private var activeFragment: Fragment? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -42,7 +41,18 @@ class MainActivity : AppCompatActivity() {
 
         printKeyHash(this)  // 로그에 키 해시 출력
 
-        // 뒤로가기 동작 처리
+        setupBackPressedHandler()
+        setupActionBar()
+        setupNavigationDrawer()
+        setupBottomNavigation()
+
+        // 첫 화면: 홈 프래그먼트
+        switchFragment(HomeFragment(), "HOME")
+        binding.bottomNavigation.selectedItemId = R.id.home
+    }
+
+    // 뒤로가기 두번 눌렀을 시 종료
+    private fun setupBackPressedHandler() {
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (supportFragmentManager.backStackEntryCount > 0) {
@@ -61,28 +71,26 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+    }
 
-        // API 레벨 26 이상에서만 실행
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // 시스템 내비게이션 바 버튼 색상 변경
-            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+    // 액션바 색깔 수정 함수
+    private fun setupActionBar() {
+        toggle = ActionBarDrawerToggle(this, binding.drawer, R.string.drawer_open, R.string.drawer_close)
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setBackgroundDrawable(ContextCompat.getDrawable(this@MainActivity, R.color.my_primary))
+
+            val titleText = SpannableString(title ?: "")
+            titleText.setSpan(ForegroundColorSpan(Color.WHITE), 0, titleText.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            title = titleText
         }
 
-        toggle = ActionBarDrawerToggle(this, binding.drawer, R.string.drawer_open, R.string.drawer_close)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        // 액션바 색깔 변경
-        supportActionBar?.setBackgroundDrawable(ContextCompat.getDrawable(this, R.color.my_primary))
-        // 액션바 글자색 변경
-        val title = SpannableString(supportActionBar?.title ?: "")
-        title.setSpan(ForegroundColorSpan(Color.WHITE), 0, title.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        supportActionBar?.title = title
-        // 햄버거 버튼 색상 변경
-        val arrowDrawable = toggle.drawerArrowDrawable
-        arrowDrawable.color = ContextCompat.getColor(this, R.color.white)
-
+        toggle.drawerArrowDrawable.color = ContextCompat.getColor(this, R.color.white)
         toggle.syncState()
+    }
 
-        // 좌측 사이드메뉴 클릭 리스너
+    // 사이드 메뉴 설정 함수
+    private fun setupNavigationDrawer() {
         binding.mainDrawerView.setNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.edit_profile -> true
@@ -94,59 +102,51 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
-
-        // 기본 프래그먼트를 항상 설정 (앱 실행 시마다)
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, HomeFragment()) // HomeFragment를 기본 프래그먼트로 설정
-            .commit()
-
-        // 하단 네비게이션에서 기본 선택 설정
-        binding.bottomNavigation.selectedItemId = R.id.home
-
-        // 하단 네비게이션 클릭 리스너
-        binding.bottomNavigation.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.my_profile -> {
-                    replaceFragment(MyProfileFragment())
-                    true
-                }
-                R.id.riding_record -> {
-                    replaceFragment(RidingPathFragment())
-                    true
-                }
-                R.id.home -> {
-                    replaceFragment(HomeFragment())
-                    true
-                }
-                R.id.my_team -> {
-                    replaceFragment(MyTeamFragment())
-                    true
-                }
-                R.id.bicycle_lock -> {
-                    replaceFragment(BicycleLockFragment())
-                    true
-                }
-                else -> false
-            }
-        }
-
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (toggle.onOptionsItemSelected(item)){
-            return true
+    // 네비게이션 바 버튼 설정 함수
+    private fun setupBottomNavigation() {
+        binding.bottomNavigation.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.my_profile -> switchFragment(MyProfileFragment(), "MY_PROFILE")
+                R.id.riding_record -> switchFragment(RidingPathFragment(), "RIDING_RECORD")
+                R.id.home -> switchFragment(HomeFragment(), "HOME")
+                R.id.my_team -> switchFragment(MyTeamFragment(), "MY_TEAM")
+                R.id.bicycle_lock -> switchFragment(BicycleLockFragment(), "BICYCLE_LOCK")
+                else -> false
+            }
+            true
         }
-        return super.onOptionsItemSelected(item)
     }
 
     // 프래그먼트 교체 함수
-    private fun replaceFragment(fragment: Fragment) {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment)
-            .commit()
+    private fun switchFragment(fragment: Fragment, tag: String) {
+        if (activeFragment?.tag == tag) return
+
+        val transaction = supportFragmentManager.beginTransaction()
+
+        // 기존 프래그먼트 숨기기
+        activeFragment?.let { transaction.hide(it) }
+
+        // 새 프래그먼트 가져오기 (기존 프래그먼트가 있으면 재사용)
+        val newFragment = fragmentMap[tag] ?: fragment.also { fragmentMap[tag] = it }
+
+        // 프래그먼트 추가 또는 보여주기
+        if (!newFragment.isAdded) {
+            transaction.add(R.id.fragment_container, newFragment, tag)
+        } else {
+            transaction.show(newFragment)
+        }
+
+        transaction.commit()
+        activeFragment = newFragment
     }
 
-    // 앱의 키 해시를 알기 위한 로그 출력 함수
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return if (toggle.onOptionsItemSelected(item)) true else super.onOptionsItemSelected(item)
+    }
+
+    // 키 해시 출력 함수
     fun printKeyHash(context: android.content.Context) {
         try {
             val info = context.packageManager.getPackageInfo(
