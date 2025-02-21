@@ -17,6 +17,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.kakao.vectormap.KakaoMap
@@ -44,7 +45,8 @@ class HomeFragment : Fragment() {
     private lateinit var warningText: TextView // 후방 위험 문구
     private var isDriving = false // 주행 상태
     private val receivedData = StringBuilder() // 데이터 누적을 위한 StringBuilder
-    private var blinkJob: Job? = null  // 깜빡임 효과를 위한 Job
+    private var blinkJob: Job? = null  // 위험 문구 깜빡임 효과를 위한 Job
+    private lateinit var bluetoothViewModel: BluetoothViewModel // 블루투스 뷰 모델
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,11 +55,9 @@ class HomeFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
 
         warningText = view.findViewById(R.id.warningText) // 텍스트 뷰 id로 매칭
-
-        // 위치 서비스 초기화
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
-
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext()) // 위치 서비스 초기화
         mapView = view.findViewById(R.id.mapView) // 맵뷰
+        bluetoothViewModel = ViewModelProvider(requireActivity()).get(BluetoothViewModel::class.java)
 
         // 카카오 맵 api로 지도 띄우기
         mapView.start(object : MapLifeCycleCallback() {
@@ -94,7 +94,6 @@ class HomeFragment : Fragment() {
         }
 
         startButton = view.findViewById(R.id.startButton) // 주행시작 버튼
-
         startButton.setOnClickListener {
             // 주행시작 or 주행종료 버튼 클릭 시
             if (!isBluetoothConnected) {
@@ -193,10 +192,8 @@ class HomeFragment : Fragment() {
                     onDataReceived = { data ->
                         Log.d("BluetoothLEMassage", "$data")
 
-                        // 주행중일 때만 데이터 처리
-                        if (isDriving) {
-                            handleBluetoothData(data)
-                        }
+                        // 블루투스 데이터 수신 시 처리 함수
+                        handleBluetoothData(data)
                     }
                 )
             }
@@ -331,19 +328,34 @@ class HomeFragment : Fragment() {
                 val jsonObject = JSONObject(validJsonData)
                 Log.d("BluetoothLE", "수신된 데이터: $validJsonData") // 로깅 추가
 
-                // "WARNING" 키가 있는 경우만 처리
-                if (jsonObject.has("WARNING")) {
-                    val warningValue = jsonObject.getDouble("WARNING")
-                    Log.d("WarningMessage", "$warningValue")
+                // 주행 중일 때만 작동
+                if (isDriving) {
+                    // "WARNING" 키가 있는 경우만 처리
+                    if (jsonObject.has("WARNING")) {
+                        val warningValue = jsonObject.getDouble("WARNING")
+                        Log.d("WarningMessage", "$warningValue")
 
-                    // -1이면 경고 숨김, 그 외에는 경고 표시
+                        // -1이면 경고 숨김, 그 외에는 경고 표시
+                        requireActivity().runOnUiThread {
+                            if (warningValue == -1.0) {
+                                blinkJob?.cancel()
+                                warningText.visibility = View.GONE
+                            } else {
+                                warningText.visibility = View.VISIBLE
+                                startBlinkingWarningText()
+                            }
+                        }
+                    }
+                }
+
+                // todo 주행 중이 아닐 때도 작동하는 잠금 기능 (추후 수정)
+                if (jsonObject.has("틸트 관련")) {
+                    val tiltValue = jsonObject.getDouble("틸트 관련")
+                    Log.d("TiltMessage", "$tiltValue")
+
                     requireActivity().runOnUiThread {
-                        if (warningValue == -1.0) {
-                            blinkJob?.cancel()
-                            warningText.visibility = View.GONE
-                        } else {
-                            warningText.visibility = View.VISIBLE
-                            startBlinkingWarningText()
+                        if (tiltValue == -1.0) {
+                            bluetoothViewModel.updateBluetoothData("DETECT")
                         }
                     }
                 }

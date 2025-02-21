@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?> <!-- 자전거 잠금 상태 버튼 -->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/red_light">
+    <item>
+        <shape android:shape="oval">
+            <gradient
+                android:startColor="@color/red"
+                android:endColor="@color/red_light"
+                android:angle="90" />
+        </shape>
+    </item>
+</ripple>

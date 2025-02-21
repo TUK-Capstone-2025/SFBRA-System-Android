@@ -87,6 +87,12 @@ class MainActivity : AppCompatActivity() {
 
         toggle.drawerArrowDrawable.color = ContextCompat.getColor(this, R.color.white)
         toggle.syncState()
+
+        // API 레벨 26 이상에서만 실행
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // 시스템 내비게이션 바 버튼 색상 변경
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+        }
     }
 
     // 사이드 메뉴 설정 함수
@@ -98,7 +104,11 @@ class MainActivity : AppCompatActivity() {
                     startActivity(Intent(this, SettingActivity::class.java))
                     true
                 }
-                R.id.logout -> true
+                R.id.logout -> {
+                    startActivity(Intent(this, LoginActivity::class.java))
+                    finish()
+                    true
+                }
                 else -> false
             }
         }
