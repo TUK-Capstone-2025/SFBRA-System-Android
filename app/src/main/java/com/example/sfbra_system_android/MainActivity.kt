@@ -33,6 +33,10 @@ class MainActivity : AppCompatActivity() {
     private val fragmentMap = mutableMapOf<String, Fragment>()
     private var activeFragment: Fragment? = null
 
+    // 블루투스 연결 확인용 변수
+    var isBluetoothConnected: Boolean = false
+        private set // 외부에서 직접 변경하지 못하도록 private 설정
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -150,6 +154,11 @@ class MainActivity : AppCompatActivity() {
 
         transaction.commit()
         activeFragment = newFragment
+    }
+
+    // 블루투스 상태 업데이트 함수
+    fun setBluetoothConnectionState(isConnected: Boolean) {
+        isBluetoothConnected = isConnected
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

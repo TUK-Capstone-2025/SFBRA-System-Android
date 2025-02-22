@@ -48,6 +48,7 @@ class HomeFragment : Fragment() {
     private val receivedData = StringBuilder() // 데이터 누적을 위한 StringBuilder
     private var blinkJob: Job? = null  // 위험 문구 깜빡임 효과를 위한 Job
     private lateinit var bluetoothViewModel: BluetoothViewModel // 블루투스 뷰 모델
+    private val mainActivity = activity as? MainActivity
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -142,6 +143,7 @@ class HomeFragment : Fragment() {
         BluetoothLEManager.disconnect(requireContext())
         Toast.makeText(requireContext(), "장치 연결 해제", Toast.LENGTH_SHORT).show()
         isBluetoothConnected = false
+        mainActivity?.setBluetoothConnectionState(isBluetoothConnected) // 메인 액티비티로 상태 업데이트
         updateConnectButton()
     }
 
@@ -187,6 +189,7 @@ class HomeFragment : Fragment() {
                         requireActivity().runOnUiThread {
                             Toast.makeText(requireActivity(), "장치 연결 성공!", Toast.LENGTH_SHORT).show()
                             isBluetoothConnected = true
+                            mainActivity?.setBluetoothConnectionState(isBluetoothConnected) // 메인 액티비티로 상태 업데이트
                             updateConnectButton()
                         }
                     },
@@ -268,8 +271,6 @@ class HomeFragment : Fragment() {
         }
 
         // 모든 조건 충족 시 주행 시작
-        startButton.text = "주행종료"
-        isDriving = true
         startDriving()
         return
     }
@@ -278,8 +279,6 @@ class HomeFragment : Fragment() {
     private val requestLocationPermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
-                startButton.text = "주행종료"
-                isDriving = true
                 startDriving() // 권한 승인 시 주행 시작
             } else {
                 Toast.makeText(requireContext(), "위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
@@ -288,7 +287,9 @@ class HomeFragment : Fragment() {
 
     // todo 주행 시작 함수 (나중에 GPS 수신 로직 추가 예정)
     private fun startDriving() {
-        updateCurrentLocation() // 현재 위치 업데이트
+        startButton.text = "주행종료"
+        isDriving = true
+        updateCurrentLocation() // 현재 위치 업데이트(초기화)
         speedText.visibility = View.VISIBLE // 속도 텍스트 표시
         Toast.makeText(requireContext(), "GPS 확인 완료. 주행을 시작합니다.", Toast.LENGTH_SHORT).show()
     }
