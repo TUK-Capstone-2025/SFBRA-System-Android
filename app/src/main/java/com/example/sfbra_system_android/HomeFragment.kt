@@ -54,7 +54,6 @@ class HomeFragment : Fragment() {
     private val receivedData = StringBuilder() // 데이터 누적을 위한 StringBuilder
     private var blinkJob: Job? = null  // 위험 문구 깜빡임 효과를 위한 Job
     private lateinit var bluetoothViewModel: BluetoothViewModel // 블루투스 뷰 모델
-    private val mainActivity = activity as? MainActivity
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -89,6 +88,10 @@ class HomeFragment : Fragment() {
                 val cameraUpdate: CameraUpdate = CameraUpdateFactory.newCenterPosition(initialPosition, 16)
                 kakaoMap.moveCamera(cameraUpdate) // 카메라 이동
                 kakaoMap.showOverlay(MapOverlay.BICYCLE_ROAD)
+
+                val addressText = getAddressFromLocation(37.340179, 126.733591)
+                (activity as? MainActivity)?.setTitleFromLocation(addressText)
+                Log.d("Location", "$addressText")
             }
         })
 
@@ -150,7 +153,7 @@ class HomeFragment : Fragment() {
         BluetoothLEManager.disconnect(requireContext())
         Toast.makeText(requireContext(), "장치 연결 해제", Toast.LENGTH_SHORT).show()
         isBluetoothConnected = false
-        mainActivity?.setBluetoothConnectionState(isBluetoothConnected) // 메인 액티비티로 상태 업데이트
+        (activity as? MainActivity)?.setBluetoothConnectionState(isBluetoothConnected) // 메인 액티비티로 상태 업데이트
         updateConnectButton()
     }
 
@@ -196,7 +199,7 @@ class HomeFragment : Fragment() {
                         requireActivity().runOnUiThread {
                             Toast.makeText(requireActivity(), "장치 연결 성공!", Toast.LENGTH_SHORT).show()
                             isBluetoothConnected = true
-                            mainActivity?.setBluetoothConnectionState(isBluetoothConnected) // 메인 액티비티로 상태 업데이트
+                            (activity as? MainActivity)?.setBluetoothConnectionState(isBluetoothConnected) // 메인 액티비티로 상태 업데이트
                             updateConnectButton()
                         }
                     },
@@ -323,6 +326,9 @@ class HomeFragment : Fragment() {
 
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
             if (location != null) {
+                val addressText = getAddressFromLocation(location.latitude, location.longitude)
+                (activity as? MainActivity)?.setTitleFromLocation(addressText)
+
                 // 현재 위치 좌표 가져오기
                 val currentLatLng = LatLng.from(location.latitude, location.longitude)
 
@@ -332,6 +338,21 @@ class HomeFragment : Fragment() {
             } else {
                 Toast.makeText(requireContext(), "현재 위치를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show()
             }
+        }
+    }
+
+    private fun getAddressFromLocation(latitude: Double, longitude: Double): String {
+        val geocoder = Geocoder(requireContext(), Locale.getDefault())
+        return try {
+            val addresses = geocoder.getFromLocation(latitude, longitude, 1)
+            if (addresses?.isNotEmpty() == true) {
+                addresses[0].getAddressLine(0) // 전체 주소
+            } else {
+                "주소를 찾을 수 없음"
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            "주소를 가져올 수 없음"
         }
     }
 

@@ -3,6 +3,7 @@ package com.example.sfbra_system_android
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.location.Address
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -46,7 +47,6 @@ class MainActivity : AppCompatActivity() {
         printKeyHash(this)  // 로그에 키 해시 출력
 
         setupBackPressedHandler()
-        setupActionBar()
         setupNavigationDrawer()
         setupBottomNavigation()
 
@@ -159,6 +159,20 @@ class MainActivity : AppCompatActivity() {
     // 블루투스 상태 업데이트 함수
     fun setBluetoothConnectionState(isConnected: Boolean) {
         isBluetoothConnected = isConnected
+    }
+
+    fun setTitleFromLocation(location: String) {
+        Log.d("Location in main", "$location")
+        val shortAddress = simplifyAddress(location) // 지명 줄이기
+        supportActionBar?.title = "현재 위치: $shortAddress"
+
+        setupActionBar()
+    }
+
+    private fun simplifyAddress(address: String): String {
+        return address
+            .replace("대한민국 ", "") // "대한민국 " 삭제
+            .substringAfter("시 ")   // "~시"까지 생략하고 그 뒤부터 표시
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
