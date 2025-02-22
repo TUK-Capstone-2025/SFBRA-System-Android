@@ -161,6 +161,7 @@ class MainActivity : AppCompatActivity() {
         isBluetoothConnected = isConnected
     }
 
+    // 현재 지도 위치로 액션바 타이틀 변경 함수
     fun setTitleFromLocation(location: String) {
         Log.d("Location in main", "$location")
         val shortAddress = simplifyAddress(location) // 지명 줄이기
@@ -169,6 +170,7 @@ class MainActivity : AppCompatActivity() {
         setupActionBar()
     }
 
+    // 지명 줄이기 함수
     private fun simplifyAddress(address: String): String {
         return address
             .replace("대한민국 ", "") // "대한민국 " 삭제

@@ -89,9 +89,8 @@ class HomeFragment : Fragment() {
                 kakaoMap.moveCamera(cameraUpdate) // 카메라 이동
                 kakaoMap.showOverlay(MapOverlay.BICYCLE_ROAD)
 
-                val addressText = getAddressFromLocation(37.340179, 126.733591)
-                (activity as? MainActivity)?.setTitleFromLocation(addressText)
-                Log.d("Location", "$addressText")
+                val addressText = getAddressFromLocation(37.340179, 126.733591) // 초기화 좌표
+                (activity as? MainActivity)?.setTitleFromLocation(addressText) // 액션바 타이틀 변경
             }
         })
 
@@ -326,8 +325,8 @@ class HomeFragment : Fragment() {
 
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
             if (location != null) {
-                val addressText = getAddressFromLocation(location.latitude, location.longitude)
-                (activity as? MainActivity)?.setTitleFromLocation(addressText)
+                val addressText = getAddressFromLocation(location.latitude, location.longitude) // 현재 위치 좌표
+                (activity as? MainActivity)?.setTitleFromLocation(addressText) // 액션바 타이틀 수정
 
                 // 현재 위치 좌표 가져오기
                 val currentLatLng = LatLng.from(location.latitude, location.longitude)
