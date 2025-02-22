@@ -4,9 +4,12 @@ import android.Manifest
 import android.bluetooth.BluetoothAdapter
 import android.content.Context
 import android.content.pm.PackageManager
+import android.location.Geocoder
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -24,6 +27,7 @@ import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
 import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.MapLifeCycleCallback
+import com.kakao.vectormap.MapOverlay
 import com.kakao.vectormap.MapView
 import com.kakao.vectormap.camera.CameraAnimation
 import com.kakao.vectormap.camera.CameraUpdate
@@ -31,6 +35,8 @@ import com.kakao.vectormap.camera.CameraUpdateFactory
 import kotlinx.coroutines.Job
 import org.json.JSONObject
 import kotlinx.coroutines.*
+import kotlinx.coroutines.Runnable
+import java.util.Locale
 
 // 홈 화면
 class HomeFragment : Fragment() {
@@ -80,8 +86,9 @@ class HomeFragment : Fragment() {
 
                 // 기본 시작 위치(한국공대)
                 val initialPosition = LatLng.from(37.340179, 126.733591)
-                val cameraUpdate: CameraUpdate = CameraUpdateFactory.newCenterPosition(initialPosition)
+                val cameraUpdate: CameraUpdate = CameraUpdateFactory.newCenterPosition(initialPosition, 16)
                 kakaoMap.moveCamera(cameraUpdate) // 카메라 이동
+                kakaoMap.showOverlay(MapOverlay.BICYCLE_ROAD)
             }
         })
 
@@ -285,13 +292,25 @@ class HomeFragment : Fragment() {
             }
         }
 
-    // todo 주행 시작 함수 (나중에 GPS 수신 로직 추가 예정)
+    // todo 주행 시작 함수 (위치 변경 확인해볼 것)
     private fun startDriving() {
         startButton.text = "주행종료"
         isDriving = true
         updateCurrentLocation() // 현재 위치 업데이트(초기화)
         speedText.visibility = View.VISIBLE // 속도 텍스트 표시
         Toast.makeText(requireContext(), "GPS 확인 완료. 주행을 시작합니다.", Toast.LENGTH_SHORT).show()
+
+        locationHandler.post(updateLocationRunnable) // 3초 간격으로 위치 업데이트 시작
+        // todo 실시간 경로 그리기 + 현재 위치 점으로 표시
+    }
+
+    // 핸들러를 사용한 실시간 위치 갱신 함수
+    private val locationHandler = Handler(Looper.getMainLooper())
+    private val updateLocationRunnable = object : Runnable {
+        override fun run() {
+            updateCurrentLocation() // 현재 위치 업데이트
+            locationHandler.postDelayed(this, 3000) // 3초마다 위치 업데이트
+        }
     }
 
     // 현재 위치 업데이트, 지도 수정 함수
@@ -307,8 +326,9 @@ class HomeFragment : Fragment() {
                 // 현재 위치 좌표 가져오기
                 val currentLatLng = LatLng.from(location.latitude, location.longitude)
 
+                val cameraUpdate = CameraUpdateFactory.newCenterPosition(currentLatLng, 16)
                 // 카메라를 현재 위치로 이동(애니메이션 효과 포함)
-                kakaoMap?.moveCamera(CameraUpdateFactory.newCenterPosition(currentLatLng), CameraAnimation.from(1000, true, true))
+                kakaoMap?.moveCamera(cameraUpdate, CameraAnimation.from(1000, true, true))
             } else {
                 Toast.makeText(requireContext(), "현재 위치를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show()
             }
@@ -359,7 +379,7 @@ class HomeFragment : Fragment() {
                             if (crashValue == 1.0) {
                                 // 사고 관련 값 받을 시
                                 Toast.makeText(requireContext(), "사고 발생", Toast.LENGTH_SHORT).show()
-                                // todo 사고 발생 시나리오 구현
+                                // todo 20초의 유예 후 긴급 연락처로 메세지 발송
                             }
                         }
                     }
@@ -410,8 +430,9 @@ class HomeFragment : Fragment() {
     private fun stopDriving() {
         startButton.text = "주행시작"
         isDriving = false
-        blinkJob?.cancel()
-        warningText.visibility = View.GONE
-        speedText.visibility = View.GONE
+        blinkJob?.cancel() // 깜빡임 중지
+        locationHandler.removeCallbacks(updateLocationRunnable) // 위치 업데이트 중지
+        warningText.visibility = View.GONE // 후방 알림 비활성화
+        speedText.visibility = View.GONE // 속도 텍스트 비활성화
     }
 }
