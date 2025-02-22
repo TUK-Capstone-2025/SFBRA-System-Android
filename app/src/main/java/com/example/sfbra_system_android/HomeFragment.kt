@@ -43,6 +43,7 @@ class HomeFragment : Fragment() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient // 위치 클라이언트
     private var isBluetoothConnected = false // 블루투스 연결 상태
     private lateinit var warningText: TextView // 후방 위험 문구
+    private lateinit var speedText: TextView // 속도 텍스트
     private var isDriving = false // 주행 상태
     private val receivedData = StringBuilder() // 데이터 누적을 위한 StringBuilder
     private var blinkJob: Job? = null  // 위험 문구 깜빡임 효과를 위한 Job
@@ -55,6 +56,7 @@ class HomeFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
 
         warningText = view.findViewById(R.id.warningText) // 텍스트 뷰 id로 매칭
+        speedText = view.findViewById(R.id.speedText) // 속도 텍스트
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext()) // 위치 서비스 초기화
         mapView = view.findViewById(R.id.mapView) // 맵뷰
         bluetoothViewModel = ViewModelProvider(requireActivity()).get(BluetoothViewModel::class.java)
@@ -102,10 +104,8 @@ class HomeFragment : Fragment() {
             }
 
             if (isDriving) {
-                startButton.text = "주행시작"
-                isDriving = false
-                blinkJob?.cancel()
-                warningText.visibility = View.GONE
+                // 주행 종료
+                stopDriving()
             } else {
                 // 주행 중이 아니면 주행 시작
                 // 주행 시작 전에 GPS 및 권한 확인
@@ -145,6 +145,7 @@ class HomeFragment : Fragment() {
         updateConnectButton()
     }
 
+    // 블루투스 연결 해제 팝업 함수
     private fun showDisconnectDialog() {
         val builder = android.app.AlertDialog.Builder(requireContext())
         builder.setTitle("블루투스 연결 해제")
@@ -241,7 +242,7 @@ class HomeFragment : Fragment() {
         }
     }
 
-    // GPS 권한 체크 및 권한 요청
+    // GPS 권한 체크 및 권한 요청 + 주행 시작
     private fun checkGPSAndRequestPermission() {
         val locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
@@ -285,9 +286,10 @@ class HomeFragment : Fragment() {
             }
         }
 
-    // 주행 시작 함수 (나중에 GPS 수신 로직 추가 예정)
+    // todo 주행 시작 함수 (나중에 GPS 수신 로직 추가 예정)
     private fun startDriving() {
         updateCurrentLocation() // 현재 위치 업데이트
+        speedText.visibility = View.VISIBLE // 속도 텍스트 표시
         Toast.makeText(requireContext(), "GPS 확인 완료. 주행을 시작합니다.", Toast.LENGTH_SHORT).show()
     }
 
@@ -346,6 +348,29 @@ class HomeFragment : Fragment() {
                             }
                         }
                     }
+
+                    // todo 사고 발생 시나리오
+                    if (jsonObject.has("사고 발생")) {
+                        val crashValue = jsonObject.getDouble("사고 발생")
+                        Log.d("CrashMessage", "$crashValue")
+
+                        requireActivity().runOnUiThread {
+                            if (crashValue == 1.0) {
+                                // 사고 관련 값 받을 시
+                                Toast.makeText(requireContext(), "사고 발생", Toast.LENGTH_SHORT).show()
+                                // todo 사고 발생 시나리오 구현
+                            }
+                        }
+                    }
+
+                    // todo 속도 표시 관련
+                    if (jsonObject.has("SPEED")) {
+                        val speedValue = jsonObject.getDouble("SPEED")
+                        Log.d("SpeedMessage", "$speedValue")
+
+                        // todo 속도 표시 구현 (확인해볼 것)
+                        speedText.text = "$speedValue"
+                    }
                 }
 
                 // todo 주행 중이 아닐 때도 작동하는 잠금 기능 (추후 수정)
@@ -355,6 +380,7 @@ class HomeFragment : Fragment() {
 
                     requireActivity().runOnUiThread {
                         if (tiltValue == -1.0) {
+                            // 특정 틸트값 들어왔을 시
                             bluetoothViewModel.updateBluetoothData("DETECT")
                         }
                     }
@@ -377,5 +403,14 @@ class HomeFragment : Fragment() {
 
             }
         }
+    }
+
+    // todo 주행 정지 함수
+    private fun stopDriving() {
+        startButton.text = "주행시작"
+        isDriving = false
+        blinkJob?.cancel()
+        warningText.visibility = View.GONE
+        speedText.visibility = View.GONE
     }
 }
