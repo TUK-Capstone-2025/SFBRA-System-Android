@@ -391,12 +391,12 @@ class HomeFragment : Fragment() {
                     }
 
                     // todo 사고 발생 시나리오
-                    if (jsonObject.has("사고 발생")) {
-                        val crashValue = jsonObject.getDouble("사고 발생")
-                        Log.d("CrashMessage", "$crashValue")
+                    if (jsonObject.has("ACCIDENT")) {
+                        val accidentValue = jsonObject.getDouble("ACCIDENT")
+                        Log.d("CrashMessage", "$accidentValue")
 
                         requireActivity().runOnUiThread {
-                            if (crashValue == 1.0) {
+                            if (accidentValue == 1.0) {
                                 // 사고 관련 값 받을 시
                                 Toast.makeText(requireContext(), "사고 발생", Toast.LENGTH_SHORT).show()
                                 // todo 20초의 유예 후 긴급 연락처로 메세지 발송
@@ -415,8 +415,8 @@ class HomeFragment : Fragment() {
                 }
 
                 // todo 주행 중이 아닐 때도 작동하는 잠금 기능 (추후 수정)
-                if (jsonObject.has("틸트 관련")) {
-                    val tiltValue = jsonObject.getDouble("틸트 관련")
+                if (jsonObject.has("TILT")) {
+                    val tiltValue = jsonObject.getDouble("TILT")
                     Log.d("TiltMessage", "$tiltValue")
 
                     requireActivity().runOnUiThread {
