@@ -296,7 +296,7 @@ class HomeFragment : Fragment() {
             }
         }
 
-    // todo 주행 시작 함수 (위치 변경 확인해볼 것)
+    // todo 주행 시작 함수
     private fun startDriving() {
         startButton.text = getString(R.string.finish_drive)
         isDriving = true

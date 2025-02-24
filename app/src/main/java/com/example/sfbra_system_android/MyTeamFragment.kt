@@ -10,16 +10,13 @@ import android.widget.Button
 // 내 팀 화면
 class MyTeamFragment : Fragment() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_my_team, container, false)
+        val view = inflater.inflate(R.layout.fragment_my_team, container, false)
+
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -42,5 +39,9 @@ class MyTeamFragment : Fragment() {
             .replace(R.id.fragment_container, fragment) // 프래그먼트 교체, 메인 액티비티 프래그먼트 컨테이너 id
             .addToBackStack(null) // 뒤로가기 눌렀을 시 이전 프래그먼트로 돌아가기
             .commit()
+    }
+
+    private fun checkMyTeam() {
+
     }
 }

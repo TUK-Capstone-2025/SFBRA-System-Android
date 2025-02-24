@@ -164,7 +164,7 @@ class MainActivity : AppCompatActivity() {
         isBluetoothConnected = isConnected
     }
 
-    // 블루투스 상태 업데이트 함수
+    // 잠금 상태 업데이트 함수
     fun setBicycleLockState(isLock: Boolean) {
         isBicycleLock = isLock
     }

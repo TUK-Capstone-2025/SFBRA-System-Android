@@ -19,7 +19,6 @@ class RidingPathFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_riding_path, container, false)
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.riding_records_recycler_view)
-
         // RecyclerView 설정
         recyclerView.layoutManager = LinearLayoutManager(context)
 

@@ -24,8 +24,6 @@ object BluetoothLEManager {
     private val SERVICE_UUID = UUID.fromString("0000FFE0-0000-1000-8000-00805F9B34FB")
     private val CHARACTERISTIC_UUID = UUID.fromString("0000FFE1-0000-1000-8000-00805F9B34FB")
 
-    private val receivedData = StringBuilder() // 데이터 조각을 저장할 버퍼
-
     // 블루투스 초기화 함수
     @SuppressLint("ServiceCast")
     fun initialize(context: Context): Boolean {
