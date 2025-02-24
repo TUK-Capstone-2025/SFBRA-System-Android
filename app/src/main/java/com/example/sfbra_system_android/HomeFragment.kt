@@ -54,6 +54,8 @@ class HomeFragment : Fragment() {
     private val receivedData = StringBuilder() // 데이터 누적을 위한 StringBuilder
     private var blinkJob: Job? = null  // 위험 문구 깜빡임 효과를 위한 Job
     private lateinit var bluetoothViewModel: BluetoothViewModel // 블루투스 뷰 모델
+    private var isBicycleLock = false // 자전거 잠금 상태
+    private var lockTiltValue: Double? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -296,7 +298,7 @@ class HomeFragment : Fragment() {
 
     // todo 주행 시작 함수 (위치 변경 확인해볼 것)
     private fun startDriving() {
-        startButton.text = "주행종료"
+        startButton.text = getString(R.string.finish_drive)
         isDriving = true
         updateCurrentLocation() // 현재 위치 업데이트(초기화)
         speedText.visibility = View.VISIBLE // 속도 텍스트 표시
@@ -380,7 +382,7 @@ class HomeFragment : Fragment() {
 
                         // -1이면 경고 숨김, 그 외에는 경고 표시
                         requireActivity().runOnUiThread {
-                            if (warningValue == -1.0) {
+                            if (warningValue == 0.0) {
                                 blinkJob?.cancel()
                                 warningText.visibility = View.GONE
                             } else {
@@ -404,27 +406,36 @@ class HomeFragment : Fragment() {
                         }
                     }
 
-                    // todo 속도 표시 관련
+                    // 속도 표시 관련
                     if (jsonObject.has("SPEED")) {
-                        val speedValue = jsonObject.getDouble("SPEED")
+                        val speedValue = jsonObject.getInt("SPEED")
                         Log.d("SpeedMessage", "$speedValue")
 
-                        // todo 속도 표시 구현 (확인해볼 것)
                         speedText.text = "$speedValue"
                     }
                 }
 
-                // todo 주행 중이 아닐 때도 작동하는 잠금 기능 (추후 수정)
-                if (jsonObject.has("TILT")) {
-                    val tiltValue = jsonObject.getDouble("TILT")
-                    Log.d("TiltMessage", "$tiltValue")
+                // 잠금 상태일 경우 움직임 감지
+                isBicycleLock = (activity as? MainActivity)?.isBicycleLock ?: false // 잠금상태 받아오기
+                if (isBicycleLock) {
+                    if (jsonObject.has("TILT")) {
+                        val tiltValue = jsonObject.getDouble("TILT")
+                        Log.d("TiltMessage", "$tiltValue")
 
-                    requireActivity().runOnUiThread {
-                        if (tiltValue == -1.0) {
-                            // 특정 틸트값 들어왔을 시
-                            bluetoothViewModel.updateBluetoothData("DETECT")
+                        requireActivity().runOnUiThread {
+                            // 잠금 상태에서 최초 틸트 값 저장
+                            if (lockTiltValue == null) {
+                                lockTiltValue = tiltValue
+                            }
+
+                            // 최초 값과 비교하여 ±15 이상 차이 나면 잠금 프래그먼트로 값 전달
+                            if (lockTiltValue != null && kotlin.math.abs(tiltValue - lockTiltValue!!) >= 15.0) {
+                                bluetoothViewModel.updateBluetoothData("DETECT")
+                            }
                         }
                     }
+                } else {
+                    lockTiltValue = null // 잠금 해제되면 다시 틸트 값 초기화
                 }
             }
         } catch (e: Exception) {
@@ -448,7 +459,7 @@ class HomeFragment : Fragment() {
 
     // todo 주행 정지 함수
     private fun stopDriving() {
-        startButton.text = "주행시작"
+        startButton.text = getString(R.string.start_drive)
         isDriving = false
         blinkJob?.cancel() // 깜빡임 중지
         locationHandler.removeCallbacks(updateLocationRunnable) // 위치 업데이트 중지

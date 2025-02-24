@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".BicycleLockFragment"
     android:background="@color/white">
 
     <LinearLayout
@@ -11,6 +9,22 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center">
+
+        <!-- 후방 위험 문구 -->
+        <TextView
+            android:id="@+id/warningText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⚠️ 주차 중 충격 발생! (확인 요망)"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/rounded_red_background"
+            android:padding="12dp"
+            android:layout_marginBottom="80dp"
+            android:gravity="center"
+            android:layout_gravity="top|center_horizontal"
+            android:visibility="invisible" />
 
         <!-- 원형 버튼 -->
         <ImageButton
@@ -28,6 +42,7 @@
             android:id="@+id/lock_status_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="80dp"
             android:text="잠금해제 상태"
             android:textSize="25sp"
             android:textStyle="bold"

@@ -8,4 +8,6 @@
     <string name="lock_status">잠금 상태</string>
     <string name="login_title">안전중심 자전거</string>
     <string name="kakao_map_key">5c6270ab005c295eca9dcb5eca51ba03</string>
+    <string name="start_drive">주행시작</string>
+    <string name="finish_drive">주행종료</string>
 </resources>

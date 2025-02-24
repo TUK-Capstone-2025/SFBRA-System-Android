@@ -38,6 +38,9 @@ class MainActivity : AppCompatActivity() {
     var isBluetoothConnected: Boolean = false
         private set // 외부에서 직접 변경하지 못하도록 private 설정
 
+    var isBicycleLock: Boolean = false
+        private set
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -159,6 +162,11 @@ class MainActivity : AppCompatActivity() {
     // 블루투스 상태 업데이트 함수
     fun setBluetoothConnectionState(isConnected: Boolean) {
         isBluetoothConnected = isConnected
+    }
+
+    // 블루투스 상태 업데이트 함수
+    fun setBicycleLockState(isLock: Boolean) {
+        isBicycleLock = isLock
     }
 
     // 현재 지도 위치로 액션바 타이틀 변경 함수
