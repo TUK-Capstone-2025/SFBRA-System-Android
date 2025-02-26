@@ -1,6 +1,8 @@
 package com.example.sfbra_system_android
 
 import android.Manifest
+import android.app.Activity
+import android.app.AlertDialog
 import android.bluetooth.BluetoothAdapter
 import android.content.Context
 import android.content.pm.PackageManager
@@ -10,6 +12,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.telephony.SmsManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +21,7 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -56,6 +60,9 @@ class HomeFragment : Fragment() {
     private lateinit var bluetoothViewModel: BluetoothViewModel // 블루투스 뷰 모델
     private var isBicycleLock = false // 자전거 잠금 상태
     private var lockTiltValue: Double? = null
+    private val REQUEST_SMS_PERMISSION = 101
+    private var emergencyNumber = "01025376247" // 긴급 메시지를 보낼 전화번호 (테스트용 개발자 폰번호)
+    private var emergencyMessage = "사용자에게 긴급 상황이 발생했습니다." // 보낼 메시지 내용
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -96,6 +103,11 @@ class HomeFragment : Fragment() {
             }
         })
 
+        // 프래그먼트 시작 시 메시지 권한 미리 요청
+        if (!checkSmsPermission(requireContext())) {
+            requestSmsPermission(requireContext())
+        }
+
         connectButton = view.findViewById(R.id.connectButton) // 연결버튼
         connectButton.setOnClickListener {
             if (isBluetoothConnected) {
@@ -119,10 +131,14 @@ class HomeFragment : Fragment() {
                 // 주행 종료
                 stopDriving()
             } else {
-                // 주행 중이 아니면 주행 시작
-                // 주행 시작 전에 GPS 및 권한 확인
+                // 주행 중이 아니면 주행 시작, 주행 시작 전에 GPS 및 권한 확인
                 checkGPSAndRequestPermission()
             }
+        }
+
+        val testButton:Button = view.findViewById(R.id.testButton)
+        testButton.setOnClickListener {
+            showAccidentAlert(requireContext())
         }
 
         return view
@@ -401,7 +417,8 @@ class HomeFragment : Fragment() {
                             if (accidentValue == 1.0) {
                                 // 사고 관련 값 받을 시
                                 Toast.makeText(requireContext(), "사고 발생", Toast.LENGTH_SHORT).show()
-                                // todo 20초의 유예 후 긴급 연락처로 메세지 발송
+                                // 20초동안 반응 없을시 긴급 연락처로 메세지 발송
+                                showAccidentAlert(requireContext())
                             }
                         }
                     }
@@ -465,5 +482,99 @@ class HomeFragment : Fragment() {
         locationHandler.removeCallbacks(updateLocationRunnable) // 위치 업데이트 중지
         warningText.visibility = View.GONE // 후방 알림 비활성화
         speedText.visibility = View.GONE // 속도 텍스트 비활성화
+    }
+
+    // 긴급 상황 시 팝업 알림 함
+    fun showAccidentAlert(context: Context) {
+        val handler = Handler(Looper.getMainLooper()) // 카운트다운을 위한 핸들러
+        var countdown = 20 // 20초 카운트다운
+
+        // 다이얼로그 생성
+        val dialog = AlertDialog.Builder(context)
+            .setTitle("사고 감지")
+            .setMessage("긴급 연락처로 메시지가 전송됩니다.\n남은 시간: $countdown")
+            .setCancelable(false) // 뒤로 가기 버튼으로 닫히지 않도록 설정
+            .setNegativeButton("취소") { _, _ ->
+                handler.removeCallbacksAndMessages(null) // 타이머 중단
+                Toast.makeText(context, "메시지 전송이 취소되었습니다.", Toast.LENGTH_SHORT).show()
+            }
+            .create()
+        dialog.show()
+
+        // 1초 주기로 카운트다운 업데이트
+        val countdownRunnable = object : Runnable {
+            override fun run() {
+                countdown--
+                dialog.setMessage("긴급 연락처로 메시지가 전송됩니다.\n남은 시간: $countdown")
+
+                if (countdown > 0) {
+                    handler.postDelayed(this, 1000) // 1초 후 다시 실행
+                } else {
+                    dialog.dismiss()
+                    if (checkSmsPermission(context)) {
+                        sendEmergencyMessage(context)
+                    } else {
+                        Toast.makeText(context, "SMS 전송 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+
+        handler.postDelayed(countdownRunnable, 1000) // 1초 후 실행 시작
+    }
+
+    // 문자메시지 권한 체크
+    private fun checkSmsPermission(context: Context): Boolean {
+        return ContextCompat.checkSelfPermission(context, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED
+    }
+
+    // 문자메시지 권한 허용 함수
+    private fun requestSmsPermission(context: Context) {
+        ActivityCompat.requestPermissions(context as Activity, arrayOf(Manifest.permission.SEND_SMS), REQUEST_SMS_PERMISSION)
+    }
+
+    // 권한 요청 결과 처리
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_SMS_PERMISSION) {
+            if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(requireContext(), "SMS 전송 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    // 긴급 메시지 전송 함수
+    fun sendEmergencyMessage(context: Context) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(context, "위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // SMS 전송
+        val smsManager = SmsManager.getDefault()
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            if (location != null) {
+                val latitude = location.latitude
+                val longitude = location.longitude
+                val addressText = getAddressFromLocation(latitude, longitude) // 주소로 변환
+
+                emergencyMessage = """
+                (테스트) 사용자에게 긴급 상황이 발생했습니다.
+                현재 위치:
+                - 주소: $addressText
+                - 좌표: $latitude, $longitude
+                """.trimIndent() // todo 추후 테스트 삭제
+
+                Log.d("EmergencyMessage", "전송할 메시지: $emergencyMessage")
+                val messageParts = smsManager.divideMessage(emergencyMessage) // 메시지 분할
+                smsManager.sendMultipartTextMessage(emergencyNumber, null, messageParts, null, null)
+
+                Toast.makeText(context, "긴급 메시지를 전송했습니다.", Toast.LENGTH_LONG).show()
+            } else {
+                smsManager.sendTextMessage(emergencyNumber, null, emergencyMessage, null, null)
+                Toast.makeText(context, "현재 위치를 제외한 메시지를 전송했습니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 }

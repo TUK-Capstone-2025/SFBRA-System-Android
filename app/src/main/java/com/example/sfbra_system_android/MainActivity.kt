@@ -3,7 +3,6 @@ package com.example.sfbra_system_android
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
-import android.location.Address
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
