@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
     <!-- 블루투스 권한 -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"
+    <uses-permission
+        android:name="android.permission.BLUETOOTH_SCAN"
         android:usesPermissionFlags="neverForLocation" />
     <!-- 위치 권한 -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -14,27 +14,33 @@
     <!-- 인터넷 권한 -->
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- 진동 권한 -->
-    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
     <!-- 메시지 권한 -->
     <uses-feature
         android:name="android.hardware.telephony"
         android:required="false" /> <!-- 메시지 기능 없는 기기 다운 가능(플레이스토어) -->
-    <uses-permission android:name="android.permission.SEND_SMS"/>
+    <uses-permission android:name="android.permission.SEND_SMS" />
 
     <application
+        android:name=".SfbraApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:name=".SfbraApplication"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SFBRASystemAndroid"
         tools:targetApi="31">
+        <activity
+            android:name=".RegisterActivity"
+            android:exported="false"
+            android:theme="@style/Base.Theme.NoActionBar" />
+
         <meta-data
             android:name="com.kakao.sdk.AppKey"
-            android:value="@string/kakao_map_key"/>
+            android:value="@string/kakao_map_key" />
+
         <!-- 스플래시 화면 -->
         <activity
             android:name=".SplashActivity"
@@ -48,8 +54,8 @@
         </activity>
         <activity
             android:name=".LoginActivity"
-            android:exported="true"
-            android:theme="@style/Base.Theme.NoActionBar"/>
+            android:exported="false"
+            android:theme="@style/Base.Theme.NoActionBar" />
         <activity
             android:name=".SettingActivity"
             android:exported="false" />

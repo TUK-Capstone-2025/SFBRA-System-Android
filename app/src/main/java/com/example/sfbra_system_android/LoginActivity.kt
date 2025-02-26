@@ -30,9 +30,8 @@ class LoginActivity : AppCompatActivity() {
 
         // todo 회원가입 버튼 클릭 리스너
         registerButton.setOnClickListener {
-            //val intent = Intent(this, RegisterActivity::class.java)
-            //startActivity(intent)
-            Toast.makeText(this, "회원가입 버튼 클릭", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, RegisterActivity::class.java)
+            startActivity(intent)
         }
 
         // API 레벨 26 이상에서만 실행
