@@ -312,7 +312,7 @@ class HomeFragment : Fragment() {
             }
         }
 
-    // todo 주행 시작 함수
+    // 주행 시작 함수
     private fun startDriving() {
         startButton.text = getString(R.string.finish_drive)
         isDriving = true
@@ -487,7 +487,7 @@ class HomeFragment : Fragment() {
     // 긴급 상황 시 팝업 알림 함
     fun showAccidentAlert(context: Context) {
         val handler = Handler(Looper.getMainLooper()) // 카운트다운을 위한 핸들러
-        var countdown = 20 // 20초 카운트다운
+        var countdown = 5 // 20초 카운트다운, but 임시로 5초
 
         // 다이얼로그 생성
         val dialog = AlertDialog.Builder(context)
