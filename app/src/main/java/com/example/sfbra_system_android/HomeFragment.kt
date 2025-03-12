@@ -176,7 +176,7 @@ class HomeFragment : Fragment() {
 
     // 블루투스 연결 해제 팝업 함수
     private fun showDisconnectDialog() {
-        val builder = android.app.AlertDialog.Builder(requireContext())
+        val builder = AlertDialog.Builder(requireContext())
         builder.setTitle("블루투스 연결 해제")
             .setMessage("장치와의 블루투스 연결을 해제하시겠습니까?")
             .setPositiveButton("예") { _, _ ->
@@ -391,7 +391,7 @@ class HomeFragment : Fragment() {
 
                 // 주행 중일 때만 작동
                 if (isDriving) {
-                    // "WARNING" 키가 있는 경우만 처리
+                    // 2미터 이내 후방 경고
                     if (jsonObject.has("WARNING")) {
                         val warningValue = jsonObject.getDouble("WARNING")
                         Log.d("WarningMessage", "$warningValue")
@@ -408,7 +408,7 @@ class HomeFragment : Fragment() {
                         }
                     }
 
-                    // todo 사고 발생 시나리오
+                    // 사고 발생
                     if (jsonObject.has("ACCIDENT")) {
                         val accidentValue = jsonObject.getDouble("ACCIDENT")
                         Log.d("CrashMessage", "$accidentValue")
@@ -435,6 +435,7 @@ class HomeFragment : Fragment() {
                 // 잠금 상태일 경우 움직임 감지
                 isBicycleLock = (activity as? MainActivity)?.isBicycleLock ?: false // 잠금상태 받아오기
                 if (isBicycleLock) {
+                    // 잠금 상태에서 움직임 감지
                     if (jsonObject.has("TILT")) {
                         val tiltValue = jsonObject.getDouble("TILT")
                         Log.d("TiltMessage", "$tiltValue")

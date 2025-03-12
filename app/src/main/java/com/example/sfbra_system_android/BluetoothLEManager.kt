@@ -101,7 +101,7 @@ object BluetoothLEManager {
         context: Context,
         device: BluetoothDevice,
         onConnected: () -> Unit,
-        onDataReceived: (String) -> Unit // 변경된 부분: 문자열을 넘겨줌
+        onDataReceived: (String) -> Unit // 문자열을 넘겨줌
     ) {
         if (!hasBluetoothPermissions(context)) {
             Log.e("BluetoothLE", "블루투스 권한이 없습니다.")

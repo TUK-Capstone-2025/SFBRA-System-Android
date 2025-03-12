@@ -3,6 +3,7 @@ package com.example.sfbra_system_android
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -22,5 +23,14 @@ class RegisterActivity : AppCompatActivity() {
             // 시스템 내비게이션 바 버튼 색상 변경
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
         }
+
+        binding.registerButton.setOnClickListener {
+            register()
+        }
+    }
+
+    private fun register() {
+        Toast.makeText(this, "회원가입이 완료되었습니다.", Toast.LENGTH_SHORT).show()
+        finish()
     }
 }
