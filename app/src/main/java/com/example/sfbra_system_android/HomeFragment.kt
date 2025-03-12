@@ -63,6 +63,7 @@ class HomeFragment : Fragment() {
     private val REQUEST_SMS_PERMISSION = 101
     private var emergencyNumber = "01025376247" // 긴급 메시지를 보낼 전화번호 (테스트용 개발자 폰번호)
     private var emergencyMessage = "사용자에게 긴급 상황이 발생했습니다." // 보낼 메시지 내용
+    private var isAccident = false // 사고 발생 유무
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -312,7 +313,7 @@ class HomeFragment : Fragment() {
             }
         }
 
-    // todo 주행 시작 함수
+    // 주행 시작 함수
     private fun startDriving() {
         startButton.text = getString(R.string.finish_drive)
         isDriving = true
@@ -410,15 +411,16 @@ class HomeFragment : Fragment() {
 
                     // 사고 발생
                     if (jsonObject.has("ACCIDENT")) {
-                        val accidentValue = jsonObject.getDouble("ACCIDENT")
-                        Log.d("CrashMessage", "$accidentValue")
+                        if (!isAccident) {
+                            val accidentValue = jsonObject.getDouble("ACCIDENT")
+                            Log.d("CrashMessage", "$accidentValue")
 
-                        requireActivity().runOnUiThread {
-                            if (accidentValue == 1.0) {
-                                // 사고 관련 값 받을 시
-                                Toast.makeText(requireContext(), "사고 발생", Toast.LENGTH_SHORT).show()
-                                // 20초동안 반응 없을시 긴급 연락처로 메세지 발송
-                                showAccidentAlert(requireContext())
+                            requireActivity().runOnUiThread {
+                                if (accidentValue == 1.0) {
+                                    // 사고 관련 값 받을 시, 20초동안 반응 없을시 긴급 연락처로 메세지 발송
+                                    isAccident = true
+                                    showAccidentAlert(requireContext())
+                                }
                             }
                         }
                     }
@@ -479,6 +481,7 @@ class HomeFragment : Fragment() {
     private fun stopDriving() {
         startButton.text = getString(R.string.start_drive)
         isDriving = false
+        isAccident = false
         blinkJob?.cancel() // 깜빡임 중지
         locationHandler.removeCallbacks(updateLocationRunnable) // 위치 업데이트 중지
         warningText.visibility = View.GONE // 후방 알림 비활성화
@@ -488,7 +491,7 @@ class HomeFragment : Fragment() {
     // 긴급 상황 시 팝업 알림 함
     fun showAccidentAlert(context: Context) {
         val handler = Handler(Looper.getMainLooper()) // 카운트다운을 위한 핸들러
-        var countdown = 20 // 20초 카운트다운
+        var countdown = 5 // 20초 카운트다운, but 임시로 5초
 
         // 다이얼로그 생성
         val dialog = AlertDialog.Builder(context)
