@@ -3,9 +3,14 @@ package com.example.sfbra_system_android
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.sfbra_system_android.databinding.ActivityLoginBinding
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class LoginActivity : AppCompatActivity() {
     lateinit var binding: ActivityLoginBinding
@@ -17,8 +22,14 @@ class LoginActivity : AppCompatActivity() {
 
         // 로그인 버튼 클릭 리스너
         binding.loginButton.setOnClickListener {
-            login()
-            finish()  // 로그인 액티비티 종료
+            val loginId = binding.loginId.text.toString()
+            val password = binding.loginPassword.text.toString()
+
+            if (loginId.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "아이디와 비밀번호를 입력해주세요.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            login(loginId, password)
         }
 
         binding.registerButton.setOnClickListener {
@@ -33,8 +44,31 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun login() {
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
+    private fun login(loginId: String, password: String) {
+        val request = LoginRequest(loginId, password)
+
+        RetrofitClient.instance.login(request).enqueue(object : Callback<LoginResponse> {
+            override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
+                if (response.isSuccessful) {
+                    val loginResponse = response.body()
+                    if (loginResponse != null && loginResponse.success) {
+                        val intent = Intent(applicationContext, MainActivity::class.java)
+                        startActivity(intent)
+                        finish()  // 로그인 액티비티 종료
+                    } else {
+                        Toast.makeText(applicationContext, "로그인 실패", Toast.LENGTH_SHORT).show()
+                        Log.d("Login", "로그인 실패: ${loginResponse?.message}")
+                    }
+                } else {
+                    Toast.makeText(applicationContext, "로그인 실패: 서버 오류", Toast.LENGTH_SHORT).show()
+                    Log.d("Login", "서버 오류: ${response.code()}")
+                }
+            }
+
+            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                Toast.makeText(applicationContext, "로그인 실패: 네트워크 오류", Toast.LENGTH_SHORT).show()
+                Log.d("Login", "네트워크 오류: ${t.message}")
+            }
+        })
     }
 }
