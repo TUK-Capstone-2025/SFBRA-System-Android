@@ -69,8 +69,5 @@ class RegisterActivity : AppCompatActivity() {
                 Log.d("Register", "네트워크 오류: ${t.message}")
             }
         })
-
-        Toast.makeText(this, "회원가입이 완료되었습니다.", Toast.LENGTH_SHORT).show()
-        finish()
     }
 }
