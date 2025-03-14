@@ -8,13 +8,21 @@ object RetrofitClient {
     // todo : 서버 주소 입력
     private  const val BASE_URL = "" // base 주소
 
-    val instance: LoginService by lazy {
-        val retrofit = Retrofit.Builder()
+    // 로그인 API
+    val loginService: LoginService by lazy {
+        Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create()) // JSON 변환기 추가
             .build()
+            .create(LoginService::class.java)
+    }
 
-        retrofit.create(LoginService::class.java)
-
+    // 회원가입 API
+    val registerService: RegisterService by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create()) // JSON 변환기 추가
+            .build()
+            .create(RegisterService::class.java)
     }
 }
