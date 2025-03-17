@@ -32,17 +32,23 @@ class RegisterActivity : AppCompatActivity() {
 
     // 회원가입 함수
     private fun register() {
-        val loginId = binding.registerId.text.toString()
+        val userId = binding.registerId.text.toString()
         val password = binding.registerPassword.text.toString()
-        val nickname = binding.registerNickname.text.toString()
+        val password2 = binding.registerPassword2.text.toString()
+        val name = binding.registerName.text.toString()
         val email = binding.registerEmail.text.toString()
+        val nickname = binding.registerNickname.text.toString()
 
-        if (loginId.isEmpty() || password.isEmpty() || nickname.isEmpty() || email.isEmpty()) {
+        if (userId.isEmpty() || password.isEmpty() || name.isEmpty() || email.isEmpty() || nickname.isEmpty()) {
             Toast.makeText(this, "모든 항목을 입력해주세요.", Toast.LENGTH_SHORT).show()
             return
         }
+        if (password != password2) {
+            Toast.makeText(this, "비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT).show()
+            return
+        }
 
-        val request = RegisterRequest(loginId, password, nickname, email)
+        val request = RegisterRequest(userId, password, password2, name, email, nickname)
 
         RetrofitClient.registerService.register(request).enqueue(object : Callback<RegisterResponse> {
             override fun onResponse(

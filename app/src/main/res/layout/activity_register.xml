@@ -21,7 +21,7 @@
             android:textSize="33sp"
             android:textStyle="bold"
             android:textColor="@color/black"
-            android:layout_marginBottom="30dp" />
+            android:layout_marginBottom="25dp" />
 
         <!-- 아이디 입력 -->
         <TextView
@@ -41,7 +41,7 @@
             android:inputType="text"
             android:padding="14dp"
             android:background="@drawable/login_edittext"
-            android:layout_marginBottom="20dp" />
+            android:layout_marginBottom="15dp" />
 
         <!-- 비밀번호 입력 -->
         <TextView
@@ -56,32 +56,43 @@
             android:id="@+id/register_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/login_edittext"
             android:hint="비밀번호를 입력하세요"
+            android:inputType="textPassword"
+            android:padding="14dp"
+            android:singleLine="true" />
+
+        <EditText
+            android:id="@+id/register_password2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="비밀번호를 한번 더 입력하세요"
             android:singleLine="true"
             android:inputType="textPassword"
             android:padding="14dp"
             android:background="@drawable/login_edittext"
-            android:layout_marginBottom="20dp" />
+            android:layout_marginBottom="15dp" />
 
-        <!-- 닉네임 입력 -->
+        <!-- 이름 입력 -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="닉네임"
+            android:text="이름"
             android:textSize="16sp"
             android:textColor="@color/black"
             android:layout_marginBottom="8dp" />
 
         <EditText
-            android:id="@+id/register_nickname"
+            android:id="@+id/register_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="닉네임을 입력하세요"
+            android:hint="이름을 입력하세요"
             android:singleLine="true"
             android:inputType="text"
             android:padding="14dp"
             android:background="@drawable/login_edittext"
-            android:layout_marginBottom="20dp" />
+            android:layout_marginBottom="15dp" />
 
         <!-- 이메일 입력 -->
         <TextView
@@ -101,7 +112,27 @@
             android:inputType="textEmailAddress"
             android:padding="14dp"
             android:background="@drawable/login_edittext"
-            android:layout_marginBottom="40dp" />
+            android:layout_marginBottom="15dp" />
+
+        <!-- 닉네임 입력 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="닉네임"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:layout_marginBottom="8dp" />
+
+        <EditText
+            android:id="@+id/register_nickname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="닉네임을 입력하세요"
+            android:singleLine="true"
+            android:inputType="text"
+            android:padding="14dp"
+            android:background="@drawable/login_edittext"
+            android:layout_marginBottom="30dp" />
 
         <!-- 회원가입 버튼 -->
         <Button
@@ -112,6 +143,6 @@
             android:textSize="20sp"
             android:textColor="@color/white"
             android:background="@drawable/login_button"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="15dp" />
     </LinearLayout>
 </ScrollView>
