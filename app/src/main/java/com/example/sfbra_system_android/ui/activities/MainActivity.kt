@@ -1,4 +1,4 @@
-package com.example.sfbra_system_android
+package com.example.sfbra_system_android.ui.activities
 
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -20,7 +20,13 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.example.sfbra_system_android.R
+import com.example.sfbra_system_android.ui.fragments.RidingPathFragment
 import com.example.sfbra_system_android.databinding.ActivityMainBinding
+import com.example.sfbra_system_android.ui.fragments.BicycleLockFragment
+import com.example.sfbra_system_android.ui.fragments.HomeFragment
+import com.example.sfbra_system_android.ui.fragments.MyProfileFragment
+import com.example.sfbra_system_android.ui.fragments.MyTeamFragment
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 
@@ -81,7 +87,10 @@ class MainActivity : AppCompatActivity() {
 
     // 액션바 색깔 수정 함수
     private fun setupActionBar() {
-        toggle = ActionBarDrawerToggle(this, binding.drawer, R.string.drawer_open, R.string.drawer_close)
+        toggle = ActionBarDrawerToggle(this, binding.drawer,
+            R.string.drawer_open,
+            R.string.drawer_close
+        )
         supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
             setBackgroundDrawable(ContextCompat.getDrawable(this@MainActivity, R.color.my_primary))

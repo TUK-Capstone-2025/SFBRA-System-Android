@@ -3,5 +3,5 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SettingFragment">
+    tools:context=".ui.fragments.SettingFragment">
 </FrameLayout> <!-- 안쓰는 프래그먼트 레이아웃 -->

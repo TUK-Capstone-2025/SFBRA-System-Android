@@ -1,4 +1,4 @@
-package com.example.sfbra_system_android
+package com.example.sfbra_system_android.ui.activities
 
 import android.content.Intent
 import android.os.Build
@@ -7,6 +7,9 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.sfbra_system_android.data.LoginRequest
+import com.example.sfbra_system_android.data.LoginResponse
+import com.example.sfbra_system_android.data.RetrofitClient
 import com.example.sfbra_system_android.databinding.ActivityLoginBinding
 import retrofit2.Call
 import retrofit2.Callback

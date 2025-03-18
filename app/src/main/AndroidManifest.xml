@@ -22,7 +22,7 @@
     <uses-permission android:name="android.permission.SEND_SMS" />
 
     <application
-        android:name=".SfbraApplication"
+        android:name=".app.SfbraApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -33,7 +33,7 @@
         android:theme="@style/Theme.SFBRASystemAndroid"
         tools:targetApi="31">
         <activity
-            android:name=".RegisterActivity"
+            android:name=".ui.activities.RegisterActivity"
             android:exported="false"
             android:theme="@style/Base.Theme.NoActionBar" />
 
@@ -43,7 +43,7 @@
 
         <!-- 스플래시 화면 -->
         <activity
-            android:name=".SplashActivity"
+            android:name=".ui.activities.SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.MyApp.Splash">
             <intent-filter>
@@ -53,14 +53,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LoginActivity"
+            android:name=".ui.activities.LoginActivity"
             android:exported="false"
             android:theme="@style/Base.Theme.NoActionBar" />
         <activity
-            android:name=".SettingActivity"
+            android:name=".ui.activities.SettingActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.activities.MainActivity"
             android:exported="true" />
     </application>
 

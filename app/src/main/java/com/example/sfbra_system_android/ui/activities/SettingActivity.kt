@@ -1,14 +1,11 @@
-package com.example.sfbra_system_android
+package com.example.sfbra_system_android.ui.activities
 
 import android.os.Build
 import android.os.Bundle
-import android.preference.Preference
 import android.view.View
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.preference.PreferenceFragmentCompat
+import com.example.sfbra_system_android.R
+import com.example.sfbra_system_android.ui.fragments.SettingFragment
 
 class SettingActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

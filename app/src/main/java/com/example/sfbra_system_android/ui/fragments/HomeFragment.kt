@@ -1,4 +1,4 @@
-package com.example.sfbra_system_android
+package com.example.sfbra_system_android.ui.fragments
 
 import android.Manifest
 import android.app.Activity
@@ -25,6 +25,10 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.example.sfbra_system_android.BluetoothLEManager
+import com.example.sfbra_system_android.BluetoothViewModel
+import com.example.sfbra_system_android.ui.activities.MainActivity
+import com.example.sfbra_system_android.R
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.kakao.vectormap.KakaoMap
@@ -209,15 +213,19 @@ class HomeFragment : Fragment() {
             }
 
             BluetoothLEManager.startScan(requireContext()) { device ->
-                Toast.makeText(requireContext(), "BLE 장치 발견: ${device.name}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "BLE 장치 발견: ${device.name}", Toast.LENGTH_SHORT)
+                    .show()
 
                 BluetoothLEManager.connectToDevice(requireContext(), device,
                     onConnected = {
                         Log.d("BluetoothLE", "장치 연결 성공!")
                         requireActivity().runOnUiThread {
-                            Toast.makeText(requireActivity(), "장치 연결 성공!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireActivity(), "장치 연결 성공!", Toast.LENGTH_SHORT)
+                                .show()
                             isBluetoothConnected = true
-                            (activity as? MainActivity)?.setBluetoothConnectionState(isBluetoothConnected) // 메인 액티비티로 상태 업데이트
+                            (activity as? MainActivity)?.setBluetoothConnectionState(
+                                isBluetoothConnected
+                            ) // 메인 액티비티로 상태 업데이트
                             updateConnectButton()
                         }
                     },

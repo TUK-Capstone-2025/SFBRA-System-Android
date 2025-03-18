@@ -1,4 +1,4 @@
-package com.example.sfbra_system_android
+package com.example.sfbra_system_android.ui.fragments
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -8,6 +8,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.sfbra_system_android.R
+import com.example.sfbra_system_android.RidingRecord
+import com.example.sfbra_system_android.RidingRecordAdapter
 
 // 주행 기록 화면
 class RidingPathFragment : Fragment() {

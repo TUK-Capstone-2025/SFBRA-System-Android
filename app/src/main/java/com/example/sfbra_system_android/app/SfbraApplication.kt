@@ -1,6 +1,7 @@
-package com.example.sfbra_system_android
+package com.example.sfbra_system_android.app
 
 import android.app.Application
+import com.example.sfbra_system_android.R
 import com.kakao.vectormap.KakaoMapSdk
 
 class SfbraApplication : Application() {

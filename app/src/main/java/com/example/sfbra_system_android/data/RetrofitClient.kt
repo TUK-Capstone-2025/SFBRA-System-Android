@@ -1,4 +1,4 @@
-package com.example.sfbra_system_android
+package com.example.sfbra_system_android.data
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

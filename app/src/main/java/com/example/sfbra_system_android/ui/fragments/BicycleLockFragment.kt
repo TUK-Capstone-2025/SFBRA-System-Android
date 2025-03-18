@@ -1,4 +1,4 @@
-package com.example.sfbra_system_android
+package com.example.sfbra_system_android.ui.fragments
 
 import android.content.Context
 import android.os.Bundle
@@ -14,6 +14,9 @@ import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import com.example.sfbra_system_android.BluetoothViewModel
+import com.example.sfbra_system_android.ui.activities.MainActivity
+import com.example.sfbra_system_android.R
 
 // 잠금 화면
 class BicycleLockFragment : Fragment() {

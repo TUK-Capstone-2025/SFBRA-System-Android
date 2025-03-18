@@ -3,4 +3,4 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/setting_content"
-    android:name="com.example.sfbra_system_android.SettingFragment"/>
+    android:name="com.example.sfbra_system_android.ui.fragments.SettingFragment"/>
