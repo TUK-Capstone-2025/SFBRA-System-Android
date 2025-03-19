@@ -1,6 +1,7 @@
 package com.example.sfbra_system_android.ui.fragments
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -10,11 +11,16 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.example.sfbra_system_android.R
 import com.example.sfbra_system_android.data.ProfileUpdateViewModel
 import com.example.sfbra_system_android.data.SharedPreferencesHelper
 import com.example.sfbra_system_android.data.UserViewModel
+import com.example.sfbra_system_android.ui.activities.LoginActivity
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 
 // 내 프로필 화면
 class MyProfileFragment : Fragment() {
@@ -74,6 +80,7 @@ class MyProfileFragment : Fragment() {
                     } else {
                         Toast.makeText(requireContext(), "닉네임 변경에 실패했습니다.", Toast.LENGTH_SHORT).show()
                     }
+                    profileUpdateViewModel.changeResponse.removeObservers(viewLifecycleOwner)
                 })
             }
             .setNegativeButton("취소", null)
@@ -82,8 +89,35 @@ class MyProfileFragment : Fragment() {
 
     // 아이디 변경 함수(중복,동일한 경우 변경 안됨)
     private fun changeLoginID() {
-        Toast.makeText(requireContext(), "아이디 변경 클릭", Toast.LENGTH_SHORT).show()
-        // todo 아이디 변경 구현(중복/현재랑 동일한 경우 유의)
+        val editText = EditText(requireContext())
+        AlertDialog.Builder(requireContext())
+            .setTitle("아이디 변경")
+            .setView(editText)
+            .setPositiveButton("변경") { _, _ ->
+                val newUserId = editText.text.toString()
+                // 닉네임 변경 요청
+                profileUpdateViewModel.changeUserId(newUserId)
+
+                // 닉네임 변경 후, 변경 완료된 시점에 사용자 정보를 새로 불러오기
+                profileUpdateViewModel.changeResponse.observe(viewLifecycleOwner, Observer { response ->
+                    if (response != null && response.success) {
+                        Toast.makeText(requireContext(), "아이디를 변경하였습니다.\n다시 로그인해주십시오.", Toast.LENGTH_SHORT).show()
+
+                        SharedPreferencesHelper.clearToken(requireContext()) // 토큰 초기화
+                        startActivity(Intent(requireContext(), LoginActivity::class.java)) // 로그인 화면으로 이동
+                        activity?.finish() // 액티비티 종료
+                    } else {
+                        val gson = Gson()
+                        val jsonObject = gson.fromJson(response?.message, JsonObject::class.java)
+
+                        val errorMessage = jsonObject.get("message").asString
+                        Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+                    }
+                })
+                profileUpdateViewModel.changeResponse.removeObservers(viewLifecycleOwner)
+            }
+            .setNegativeButton("취소", null)
+            .show()
     }
 
     // 비밀번호 변경 함수(동일한 경우 변경 안됨)
@@ -120,13 +154,14 @@ class MyProfileFragment : Fragment() {
                         Toast.makeText(requireContext(), "비밀번호 변경에 실패했습니다.", Toast.LENGTH_SHORT).show()
                     }
                 })
+                profileUpdateViewModel.changeResponse.removeObservers(viewLifecycleOwner)
                 dialog.dismiss()  // 비밀번호 변경 완료 후 다이얼로그 닫음
             }
         }
     }
 
     // 사용자 정보 불러오기 함수
-    private fun getInformation() {
+    fun getInformation() {
         // 사용자 정보 가져오기
         userViewModel.fetchUserInfo()
 
@@ -138,6 +173,15 @@ class MyProfileFragment : Fragment() {
                 id.text = "id: ${user.data.userId}"
             } else {
                 Toast.makeText(requireContext(), "사용자 정보를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    fun <T> LiveData<T>.observeOnce(owner: LifecycleOwner, observer: Observer<T>) {
+        observe(owner, object : Observer<T> {
+            override fun onChanged(value: T) {
+                removeObserver(this) // 한 번 호출 후 제거
+                observer.onChanged(value)
             }
         })
     }

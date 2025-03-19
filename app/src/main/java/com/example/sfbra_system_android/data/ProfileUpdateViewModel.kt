@@ -2,6 +2,8 @@ package com.example.sfbra_system_android.data
 
 import android.app.Application
 import android.util.Log
+import android.widget.Toast
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -47,8 +49,16 @@ class ProfileUpdateViewModel(application: Application) : AndroidViewModel(applic
                         // 아이디 변경 성공
                         _changeResponse.value = response.body()
                     } else {
-                        // 아이디 변경 실패
-                        Log.e("ProfileUpdateViewModel", "아이디 변경 실패: ${response.message()}")
+                        // 아이디 변경 실패: errorBody에서 메시지 읽기
+                        try {
+                            val errorResponse = response.errorBody()?.string()
+                            Log.e("ProfileUpdateViewModel", "아이디 변경 실패: $errorResponse")
+
+                            // errorBody를 통해 받은 에러 메시지를 ApiResponse로 변환하여 저장
+                            _changeResponse.value = ApiResponse(false, errorResponse ?: "알 수 없는 오류", "")
+                        } catch (e: Exception) {
+                            Log.e("ProfileUpdateViewModel", "아이디 변경 실패 - Error parsing errorBody: ${e.message}")
+                        }
                     }
                 }
 
