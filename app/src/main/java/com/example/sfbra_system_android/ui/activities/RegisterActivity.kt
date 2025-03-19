@@ -63,7 +63,7 @@ class RegisterActivity : AppCompatActivity() {
                     if (registerResponse != null && registerResponse.success) {
                         Toast.makeText(this@RegisterActivity, "회원가입 성공", Toast.LENGTH_SHORT).show()
                         finish()
-                    } else {
+                    } else{
                         Toast.makeText(this@RegisterActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()
                         Log.d("Register", "회원가입 실패: ${registerResponse?.message}")
                     }

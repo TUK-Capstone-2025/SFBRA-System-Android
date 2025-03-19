@@ -53,4 +53,9 @@ object RetrofitClient {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
+
+    fun getProfileUpdateService(token: String): ProfileUpdateService {
+        val retrofit = getRetrofitInstance(token)
+        return retrofit.create(ProfileUpdateService::class.java)
+    }
 }
