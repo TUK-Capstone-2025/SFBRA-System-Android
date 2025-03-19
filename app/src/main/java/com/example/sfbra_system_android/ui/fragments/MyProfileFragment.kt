@@ -7,10 +7,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import com.example.sfbra_system_android.R
+import com.example.sfbra_system_android.data.UserViewModel
 
 // 내 프로필 화면
 class MyProfileFragment : Fragment() {
+    private val userViewModel: UserViewModel by viewModels()
+    private lateinit var name: TextView
+    private lateinit var nickname: TextView
+    private lateinit var id: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -27,6 +34,10 @@ class MyProfileFragment : Fragment() {
         changeNickname.setOnClickListener { changeNickname() }
         changeId.setOnClickListener { changeLoginID() }
         changePassword.setOnClickListener { changePassword() }
+
+        name = view.findViewById(R.id.name_text)
+        nickname = view.findViewById(R.id.nickname_text)
+        id = view.findViewById(R.id.id_text)
 
         getInformation()
 
@@ -52,6 +63,18 @@ class MyProfileFragment : Fragment() {
 
     // todo 서버에서 정보 가져와 닉네임, id, 프로필사진 출력
     private fun getInformation() {
+        // 사용자 정보 가져오기
+        userViewModel.fetchUserInfo()
 
+        // UI 업데이트
+        userViewModel.userInfo.observe(viewLifecycleOwner, Observer { user ->
+            if (user != null && user.success) {
+                name.text = user.data.name
+                nickname.text = user.data.nickname
+                id.text = "id: ${user.data.userId}"
+            } else {
+                Toast.makeText(requireContext(), "사용자 정보를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 }

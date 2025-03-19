@@ -1,4 +1,4 @@
-package com.example.sfbra_system_android
+package com.example.sfbra_system_android.data
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -121,7 +121,9 @@ object BluetoothLEManager {
 
             override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
                 if (status == BluetoothGatt.GATT_SUCCESS) {
-                    val characteristic = gatt?.getService(SERVICE_UUID)?.getCharacteristic(CHARACTERISTIC_UUID)
+                    val characteristic = gatt?.getService(SERVICE_UUID)?.getCharacteristic(
+                        CHARACTERISTIC_UUID
+                    )
                     characteristic?.let {
                         gatt.setCharacteristicNotification(it, true)
                         Log.d("BluetoothLE", "BLE 감지됨")

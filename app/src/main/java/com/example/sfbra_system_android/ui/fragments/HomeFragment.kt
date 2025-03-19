@@ -25,8 +25,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.example.sfbra_system_android.BluetoothLEManager
-import com.example.sfbra_system_android.BluetoothViewModel
+import com.example.sfbra_system_android.data.BluetoothLEManager
+import com.example.sfbra_system_android.data.BluetoothViewModel
 import com.example.sfbra_system_android.ui.activities.MainActivity
 import com.example.sfbra_system_android.R
 import com.google.android.gms.location.FusedLocationProviderClient

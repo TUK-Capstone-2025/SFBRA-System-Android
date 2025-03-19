@@ -21,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.sfbra_system_android.R
+import com.example.sfbra_system_android.data.SharedPreferencesHelper
 import com.example.sfbra_system_android.ui.fragments.RidingPathFragment
 import com.example.sfbra_system_android.databinding.ActivityMainBinding
 import com.example.sfbra_system_android.ui.fragments.BicycleLockFragment
@@ -120,6 +121,7 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.logout -> {
+                    SharedPreferencesHelper.clearToken(this) // 토큰 초기화
                     startActivity(Intent(this, LoginActivity::class.java))
                     finish()
                     true

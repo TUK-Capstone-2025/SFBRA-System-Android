@@ -1,4 +1,4 @@
-package com.example.sfbra_system_android
+package com.example.sfbra_system_android.data
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

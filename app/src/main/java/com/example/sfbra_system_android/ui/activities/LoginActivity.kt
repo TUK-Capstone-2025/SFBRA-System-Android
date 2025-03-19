@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.sfbra_system_android.data.LoginRequest
 import com.example.sfbra_system_android.data.LoginResponse
 import com.example.sfbra_system_android.data.RetrofitClient
+import com.example.sfbra_system_android.data.SharedPreferencesHelper
 import com.example.sfbra_system_android.databinding.ActivityLoginBinding
 import retrofit2.Call
 import retrofit2.Callback
@@ -60,7 +61,11 @@ class LoginActivity : AppCompatActivity() {
             ) {
                 if (response.isSuccessful) {
                     val loginResponse = response.body()
-                    if (loginResponse != null && loginResponse.success) {
+                    if (loginResponse != null && loginResponse.success) { // 로그인 성공
+                        // 로그인 성공하여 토큰 저장
+                        Log.d("Token", "${loginResponse.data}")
+                        SharedPreferencesHelper.saveToken(this@LoginActivity, loginResponse.data)
+
                         val intent = Intent(this@LoginActivity, MainActivity::class.java)
                         startActivity(intent) // 메인 액티비티로 이동
                         finish() // 로그인 액티비티 종료
