@@ -70,17 +70,17 @@ class MyProfileFragment : Fragment() {
             .setPositiveButton("변경") { _, _ ->
                 val newNickname = editText.text.toString()
                 // 닉네임 변경 요청
+                profileUpdateViewModel.changeNickResponse.removeObservers(viewLifecycleOwner)
                 profileUpdateViewModel.changeNickname(newNickname)
 
                 // 닉네임 변경 후, 변경 완료된 시점에 사용자 정보를 새로 불러오기
-                profileUpdateViewModel.changeResponse.observe(viewLifecycleOwner, Observer { response ->
+                profileUpdateViewModel.changeNickResponse.observe(viewLifecycleOwner, Observer { response ->
                     if (response != null && response.success) {
                         Toast.makeText(requireContext(), "닉네임을 변경하였습니다.", Toast.LENGTH_SHORT).show()
                         getInformation()
                     } else {
                         Toast.makeText(requireContext(), "닉네임 변경에 실패했습니다.", Toast.LENGTH_SHORT).show()
                     }
-                    profileUpdateViewModel.changeResponse.removeObservers(viewLifecycleOwner)
                 })
             }
             .setNegativeButton("취소", null)
@@ -95,11 +95,12 @@ class MyProfileFragment : Fragment() {
             .setView(editText)
             .setPositiveButton("변경") { _, _ ->
                 val newUserId = editText.text.toString()
-                // 닉네임 변경 요청
+                // 아이디 변경 요청
+                profileUpdateViewModel.changeIdResponse.removeObservers(viewLifecycleOwner)
                 profileUpdateViewModel.changeUserId(newUserId)
 
-                // 닉네임 변경 후, 변경 완료된 시점에 사용자 정보를 새로 불러오기
-                profileUpdateViewModel.changeResponse.observe(viewLifecycleOwner, Observer { response ->
+                // 아이디 변경 후, 재로그인
+                profileUpdateViewModel.changeIdResponse.observe(viewLifecycleOwner, Observer { response ->
                     if (response != null && response.success) {
                         Toast.makeText(requireContext(), "아이디를 변경하였습니다.\n다시 로그인해주십시오.", Toast.LENGTH_SHORT).show()
 
@@ -114,7 +115,6 @@ class MyProfileFragment : Fragment() {
                         Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
                     }
                 })
-                profileUpdateViewModel.changeResponse.removeObservers(viewLifecycleOwner)
             }
             .setNegativeButton("취소", null)
             .show()
@@ -145,16 +145,16 @@ class MyProfileFragment : Fragment() {
                 Toast.makeText(requireContext(), "비밀번호가 같습니다.", Toast.LENGTH_SHORT).show()
             } else {
                 // 비밀번호가 다를 때 비밀번호 변경 요청
+                profileUpdateViewModel.changePassResponse.removeObservers(viewLifecycleOwner)
                 profileUpdateViewModel.changePassword(currentPassword, newPassword)
 
-                profileUpdateViewModel.changeResponse.observe(viewLifecycleOwner, Observer { response ->
+                profileUpdateViewModel.changePassResponse.observe(viewLifecycleOwner, Observer { response ->
                     if (response != null && response.success) {
                         Toast.makeText(requireContext(), "비밀번호를 변경하였습니다.", Toast.LENGTH_SHORT).show()
                     } else {
                         Toast.makeText(requireContext(), "비밀번호 변경에 실패했습니다.", Toast.LENGTH_SHORT).show()
                     }
                 })
-                profileUpdateViewModel.changeResponse.removeObservers(viewLifecycleOwner)
                 dialog.dismiss()  // 비밀번호 변경 완료 후 다이얼로그 닫음
             }
         }

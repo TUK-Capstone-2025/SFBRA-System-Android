@@ -12,8 +12,12 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class ProfileUpdateViewModel(application: Application) : AndroidViewModel(application) {
-    private val _changeResponse = MutableLiveData<ApiResponse?>()
-    val changeResponse: MutableLiveData<ApiResponse?> get() = _changeResponse
+    private val _changeNickResponse = MutableLiveData<ChangeNicknameResponse?>()
+    val changeNickResponse: MutableLiveData<ChangeNicknameResponse?> get() = _changeNickResponse
+    private val _changeIdResponse = MutableLiveData<ChangeUserIdResponse?>()
+    val changeIdResponse: MutableLiveData<ChangeUserIdResponse?> get() = _changeIdResponse
+    private val _changePassResponse = MutableLiveData<ChangePasswordResponse?>()
+    val changePassResponse: MutableLiveData<ChangePasswordResponse?> get() = _changePassResponse
 
     private val token: String = SharedPreferencesHelper.getToken(application).toString()
 
@@ -21,18 +25,18 @@ class ProfileUpdateViewModel(application: Application) : AndroidViewModel(applic
         val service = RetrofitClient.getProfileUpdateService(token)
 
         service.changeNickname(ChangeNicknameRequest(newNickname))
-            .enqueue(object : Callback<ApiResponse> {
-                override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+            .enqueue(object : Callback<ChangeNicknameResponse> {
+                override fun onResponse(call: Call<ChangeNicknameResponse>, response: Response<ChangeNicknameResponse>) {
                     if (response.isSuccessful) {
                         // 닉네임 변경 성공
-                        _changeResponse.value = response.body()
+                        _changeNickResponse.value = response.body()
                     } else {
                         // 닉네임 변경 실패
                         Log.e("ProfileUpdateViewModel", "닉네임 변경 실패: ${response.message()}")
                     }
                 }
 
-                override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                override fun onFailure(call: Call<ChangeNicknameResponse>, t: Throwable) {
                     // 네트워크 오류
                     Log.e("ProfileUpdateViewModel", "네트워크 오류: ${t.message}")
                 }
@@ -43,11 +47,11 @@ class ProfileUpdateViewModel(application: Application) : AndroidViewModel(applic
         val service = RetrofitClient.getProfileUpdateService(token)
 
         service.changeUserId(ChangeUserIdRequest(newUserId))
-            .enqueue(object : Callback<ApiResponse> {
-                override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+            .enqueue(object : Callback<ChangeUserIdResponse> {
+                override fun onResponse(call: Call<ChangeUserIdResponse>, response: Response<ChangeUserIdResponse>) {
                     if (response.isSuccessful) {
                         // 아이디 변경 성공
-                        _changeResponse.value = response.body()
+                        _changeIdResponse.value = response.body()
                     } else {
                         // 아이디 변경 실패: errorBody에서 메시지 읽기
                         try {
@@ -55,14 +59,14 @@ class ProfileUpdateViewModel(application: Application) : AndroidViewModel(applic
                             Log.e("ProfileUpdateViewModel", "아이디 변경 실패: $errorResponse")
 
                             // errorBody를 통해 받은 에러 메시지를 ApiResponse로 변환하여 저장
-                            _changeResponse.value = ApiResponse(false, errorResponse ?: "알 수 없는 오류", "")
+                            _changeIdResponse.value = ChangeUserIdResponse(false, errorResponse ?: "알 수 없는 오류", "")
                         } catch (e: Exception) {
                             Log.e("ProfileUpdateViewModel", "아이디 변경 실패 - Error parsing errorBody: ${e.message}")
                         }
                     }
                 }
 
-                override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                override fun onFailure(call: Call<ChangeUserIdResponse>, t: Throwable) {
                     // 네트워크 오류
                     Log.e("ProfileUpdateViewModel", "네트워크 오류: ${t.message}")
                 }
@@ -73,11 +77,11 @@ class ProfileUpdateViewModel(application: Application) : AndroidViewModel(applic
         val service = RetrofitClient.getProfileUpdateService(token)
 
         service.changePassword(ChangePasswordRequest(currentPassword, newPassword))
-            .enqueue(object : Callback<ApiResponse> {
-                override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+            .enqueue(object : Callback<ChangePasswordResponse> {
+                override fun onResponse(call: Call<ChangePasswordResponse>, response: Response<ChangePasswordResponse>) {
                     if (response.isSuccessful) {
                         // 비밀번호 변경 성공
-                        _changeResponse.value = response.body()
+                        _changePassResponse.value = response.body()
                     }
                     else {
                         // 비밀번호 변경 실패
@@ -85,7 +89,7 @@ class ProfileUpdateViewModel(application: Application) : AndroidViewModel(applic
                     }
                 }
 
-                override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                override fun onFailure(call: Call<ChangePasswordResponse>, t: Throwable) {
                     // 네트워크 오류
                     Log.e("ProfileUpdateViewModel", "네트워크 오류: ${t.message}")
                 }
