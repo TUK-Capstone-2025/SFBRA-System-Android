@@ -5,15 +5,19 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sfbra_system_android.R
 import com.example.sfbra_system_android.RidingRecord
 import com.example.sfbra_system_android.RidingRecordAdapter
+import com.example.sfbra_system_android.data.PathRecordViewModel
 
 // 주행 기록 화면
 class RidingPathFragment : Fragment() {
+    private val viewModel: PathRecordViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,19 +36,20 @@ class RidingPathFragment : Fragment() {
         )
         recyclerView.addItemDecoration(dividerItemDecoration)
 
-        recyclerView.adapter = RidingRecordAdapter(getRidingRecords())
+        val adapter = RidingRecordAdapter(emptyList()) // 초기 데이터 비워두기
+        recyclerView.adapter = adapter
+
+        getRidingRecords(adapter)
 
         return view
     }
 
-    // 주행 기록 더미 데이터
-    private fun getRidingRecords(): List<RidingRecord> {
-        return listOf(
-            RidingRecord("주행기록1", "2024.11.25"),
-            RidingRecord("주행기록2", "2024.11.30"),
-            RidingRecord("주행기록3", "2024.12.03"),
-            RidingRecord("주행기록4", "2025.12.22"),
-            RidingRecord("주행기록5", "2025.01.05")
-        )
+    // 주행 기록 불러오기 함수
+    private fun getRidingRecords(adapter: RidingRecordAdapter) {
+        viewModel.fetchPathRecords()
+
+        viewModel.pathRecords.observe(viewLifecycleOwner, Observer { pathRecords ->
+            adapter.updateRecords(pathRecords.map { RidingRecord("주행기록 ${it.PathRecordId}", it.PathRecordDate) })
+        })
     }
 }

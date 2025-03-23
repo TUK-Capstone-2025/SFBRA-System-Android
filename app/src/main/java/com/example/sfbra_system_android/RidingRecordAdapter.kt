@@ -7,11 +7,11 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 // 리사이클러뷰 어댑터 -> 주행기록 동적표시
-class RidingRecordAdapter(private val records: List<RidingRecord>) :
+class RidingRecordAdapter(private var records: List<RidingRecord>) :
     RecyclerView.Adapter<RidingRecordAdapter.RecordViewHolder>() {
 
     class RecordViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val recordName: TextView = itemView.findViewById(R.id.record_name)
+        val recordId: TextView = itemView.findViewById(R.id.record_id)
         val recordDate: TextView = itemView.findViewById(R.id.record_date)
     }
 
@@ -23,11 +23,16 @@ class RidingRecordAdapter(private val records: List<RidingRecord>) :
 
     override fun onBindViewHolder(holder: RecordViewHolder, position: Int) {
         val record = records[position]
-        holder.recordName.text = record.name
+        holder.recordId.text = record.id
         holder.recordDate.text = record.date
     }
 
     override fun getItemCount(): Int = records.size
+
+    fun updateRecords(newRecords: List<RidingRecord>) {
+        records = newRecords
+        notifyDataSetChanged() // 리스트 갱신
+    }
 }
 
-data class RidingRecord(val name: String, val date: String)
+data class RidingRecord(val id: String, val date: String)

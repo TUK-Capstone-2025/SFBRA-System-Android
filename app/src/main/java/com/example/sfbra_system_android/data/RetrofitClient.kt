@@ -58,4 +58,9 @@ object RetrofitClient {
         val retrofit = getRetrofitInstance(token)
         return retrofit.create(ProfileUpdateService::class.java)
     }
+
+    fun getPathRecordService(token: String): PathRecordService {
+        val retrofit = getRetrofitInstance(token)
+        return retrofit.create(PathRecordService::class.java)
+    }
 }
