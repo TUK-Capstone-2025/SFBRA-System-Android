@@ -19,6 +19,18 @@
         android:gravity="center"
         android:layout_marginBottom="8dp" />
 
+    <!-- 주행 기록 없음 메시지 -->
+    <TextView
+        android:id="@+id/no_records_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="주행 기록이 없습니다."
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:gravity="center"
+        android:visibility="gone"
+        android:layout_marginTop="16dp"/>
+
     <!-- RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/riding_records_recycler_view"

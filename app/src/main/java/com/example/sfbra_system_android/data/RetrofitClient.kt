@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit
 // 서버 통신을 위한 Retrofit 클라이언트 객체 생성
 object RetrofitClient {
     // todo : 서버 주소 입력
-    private  const val BASE_URL = "/api/" // base 주소
+    private  const val BASE_URL = "https://3cf0-210-99-254-13.ngrok-free.app/api/" // base 주소
 
     // 로그인 API
     val loginService: LoginService by lazy {
