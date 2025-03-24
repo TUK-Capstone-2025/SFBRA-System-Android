@@ -19,8 +19,10 @@ class ProfileUpdateViewModel(application: Application) : AndroidViewModel(applic
     private val _changePassResponse = MutableLiveData<ChangePasswordResponse?>()
     val changePassResponse: MutableLiveData<ChangePasswordResponse?> get() = _changePassResponse
 
+    // 저장된 사용자 토큰
     private val token: String = SharedPreferencesHelper.getToken(application).toString()
 
+    // 닉네임 변경
     fun changeNickname(newNickname: String) {
         val service = RetrofitClient.getProfileUpdateService(token)
 
@@ -43,6 +45,7 @@ class ProfileUpdateViewModel(application: Application) : AndroidViewModel(applic
             })
     }
 
+    // 아이디 변경
     fun changeUserId(newUserId: String) {
         val service = RetrofitClient.getProfileUpdateService(token)
 
@@ -73,6 +76,7 @@ class ProfileUpdateViewModel(application: Application) : AndroidViewModel(applic
             })
     }
 
+    // 비밀번호 변경
     fun changePassword(currentPassword: String, newPassword: String) {
         val service = RetrofitClient.getProfileUpdateService(token)
 

@@ -5,7 +5,7 @@ import retrofit2.http.GET
 
 // 사용자 정보 API 호출 인터페이스
 interface ProfileService {
-    @GET("member/me")
+    @GET("member/me") // 엔드포인트
     fun getUserInfo(): Call<ProfileResponse>
 }
 
@@ -16,6 +16,7 @@ data class ProfileResponse(
     val data: UserData
 )
 
+// 사용자 데이터 형식
 data class UserData(
     val name: String,
     val nickname: String,

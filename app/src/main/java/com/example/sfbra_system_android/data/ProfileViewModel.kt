@@ -21,6 +21,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         userService = retrofit.create(ProfileService::class.java)
     }
 
+    // 사용자 정보 조회
     fun fetchUserInfo() {
         userService.getUserInfo().enqueue(object : Callback<ProfileResponse> {
             override fun onResponse(call: Call<ProfileResponse>, response: Response<ProfileResponse>) {
