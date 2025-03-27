@@ -13,9 +13,9 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sfbra_system_android.R
-import com.example.sfbra_system_android.RidingRecord
-import com.example.sfbra_system_android.RidingRecordAdapter
-import com.example.sfbra_system_android.data.PathRecordViewModel
+import com.example.sfbra_system_android.data.RidingRecord
+import com.example.sfbra_system_android.data.RidingRecordAdapter
+import com.example.sfbra_system_android.data.viewmodels.PathRecordViewModel
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 

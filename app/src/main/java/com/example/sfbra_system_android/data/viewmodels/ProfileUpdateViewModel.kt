@@ -1,9 +1,17 @@
-package com.example.sfbra_system_android.data
+package com.example.sfbra_system_android.data.viewmodels
 
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import com.example.sfbra_system_android.data.RetrofitClient
+import com.example.sfbra_system_android.data.SharedPreferencesHelper
+import com.example.sfbra_system_android.data.services.ChangeNicknameRequest
+import com.example.sfbra_system_android.data.services.ChangeNicknameResponse
+import com.example.sfbra_system_android.data.services.ChangePasswordRequest
+import com.example.sfbra_system_android.data.services.ChangePasswordResponse
+import com.example.sfbra_system_android.data.services.ChangeUserIdRequest
+import com.example.sfbra_system_android.data.services.ChangeUserIdResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

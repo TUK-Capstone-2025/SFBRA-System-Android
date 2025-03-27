@@ -1,10 +1,11 @@
-package com.example.sfbra_system_android
+package com.example.sfbra_system_android.data
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.sfbra_system_android.R
 
 // 리사이클러뷰 어댑터 -> 주행기록 동적표시
 class RidingRecordAdapter(private var records: List<RidingRecord>) :

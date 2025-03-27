@@ -7,8 +7,8 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.sfbra_system_android.data.LoginRequest
-import com.example.sfbra_system_android.data.LoginResponse
+import com.example.sfbra_system_android.data.services.LoginRequest
+import com.example.sfbra_system_android.data.services.LoginResponse
 import com.example.sfbra_system_android.data.RetrofitClient
 import com.example.sfbra_system_android.data.SharedPreferencesHelper
 import com.example.sfbra_system_android.databinding.ActivityLoginBinding

@@ -1,4 +1,4 @@
-package com.example.sfbra_system_android.data
+package com.example.sfbra_system_android.data.services
 
 import retrofit2.Call
 import retrofit2.http.GET

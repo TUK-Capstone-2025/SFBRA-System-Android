@@ -6,8 +6,8 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.sfbra_system_android.data.RegisterRequest
-import com.example.sfbra_system_android.data.RegisterResponse
+import com.example.sfbra_system_android.data.services.RegisterRequest
+import com.example.sfbra_system_android.data.services.RegisterResponse
 import com.example.sfbra_system_android.data.RetrofitClient
 import com.example.sfbra_system_android.databinding.ActivityRegisterBinding
 import retrofit2.Call

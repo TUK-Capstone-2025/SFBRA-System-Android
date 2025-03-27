@@ -15,9 +15,9 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.example.sfbra_system_android.R
-import com.example.sfbra_system_android.data.ProfileUpdateViewModel
+import com.example.sfbra_system_android.data.viewmodels.ProfileUpdateViewModel
 import com.example.sfbra_system_android.data.SharedPreferencesHelper
-import com.example.sfbra_system_android.data.UserViewModel
+import com.example.sfbra_system_android.data.viewmodels.UserViewModel
 import com.example.sfbra_system_android.ui.activities.LoginActivity
 import com.google.gson.Gson
 import com.google.gson.JsonObject

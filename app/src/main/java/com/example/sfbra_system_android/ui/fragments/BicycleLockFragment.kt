@@ -14,7 +14,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
-import com.example.sfbra_system_android.data.BluetoothViewModel
+import com.example.sfbra_system_android.data.viewmodels.BluetoothViewModel
 import com.example.sfbra_system_android.ui.activities.MainActivity
 import com.example.sfbra_system_android.R
 
