@@ -3,12 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.fragments.JoinTeamFragment">
+    tools:context=".ui.fragments.MyRequestsStatusFragment">
 
+    <!-- TODO: Update blank fragment layout -->
     <TextView
-        android:id="@+id/my_request_management"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="내 신청 관리" />
+        android:text="@string/hello_blank_fragment" />
 
 </FrameLayout>

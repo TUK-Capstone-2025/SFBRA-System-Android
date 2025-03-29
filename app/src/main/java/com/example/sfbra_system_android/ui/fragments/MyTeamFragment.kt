@@ -5,7 +5,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import com.example.sfbra_system_android.R
 
 // 내 팀 화면
@@ -26,7 +25,7 @@ class MyTeamFragment : Fragment() {
 
         return view
     }
-    
+
     // 사용자 팀 유무 체크 함수
     private fun checkMyTeam() {
 
@@ -37,7 +36,7 @@ class MyTeamFragment : Fragment() {
         if (activeFragment?.tag == tag) return
 
         val transaction = childFragmentManager.beginTransaction()
-
+        
         // 기존 프래그먼트 숨기기
         activeFragment?.let { transaction.hide(it) }
 
