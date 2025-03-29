@@ -5,34 +5,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:padding="16dp"
     android:background="@color/white">
 
-    <!-- 팀 만들기 버튼 -->
-    <Button
-        android:id="@+id/btnCreateTeam"
+    <!-- 프래그먼트를 삽입할 컨테이너 -->
+    <FrameLayout
+        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="25dp"
-        android:text="팀 만들기"
-        android:textSize="20sp"
-        android:fontFamily="sans-serif-medium"
-        android:backgroundTint="#0F429D"
-        android:textColor="#FFFFFF"
-        android:padding="15dp"
-        android:layout_marginHorizontal="32dp"/>
-
-    <!-- 주행시작 버튼 -->
-    <Button
-        android:id="@+id/btnJoinTeam"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="팀 참가하기"
-        android:textSize="20sp"
-        android:fontFamily="sans-serif-medium"
-        android:backgroundTint="#0F429D"
-        android:textColor="#FFFFFF"
-        android:padding="15dp"
-        android:layout_marginHorizontal="32dp" />
+        android:layout_height="match_parent"/>
 
 </LinearLayout>

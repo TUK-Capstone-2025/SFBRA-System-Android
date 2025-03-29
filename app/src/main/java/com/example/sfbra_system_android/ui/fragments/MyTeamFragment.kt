@@ -10,6 +10,9 @@ import com.example.sfbra_system_android.R
 
 // 내 팀 화면
 class MyTeamFragment : Fragment() {
+    // 프래그먼트 저장용 맵
+    private val fragmentMap = mutableMapOf<String, Fragment>()
+    private var activeFragment: Fragment? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -17,32 +20,38 @@ class MyTeamFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_my_team, container, false)
 
+        //switchFragment(NoTeamActionFragment(), "NO_TEAM")
+        //switchFragment(MyTeamInfoFragment(), "MY_TEAM")
+        checkMyTeam()
+
         return view
     }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        val btnCreateTeam = view.findViewById<Button>(R.id.btnCreateTeam)
-        val btnJoinTeam = view.findViewById<Button>(R.id.btnJoinTeam)
-
-        btnCreateTeam.setOnClickListener {
-            replaceFragment(CreateTeamFragment())
-        }
-
-        btnJoinTeam.setOnClickListener {
-            replaceFragment(JoinTeamFragment())
-        }
-    }
-
-    private fun replaceFragment(fragment: Fragment) {
-        parentFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment) // 프래그먼트 교체, 메인 액티비티 프래그먼트 컨테이너 id
-            .addToBackStack(null) // 뒤로가기 눌렀을 시 이전 프래그먼트로 돌아가기
-            .commit()
-    }
-
+    
+    // 사용자 팀 유무 체크 함수
     private fun checkMyTeam() {
 
+    }
+
+    // 프래그먼트 교체 함수
+    private fun switchFragment(fragment: Fragment, tag: String) {
+        if (activeFragment?.tag == tag) return
+
+        val transaction = childFragmentManager.beginTransaction()
+
+        // 기존 프래그먼트 숨기기
+        activeFragment?.let { transaction.hide(it) }
+
+        // 새 프래그먼트 가져오기 (기존 프래그먼트가 있으면 재사용)
+        val newFragment = fragmentMap[tag] ?: fragment.also { fragmentMap[tag] = it }
+
+        // 프래그먼트 추가 또는 보여주기
+        if (!newFragment.isAdded) {
+            transaction.add(R.id.fragment_container, newFragment, tag)
+        } else {
+            transaction.show(newFragment)
+        }
+
+        transaction.commit()
+        activeFragment = newFragment
     }
 }
