@@ -31,6 +31,7 @@ import com.example.sfbra_system_android.ui.fragments.MyTeamFragment
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 
+// 메인 액티비티
 class MainActivity : AppCompatActivity() {
     private var doubleBackToExitPressedOnce = false
     private lateinit var toggle: ActionBarDrawerToggle

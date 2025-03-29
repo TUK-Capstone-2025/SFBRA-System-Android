@@ -14,6 +14,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+// 회원가입 화면
 class RegisterActivity : AppCompatActivity() {
     lateinit var binding: ActivityRegisterBinding
 

@@ -16,6 +16,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+// 로그인 화면
 class LoginActivity : AppCompatActivity() {
     lateinit var binding: ActivityLoginBinding
 

@@ -7,15 +7,11 @@
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission
         android:name="android.permission.BLUETOOTH_SCAN"
-        android:usesPermissionFlags="neverForLocation" />
-    <!-- 위치 권한 -->
+        android:usesPermissionFlags="neverForLocation" /> <!-- 위치 권한 -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <!-- 인터넷 권한 -->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <!-- 진동 권한 -->
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <!-- 메시지 권한 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- 인터넷 권한 -->
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- 진동 권한 -->
+    <uses-permission android:name="android.permission.VIBRATE" /> <!-- 메시지 권한 -->
     <uses-feature
         android:name="android.hardware.telephony"
         android:required="false" /> <!-- 메시지 기능 없는 기기 다운 가능(플레이스토어) -->
@@ -33,15 +29,16 @@
         android:theme="@style/Theme.SFBRASystemAndroid"
         tools:targetApi="31">
         <activity
+            android:name=".ui.activities.PathViewActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.activities.RegisterActivity"
             android:exported="false"
             android:theme="@style/Base.Theme.NoActionBar" />
 
         <meta-data
             android:name="com.kakao.sdk.AppKey"
-            android:value="@string/kakao_map_key" />
-
-        <!-- 스플래시 화면 -->
+            android:value="@string/kakao_map_key" /> <!-- 스플래시 화면 -->
         <activity
             android:name=".ui.activities.SplashActivity"
             android:exported="true"
