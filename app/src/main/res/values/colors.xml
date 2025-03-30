@@ -7,6 +7,9 @@
     <color name="gray_dark">#757575</color>
     <color name="red">#A90000</color>
     <color name="red_light">#FF0000</color>
+    <color name="status_waiting">#666666</color>
+    <color name="status_accept">#00A900</color>
+    <color name="status_reject">#D70000</color>
     <color name="my_primary">#0F429D</color> <!-- 액션바 -->
     <color name="my_primary_variant">#0F429D</color> <!-- 상태바 -->
     <color name="my_navigation_bar">#F3EDF7</color> <!-- 하단 네비게이션바 -->
