@@ -1,14 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.fragments.CreateTeamFragment">
+    android:padding="24dp"
+    android:background="@android:color/white">
 
-    <Button
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/create_button"
-        android:text="만들기" />
+        android:orientation="vertical">
 
-</FrameLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="팀 생성"
+            android:textSize="35sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="10dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/my_primary"
+            android:layout_marginBottom="35dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="팀 이름"
+            android:textSize="20sp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- 팀 이름 입력 -->
+        <EditText
+            android:id="@+id/team_name_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="팀 이름을 입력하세요"
+            android:background="@drawable/default_edittext"
+            android:padding="12dp"
+            android:textSize="18sp"
+            android:layout_marginBottom="24dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="팀 소개"
+            android:textSize="20sp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- 팀 소개 입력 -->
+        <EditText
+            android:id="@+id/team_intro_input"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:hint="팀 소개를 입력하세요"
+            android:background="@drawable/default_edittext"
+            android:padding="12dp"
+            android:textSize="18sp"
+            android:gravity="top"
+            android:inputType="textMultiLine"
+            android:layout_marginBottom="30dp" />
+
+        <!-- 생성 버튼 -->
+        <Button
+            android:id="@+id/create_button"
+            android:layout_width="120dp"
+            android:layout_height="60dp"
+            android:text="생성"
+            android:textSize="25sp"
+            android:textColor="@android:color/white"
+            android:backgroundTint="#0072CE"
+            android:layout_gravity="end"
+            android:background="@drawable/rounded_button" />
+
+    </LinearLayout>
+</ScrollView>
