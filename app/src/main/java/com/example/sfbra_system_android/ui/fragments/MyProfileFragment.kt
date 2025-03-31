@@ -17,14 +17,14 @@ import androidx.lifecycle.Observer
 import com.example.sfbra_system_android.R
 import com.example.sfbra_system_android.data.viewmodels.ProfileUpdateViewModel
 import com.example.sfbra_system_android.data.SharedPreferencesHelper
-import com.example.sfbra_system_android.data.viewmodels.UserViewModel
+import com.example.sfbra_system_android.data.viewmodels.ProfileViewModel
 import com.example.sfbra_system_android.ui.activities.LoginActivity
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 
 // 내 프로필 화면
 class MyProfileFragment : Fragment() {
-    private val userViewModel: UserViewModel by viewModels() // 사용자 정보를 가져오는 뷰 모델
+    private val userViewModel: ProfileViewModel by viewModels() // 사용자 정보를 가져오는 뷰 모델
     private val profileUpdateViewModel: ProfileUpdateViewModel by viewModels() // 프로필 정보를 업데이트하는 뷰 모델
     private lateinit var name: TextView
     private lateinit var nickname: TextView

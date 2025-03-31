@@ -13,7 +13,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class UserViewModel(application: Application) : AndroidViewModel(application) {
+class ProfileViewModel(application: Application) : AndroidViewModel(application) {
     private val _userInfo = MutableLiveData<ProfileResponse?>()
     val userInfo: LiveData<ProfileResponse?> get() = _userInfo
 

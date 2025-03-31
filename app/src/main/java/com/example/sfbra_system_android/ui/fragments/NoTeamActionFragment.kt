@@ -42,7 +42,7 @@ class NoTeamActionFragment : Fragment() {
     // 자식 프래그먼트 교체 함수
     private fun replaceFragment(fragment: Fragment) {
         parentFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment) // 프래그먼트 교체, 메인 액티비티 프래그먼트 컨테이너 id
+            .replace(R.id.fragment_container2, fragment) // 프래그먼트 교체, 메인 액티비티 프래그먼트 컨테이너 id
             .addToBackStack(null) // 뒤로가기 눌렀을 시 이전 프래그먼트로 돌아가기
             .commit()
     }

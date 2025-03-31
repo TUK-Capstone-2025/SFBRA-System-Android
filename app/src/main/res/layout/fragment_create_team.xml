@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="24dp"
+    android:paddingBottom="0dp"
     android:background="@android:color/white">
 
     <LinearLayout
@@ -30,7 +31,7 @@
             android:layout_height="wrap_content"
             android:text="팀 이름"
             android:textSize="20sp"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="5dp" />
 
         <!-- 팀 이름 입력 -->
         <EditText
@@ -41,20 +42,20 @@
             android:background="@drawable/default_edittext"
             android:padding="12dp"
             android:textSize="18sp"
-            android:layout_marginBottom="24dp" />
+            android:layout_marginBottom="10dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="팀 소개"
             android:textSize="20sp"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="5dp" />
 
         <!-- 팀 소개 입력 -->
         <EditText
             android:id="@+id/team_intro_input"
             android:layout_width="match_parent"
-            android:layout_height="160dp"
+            android:layout_height="150dp"
             android:hint="팀 소개를 입력하세요"
             android:background="@drawable/default_edittext"
             android:padding="12dp"
