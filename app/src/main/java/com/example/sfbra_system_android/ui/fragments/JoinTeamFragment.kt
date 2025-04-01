@@ -17,6 +17,7 @@ import com.example.sfbra_system_android.R
 import com.example.sfbra_system_android.data.TeamListAdapter
 import com.example.sfbra_system_android.data.services.TeamListItem
 import com.example.sfbra_system_android.data.viewmodels.TeamListViewModel
+import com.example.sfbra_system_android.ui.bottomsheets.TeamDetailBottomSheetDialogFragment
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 
@@ -33,21 +34,25 @@ class JoinTeamFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_join_team, container, false)
 
-        noTeamsText = view.findViewById(R.id.no_teams_text)
-        myRequestManagement = view.findViewById(R.id.my_request_management)
+        noTeamsText = view.findViewById(R.id.no_teams_text) // 팀 목록 없을 때의 텍스트뷰
+        myRequestManagement = view.findViewById(R.id.my_request_management) // 내 신청 관리
         myRequestManagement.setOnClickListener {
             replaceFragment(MyRequestsStatusFragment())
         }
 
-        teamListRecyclerView = view.findViewById(R.id.team_list_recyclerview)
+        teamListRecyclerView = view.findViewById(R.id.team_list_recyclerview) // 팀목록 리사이클러뷰
 
-        val adapter = TeamListAdapter(emptyList()) { teamName ->
-            Toast.makeText(context, "$teamName 클릭됨", Toast.LENGTH_SHORT).show()
-            // todo 클릭 시 원하는 동작
+        val adapter = TeamListAdapter(emptyList()) { team ->
+            // 바텀시트 호출
+            val bottomSheet = TeamDetailBottomSheetDialogFragment(team) { teamId ->
+                Toast.makeText(context, "${team.name} 팀 참가 요청 처리", Toast.LENGTH_SHORT).show()
+                // todo 참가 처리
+            }
+            bottomSheet.show(parentFragmentManager, "TEAM_DETAIL")
         }
 
         teamListRecyclerView.adapter = adapter
-        teamListRecyclerView.layoutManager = LinearLayoutManager(context)
+        teamListRecyclerView.layoutManager = LinearLayoutManager(context) // 어댑터 붙이기
 
         getTeamList(adapter)
 
@@ -81,15 +86,18 @@ class JoinTeamFragment : Fragment() {
             .commit()
     }
 
+    // 팀 목록 조회 함수
     private fun getTeamList(adapter: TeamListAdapter) {
         teamListViewModel.getTeamList()
 
         teamListViewModel.teamList.observe(viewLifecycleOwner, Observer { teamList ->
             val teams = teamList.data ?: emptyList()
 
-            if (teams.isNotEmpty() && teamList.success) {
+            if (teams.isNotEmpty() && teamList.success) { // 팀 목록이 있을 때
                 noTeamsText.visibility = View.GONE
                 teamListRecyclerView.visibility = View.VISIBLE
+
+                // 리사이클러뷰 어댑터에 팀 목록 설정
                 adapter.updateTeams(teams.map { TeamListItem(
                     it.leader,
                     it.teamId,
@@ -97,7 +105,7 @@ class JoinTeamFragment : Fragment() {
                     it.name,
                     it.description) })
 
-            } else {
+            } else { // 팀 목록이 없을 때
                 noTeamsText.visibility = View.VISIBLE
                 teamListRecyclerView.visibility = View.GONE
             }

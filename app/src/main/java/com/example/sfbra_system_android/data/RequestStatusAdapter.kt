@@ -27,6 +27,7 @@ class RequestStatusAdapter(
         val teamName: TextView = view.findViewById(R.id.team_name)
         val statusText: TextView = view.findViewById(R.id.request_status)
         val cancelButton: ImageView = view.findViewById(R.id.cancel_button)
+        val justSpace: ImageView = view.findViewById(R.id.just_space)
 
         fun bind(item: RequestStatusItem) {
             teamName.text = item.teamName
@@ -36,11 +37,13 @@ class RequestStatusAdapter(
                     statusText.text = itemView.context.getString(R.string.status_reject)
                     statusText.setTextColor(ContextCompat.getColor(itemView.context, R.color.status_reject))
                     cancelButton.visibility = View.GONE
+                    justSpace.visibility = View.VISIBLE
                 }
                 RequestStatus.WAITING -> {
                     statusText.text = itemView.context.getString(R.string.status_waiting)
                     statusText.setTextColor(ContextCompat.getColor(itemView.context, R.color.status_waiting))
                     cancelButton.visibility = View.VISIBLE
+                    justSpace.visibility = View.GONE
                     cancelButton.setOnClickListener {
                         onCancelClick(item)
                     }
@@ -49,6 +52,7 @@ class RequestStatusAdapter(
                     statusText.text = itemView.context.getString(R.string.status_accept)
                     statusText.setTextColor(ContextCompat.getColor(itemView.context, R.color.status_accept))
                     cancelButton.visibility = View.GONE
+                    justSpace.visibility = View.VISIBLE
                 }
             }
         }
