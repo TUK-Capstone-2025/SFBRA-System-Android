@@ -22,9 +22,9 @@ class PathRecordViewModel(application: Application) : AndroidViewModel(applicati
     private val token: String = SharedPreferencesHelper.getToken(application).toString()
 
     fun fetchPathRecords() {
-        val service = RetrofitClient.getPathRecordService(token)
+        val pathRecordService = RetrofitClient.getPathRecordService(token)
 
-        service.getPathRecord()
+        pathRecordService.getPathRecord()
             .enqueue(object : Callback<PathRecordResponse> {
                 override fun onResponse(call: Call<PathRecordResponse>, response: Response<PathRecordResponse>) {
                     if (response.isSuccessful) {

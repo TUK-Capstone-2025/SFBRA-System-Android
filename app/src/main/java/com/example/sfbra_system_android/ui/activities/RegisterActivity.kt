@@ -54,7 +54,8 @@ class RegisterActivity : AppCompatActivity() {
 
         val request = RegisterRequest(userId, password, password2, name, email, nickname)
 
-        RetrofitClient.registerService.register(request).enqueue(object : Callback<RegisterResponse> {
+        val registerService = RetrofitClient.getRegisterService()
+        registerService.register(request).enqueue(object : Callback<RegisterResponse> {
             override fun onResponse(
                 call: Call<RegisterResponse>,
                 response: Response<RegisterResponse>

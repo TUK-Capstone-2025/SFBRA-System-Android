@@ -8,7 +8,6 @@ import androidx.lifecycle.MutableLiveData
 import com.example.sfbra_system_android.data.RetrofitClient
 import com.example.sfbra_system_android.data.SharedPreferencesHelper
 import com.example.sfbra_system_android.data.services.ProfileResponse
-import com.example.sfbra_system_android.data.services.ProfileService
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -18,15 +17,11 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
     val userInfo: LiveData<ProfileResponse?> get() = _userInfo
 
     private val token: String = SharedPreferencesHelper.getToken(application).toString()
-    private val userService: ProfileService
-
-    init {
-        val retrofit = RetrofitClient.getRetrofitInstance(token)
-        userService = retrofit.create(ProfileService::class.java)
-    }
 
     // 사용자 정보 조회
     fun fetchUserInfo() {
+        val userService = RetrofitClient.getUserInfoService(token) // retrofit 객체 생성
+
         userService.getUserInfo().enqueue(object : Callback<ProfileResponse> {
             override fun onResponse(call: Call<ProfileResponse>, response: Response<ProfileResponse>) {
                 if (response.isSuccessful) {

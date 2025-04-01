@@ -8,7 +8,6 @@ import androidx.lifecycle.MutableLiveData
 import com.example.sfbra_system_android.data.RetrofitClient
 import com.example.sfbra_system_android.data.SharedPreferencesHelper
 import com.example.sfbra_system_android.data.services.TeamCheckResponse
-import com.example.sfbra_system_android.data.services.TeamCheckService
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -18,15 +17,11 @@ class TeamCheckViewModel(application: Application) : AndroidViewModel(applicatio
     val hasTeam: LiveData<TeamCheckResponse?> get() = _hasTeam
 
     private val token: String = SharedPreferencesHelper.getToken(application).toString()
-    private val teamCheckService: TeamCheckService
-
-    init {
-        val retrofit = RetrofitClient.getRetrofitInstance(token)
-        teamCheckService = retrofit.create(TeamCheckService::class.java)
-    }
 
     // 팀 유무 조회
     fun hasTeam() {
+        val teamCheckService = RetrofitClient.getTeamCheckService(token)
+
         teamCheckService.checkUserHasTeam().enqueue(object : Callback<TeamCheckResponse> {
             override fun onResponse(call: Call<TeamCheckResponse>, response: Response<TeamCheckResponse>) {
                 if (response.isSuccessful) {
@@ -36,6 +31,7 @@ class TeamCheckViewModel(application: Application) : AndroidViewModel(applicatio
                     _hasTeam.value = null
                 }
             }
+
             override fun onFailure(call: Call<TeamCheckResponse>, t: Throwable) {
                 Log.e("TeamCheckViewModel", "네트워크 오류: ${t.message}")
                 _hasTeam.value = null
