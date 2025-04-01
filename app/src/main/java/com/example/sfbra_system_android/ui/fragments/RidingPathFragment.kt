@@ -21,7 +21,7 @@ import com.google.gson.JsonObject
 
 // 주행 기록 화면
 class RidingPathFragment : Fragment() {
-    private val viewModel: PathRecordViewModel by viewModels()
+    private val pathRecordViewModel: PathRecordViewModel by viewModels()
     private lateinit var noRecordsText: TextView
     private lateinit var recyclerView: RecyclerView
 
@@ -53,10 +53,10 @@ class RidingPathFragment : Fragment() {
 
     // 주행 기록 불러오기 함수
     private fun getRidingRecords(adapter: RidingRecordAdapter) {
-        viewModel.fetchPathRecords()
+        pathRecordViewModel.fetchPathRecords()
 
         // pathRecords 옵저빙 (주행 기록 데이터 변경 시)
-        viewModel.pathRecords.observe(viewLifecycleOwner, Observer { pathRecords ->
+        pathRecordViewModel.pathRecords.observe(viewLifecycleOwner, Observer { pathRecords ->
             val records = pathRecords.data ?: emptyList() // null 방지
 
             if (records.isNotEmpty() && pathRecords.success) {
@@ -71,7 +71,7 @@ class RidingPathFragment : Fragment() {
         })
 
         // message 옵저빙 (TextView 업데이트)
-        viewModel.message.observe(viewLifecycleOwner, Observer { message ->
+        pathRecordViewModel.message.observe(viewLifecycleOwner, Observer { message ->
             val gson = Gson()
             val jsonObject = gson.fromJson(message, JsonObject::class.java)
 

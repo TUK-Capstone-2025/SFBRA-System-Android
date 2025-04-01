@@ -6,17 +6,20 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sfbra_system_android.R
+import com.example.sfbra_system_android.data.services.TeamListItem
 
 // 리사이클러뷰 어댑터 -> 팀목록 동적표시
 class TeamListAdapter(
-    private val teamList: List<String>,
-    private val onItemClick: (String) -> Unit
+    private var teamList: List<TeamListItem>,
+    private val onItemClick: (TeamListItem) -> Unit
 ) : RecyclerView.Adapter<TeamListAdapter.TeamViewHolder>() {
 
     inner class TeamViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val teamNameTextView: TextView = itemView.findViewById(R.id.team_name)
 
-        init {
+        fun bind(team: TeamListItem) {
+            teamNameTextView.text = team.name
+
             itemView.setOnClickListener {
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
@@ -33,8 +36,13 @@ class TeamListAdapter(
     }
 
     override fun onBindViewHolder(holder: TeamViewHolder, position: Int) {
-        holder.teamNameTextView.text = teamList[position]
+        holder.bind(teamList[position])
     }
 
     override fun getItemCount(): Int = teamList.size
+
+    fun updateTeams(newTeams: List<TeamListItem>) {
+        teamList = newTeams
+        notifyDataSetChanged() // 데이터 갱신
+    }
 }

@@ -20,5 +20,5 @@ data class TeamListItem (
     val teamId: Int,
     val memberCount: Int,
     val name: String,
-    val leaderName: String
+    val description: String?
 )

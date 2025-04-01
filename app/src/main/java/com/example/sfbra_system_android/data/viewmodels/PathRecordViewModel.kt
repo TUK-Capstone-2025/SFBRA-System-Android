@@ -31,7 +31,7 @@ class PathRecordViewModel(application: Application) : AndroidViewModel(applicati
                         // 주행기록 목록 조회 성공
                         _pathRecords.value = response.body()
                     } else {
-                        // 아이디 변경 실패: errorBody에서 메시지 읽기
+                        // 주행기록 불러오기 실패: errorBody에서 메시지 읽기
                         try {
                             val errorResponse = response.errorBody()?.string()
 

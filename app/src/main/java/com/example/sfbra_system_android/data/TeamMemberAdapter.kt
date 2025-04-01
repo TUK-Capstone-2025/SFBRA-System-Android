@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.sfbra_system_android.R
 
 class TeamMemberAdapter(
-    private val members: List<TeamMember>
+    private var members: List<TeamMember>
 ) : RecyclerView.Adapter<TeamMemberAdapter.TeamMemberViewHolder>() {
 
     inner class TeamMemberViewHolder(view: View) : RecyclerView.ViewHolder(view) {
