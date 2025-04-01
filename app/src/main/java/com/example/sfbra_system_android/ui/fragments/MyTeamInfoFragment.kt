@@ -25,6 +25,7 @@ class MyTeamInfoFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_my_team_info, container, false)
 
+        memberRecyclerView = view.findViewById(R.id.team_member_recyclerview)
 
         val members = listOf(
             TeamMember("홍길동", isLeader = true),
