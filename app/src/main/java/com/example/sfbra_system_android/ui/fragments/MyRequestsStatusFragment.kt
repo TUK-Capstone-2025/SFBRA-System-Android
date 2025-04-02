@@ -1,5 +1,6 @@
 package com.example.sfbra_system_android.ui.fragments
 
+import android.app.AlertDialog
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -15,11 +16,13 @@ import com.example.sfbra_system_android.R
 import com.example.sfbra_system_android.data.RequestStatus
 import com.example.sfbra_system_android.data.RequestStatusAdapter
 import com.example.sfbra_system_android.data.RequestStatusItem
+import com.example.sfbra_system_android.data.viewmodels.DeleteRequestViewModel
 import com.example.sfbra_system_android.data.viewmodels.RequestListViewModel
 
 // 내 신청 관리 화면
 class MyRequestsStatusFragment : Fragment() {
     private val requestListViewModel: RequestListViewModel by viewModels()
+    private val deleteRequestViewModel: DeleteRequestViewModel by viewModels()
     private lateinit var requestStatusRecyclerView: RecyclerView
 
     override fun onCreateView(
@@ -30,9 +33,9 @@ class MyRequestsStatusFragment : Fragment() {
 
         requestStatusRecyclerView = view.findViewById(R.id.request_status_recyclerview)
 
-        val adapter = RequestStatusAdapter(emptyList()) { team ->
-            Toast.makeText(context, "${team.teamName} 신청 취소 선택", Toast.LENGTH_SHORT).show()
-            // todo 서버 요청 or 리스트 갱신
+        val adapter = RequestStatusAdapter(emptyList()) {
+            // 취소 버튼 눌렀을 경우
+            confirmCancelRequest()
         }
 
         requestStatusRecyclerView.adapter = adapter
@@ -85,13 +88,36 @@ class MyRequestsStatusFragment : Fragment() {
                     adapter.updateItems(items)
                 } else {
                     // 신청 목록이 없을 때
+                    // todo 텍스트 뷰 추가해서 표시할 것
                 }
             }
         })
     }
 
+    // 취소 요청 팝업 생성
+    private fun confirmCancelRequest() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("신청 취소")
+            .setMessage("신청을 취소하시겠습니까?")
+            .setPositiveButton("예") { _, _ ->
+                cancelRequest() // 취소 요청
+            }
+            .setNegativeButton("아니오", null)
+            .show()
+    }
+
+
     // 신청 취소 함수
     private fun cancelRequest() {
+        deleteRequestViewModel.deleteRequest()
 
+        deleteRequestViewModel.deleteRequestResponse.observe(viewLifecycleOwner, Observer { deleteResponse ->
+            if (deleteResponse != null && deleteResponse.success) {
+                Toast.makeText(context, "신청이 취소되었습니다.", Toast.LENGTH_SHORT).show()
+                parentFragmentManager.popBackStack()
+            } else {
+                Toast.makeText(context, "신청 취소에 실패했습니다.", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 }
