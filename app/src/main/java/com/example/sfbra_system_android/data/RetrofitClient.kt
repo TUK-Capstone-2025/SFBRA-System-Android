@@ -1,6 +1,7 @@
 package com.example.sfbra_system_android.data
 
 import com.example.sfbra_system_android.data.services.CreateTeamService
+import com.example.sfbra_system_android.data.services.JoinTeamService
 import com.example.sfbra_system_android.data.services.LoginService
 import com.example.sfbra_system_android.data.services.PathRecordService
 import com.example.sfbra_system_android.data.services.ProfileService
@@ -67,4 +68,7 @@ object RetrofitClient {
 
     fun getCreateTeamService(token: String): CreateTeamService =
         getRetrofitInstance(token).create(CreateTeamService::class.java)
+
+    fun getJoinTeamService(token: String): JoinTeamService =
+        getRetrofitInstance(token).create(JoinTeamService::class.java)
 }

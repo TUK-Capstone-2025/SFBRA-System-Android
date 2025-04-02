@@ -4,6 +4,7 @@ import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.POST
 
+// 팀 생성 요청
 interface CreateTeamService {
     @POST("team/create") // 엔드포인트
     fun createTeam(@Body request: CreateTeamRequest): Call<CreateTeamResponse>

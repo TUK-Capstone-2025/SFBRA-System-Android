@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.sfbra_system_android.R
 import com.example.sfbra_system_android.data.TeamListAdapter
 import com.example.sfbra_system_android.data.services.TeamListItem
+import com.example.sfbra_system_android.data.viewmodels.JoinTeamViewModel
 import com.example.sfbra_system_android.data.viewmodels.TeamListViewModel
 import com.example.sfbra_system_android.ui.bottomsheets.TeamDetailBottomSheetDialogFragment
 import com.google.gson.Gson
@@ -24,6 +25,7 @@ import com.google.gson.JsonObject
 // 팀 참가하기 화면
 class JoinTeamFragment : Fragment() {
     private val teamListViewModel: TeamListViewModel = TeamListViewModel()
+    private val joinTeamViewModel: JoinTeamViewModel by viewModels()
     private lateinit var myRequestManagement: TextView
     private lateinit var teamListRecyclerView: RecyclerView
     private lateinit var noTeamsText: TextView
@@ -45,8 +47,7 @@ class JoinTeamFragment : Fragment() {
         val adapter = TeamListAdapter(emptyList()) { team ->
             // 바텀시트 호출
             val bottomSheet = TeamDetailBottomSheetDialogFragment(team) { teamId ->
-                Toast.makeText(context, "${team.name} 팀 참가 요청 처리", Toast.LENGTH_SHORT).show()
-                // todo 참가 처리
+                joinTeam(teamId)
             }
             bottomSheet.show(parentFragmentManager, "TEAM_DETAIL")
         }
@@ -76,6 +77,15 @@ class JoinTeamFragment : Fragment() {
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+
+        // 옵저버 한 번만 등록
+        joinTeamViewModel.joinTeamResponse.observe(viewLifecycleOwner, Observer { response ->
+            if (response != null && response.success) {
+                Toast.makeText(requireContext(), "참가 요청을 했습니다.", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(requireContext(), "참가 요청에 실패했습니다.", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     // 자식 프래그먼트 교체 함수
@@ -120,5 +130,9 @@ class JoinTeamFragment : Fragment() {
             noTeamsText.text = errorMessage // TextView에 message 반영
             Log.d("PathRecordViewModel", "message: $errorMessage")
         })
+    }
+
+    private fun joinTeam(teamId: Int) {
+        joinTeamViewModel.joinTeam(teamId) // 옵저빙 onViewCreated에서 한번만 실행(중첩 방지)
     }
 }
