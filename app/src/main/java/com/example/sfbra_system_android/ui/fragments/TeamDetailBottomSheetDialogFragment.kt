@@ -1,5 +1,7 @@
 package com.example.sfbra_system_android.ui.bottomsheets
 
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View

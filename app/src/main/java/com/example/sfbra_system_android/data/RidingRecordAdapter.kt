@@ -37,3 +37,4 @@ class RidingRecordAdapter(private var records: List<RidingRecord>) :
 }
 
 data class RidingRecord(val id: String, val date: String)
+// todo 나중에 PathRecordData로 사용하고 RidingRecord은 지울것. 어댑터 내부에서 string으로 변경하면 됨.

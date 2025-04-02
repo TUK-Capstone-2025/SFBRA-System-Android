@@ -1,5 +1,6 @@
 package com.example.sfbra_system_android.data
 
+import com.example.sfbra_system_android.data.services.CreateTeamService
 import com.example.sfbra_system_android.data.services.LoginService
 import com.example.sfbra_system_android.data.services.PathRecordService
 import com.example.sfbra_system_android.data.services.ProfileService
@@ -64,45 +65,6 @@ object RetrofitClient {
 
     fun getTeamListService(): TeamListService = getRetrofitInstance().create(TeamListService::class.java)
 
-
-    // 리팩토링 이전
-    /*
-    // 로그인 API Retorfit 객체
-    val loginService: LoginService by lazy {
-        Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create()) // JSON 변환기 추가
-            .build()
-            .create(LoginService::class.java)
-    }
-
-    // 회원가입 API Retorfit 객체
-    val registerService: RegisterService by lazy {
-        Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create()) // JSON 변환기 추가
-            .build()
-            .create(RegisterService::class.java)
-    }
-
-    fun getProfileUpdateService(token: String): ProfileUpdateService {
-        val retrofit = getRetrofitInstance(token)
-        return retrofit.create(ProfileUpdateService::class.java)
-    }
-
-    fun getPathRecordService(token: String): PathRecordService {
-        val retrofit = getRetrofitInstance(token)
-        return retrofit.create(PathRecordService::class.java)
-    }
-
-    fun getUserInfo(token: String): ProfileService {
-        val retrofit = getRetrofitInstance(token)
-        return retrofit.create(ProfileService::class.java)
-    }
-
-    fun checkUserHasTeam(token: String): TeamCheckService {
-        val retrofit = getRetrofitInstance(token)
-        return retrofit.create(TeamCheckService::class.java)
-    }
-     */
+    fun getCreateTeamService(token: String): CreateTeamService =
+        getRetrofitInstance(token).create(CreateTeamService::class.java)
 }
