@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sfbra_system_android.R
 import com.example.sfbra_system_android.data.TeamListAdapter
+import com.example.sfbra_system_android.data.services.JoinTeamResponse
 import com.example.sfbra_system_android.data.services.TeamListItem
 import com.example.sfbra_system_android.data.viewmodels.JoinTeamViewModel
 import com.example.sfbra_system_android.data.viewmodels.TeamListViewModel
@@ -75,17 +76,21 @@ class JoinTeamFragment : Fragment() {
                 }
             }
         }
-
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
         // 옵저버 한 번만 등록
         joinTeamViewModel.joinTeamResponse.observe(viewLifecycleOwner, Observer { response ->
-            if (response != null && response.success) {
-                Toast.makeText(requireContext(), "참가 요청을 했습니다.", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(requireContext(), "참가 요청에 실패했습니다.", Toast.LENGTH_SHORT).show()
+            if (response != null) {
+                if (response.success) {
+                    Toast.makeText(requireContext(), "참가 요청을 했습니다.", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(requireContext(), "참가 요청에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                }
+                // 이후 다시 들어왔을 때 중복 실행되지 않도록 null 처리
+                joinTeamViewModel.clearJoinTeamResponse()
             }
         })
+
     }
 
     // 자식 프래그먼트 교체 함수

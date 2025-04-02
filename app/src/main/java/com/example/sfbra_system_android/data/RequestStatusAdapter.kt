@@ -19,7 +19,7 @@ enum class RequestStatus {
 }
 
 class RequestStatusAdapter(
-    private val items: List<RequestStatusItem>,
+    private var items: List<RequestStatusItem>,
     private val onCancelClick: (RequestStatusItem) -> Unit
 ) : RecyclerView.Adapter<RequestStatusAdapter.ViewHolder>() {
 
@@ -69,4 +69,9 @@ class RequestStatusAdapter(
     }
 
     override fun getItemCount(): Int = items.size
+
+    fun updateItems(newItems: List<RequestStatusItem>) {
+        items = newItems
+        notifyDataSetChanged()
+    }
 }

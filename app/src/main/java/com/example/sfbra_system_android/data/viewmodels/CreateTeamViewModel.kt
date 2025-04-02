@@ -19,6 +19,7 @@ class CreateTeamViewModel(application: Application) : AndroidViewModel(applicati
 
     private val token: String = SharedPreferencesHelper.getToken(application).toString()
 
+    // 팀 생성
     fun createTeam(name: String, description: String) {
         val service = RetrofitClient.getCreateTeamService(token)
 

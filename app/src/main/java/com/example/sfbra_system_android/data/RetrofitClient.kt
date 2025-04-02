@@ -7,6 +7,7 @@ import com.example.sfbra_system_android.data.services.PathRecordService
 import com.example.sfbra_system_android.data.services.ProfileService
 import com.example.sfbra_system_android.data.services.ProfileUpdateService
 import com.example.sfbra_system_android.data.services.RegisterService
+import com.example.sfbra_system_android.data.services.RequestListService
 import com.example.sfbra_system_android.data.services.TeamCheckService
 import com.example.sfbra_system_android.data.services.TeamListService
 import okhttp3.Interceptor
@@ -71,4 +72,7 @@ object RetrofitClient {
 
     fun getJoinTeamService(token: String): JoinTeamService =
         getRetrofitInstance(token).create(JoinTeamService::class.java)
+
+    fun getRequestListService(token: String): RequestListService =
+        getRetrofitInstance(token).create(RequestListService::class.java)
 }

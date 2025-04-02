@@ -13,5 +13,5 @@ interface JoinTeamService {
 data class JoinTeamResponse(
     val success: Boolean,
     val message: String,
-    val data: String
+    val data: String?
 )

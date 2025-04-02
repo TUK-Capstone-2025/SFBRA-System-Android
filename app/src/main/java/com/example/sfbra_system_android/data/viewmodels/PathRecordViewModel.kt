@@ -21,6 +21,7 @@ class PathRecordViewModel(application: Application) : AndroidViewModel(applicati
 
     private val token: String = SharedPreferencesHelper.getToken(application).toString()
 
+    // 주행기록 목록 조회
     fun fetchPathRecords() {
         val pathRecordService = RetrofitClient.getPathRecordService(token)
 
