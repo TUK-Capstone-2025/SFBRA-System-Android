@@ -16,5 +16,6 @@ data class TeamCheckResponse (
 )
 
 data class TeamCheckData (
-    val isInTeam: Boolean
+    val isInTeam: Boolean,
+    val teamId: Int
 )

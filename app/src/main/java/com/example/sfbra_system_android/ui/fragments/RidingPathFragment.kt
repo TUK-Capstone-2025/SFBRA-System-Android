@@ -53,7 +53,7 @@ class RidingPathFragment : Fragment() {
 
     // 주행 기록 불러오기 함수
     private fun getRidingRecords(adapter: RidingRecordAdapter) {
-        pathRecordViewModel.fetchPathRecords()
+        pathRecordViewModel.getPathRecords()
 
         // pathRecords 옵저빙 (주행 기록 데이터 변경 시)
         pathRecordViewModel.pathRecords.observe(viewLifecycleOwner, Observer { pathRecords ->

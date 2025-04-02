@@ -48,7 +48,8 @@ class MyTeamFragment : Fragment() {
         teamCheckViewModel.hasTeam.observe(viewLifecycleOwner) { response ->
             if (response != null && response.success) {
                 if (response.data.isInTeam) {
-                    switchFragment(MyTeamInfoFragment(), "MY_TEAM")
+                    val teamId = response.data.teamId
+                    switchFragment(MyTeamInfoFragment.newInstance(teamId), "MY_TEAM") // 팀id 전달
                 } else {
                     switchFragment(NoTeamActionFragment(), "NO_TEAM")
                 }

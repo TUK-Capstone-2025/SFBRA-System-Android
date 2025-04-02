@@ -163,7 +163,7 @@ class MyProfileFragment : Fragment() {
     // 사용자 정보 불러오기 함수
     fun getInformation() {
         // 사용자 정보 가져오기
-        userViewModel.fetchUserInfo()
+        userViewModel.getUserInfo()
 
         // UI 업데이트
         userViewModel.userInfo.observe(viewLifecycleOwner, Observer { user ->

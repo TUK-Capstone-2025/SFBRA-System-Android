@@ -4,6 +4,7 @@ import com.example.sfbra_system_android.data.services.CreateTeamService
 import com.example.sfbra_system_android.data.services.DeleteRequestService
 import com.example.sfbra_system_android.data.services.JoinTeamService
 import com.example.sfbra_system_android.data.services.LoginService
+import com.example.sfbra_system_android.data.services.MyTeamInfoService
 import com.example.sfbra_system_android.data.services.PathRecordService
 import com.example.sfbra_system_android.data.services.ProfileService
 import com.example.sfbra_system_android.data.services.ProfileUpdateService
@@ -79,4 +80,6 @@ object RetrofitClient {
 
     fun getDeleteRequestService(token: String): DeleteRequestService =
         getRetrofitInstance(token).create(DeleteRequestService::class.java)
+
+    fun getMyTeamInfoService(): MyTeamInfoService = getRetrofitInstance().create(MyTeamInfoService::class.java)
 }

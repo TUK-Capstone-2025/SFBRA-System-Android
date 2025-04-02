@@ -18,10 +18,11 @@ class RequestListViewModel(application: Application) : AndroidViewModel(applicat
 
     private val token: String = SharedPreferencesHelper.getToken(application).toString()
 
+    // 팀 신청 목록 조회
     fun getRequestList() {
-        val requestListService = RetrofitClient.getRequestListService(token)
+        val service = RetrofitClient.getRequestListService(token)
 
-        requestListService.getRequestList().enqueue(object : Callback<RequestListResponse> {
+        service.getRequestList().enqueue(object : Callback<RequestListResponse> {
             override fun onResponse(call: Call<RequestListResponse>, response: Response<RequestListResponse>) {
                 if (response.isSuccessful) {
                     _requestList.value = response.body()

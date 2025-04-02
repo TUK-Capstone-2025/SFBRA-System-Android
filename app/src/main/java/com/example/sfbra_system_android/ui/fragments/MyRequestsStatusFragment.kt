@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.viewModels
@@ -23,7 +24,8 @@ import com.example.sfbra_system_android.data.viewmodels.RequestListViewModel
 class MyRequestsStatusFragment : Fragment() {
     private val requestListViewModel: RequestListViewModel by viewModels()
     private val deleteRequestViewModel: DeleteRequestViewModel by viewModels()
-    private lateinit var requestStatusRecyclerView: RecyclerView
+    private lateinit var requestStatusRecyclerView: RecyclerView // 신청 팀 목록 리사이클러뷰
+    private lateinit var noRequests: TextView // 신청 목록 없을때 텍스트
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,6 +33,7 @@ class MyRequestsStatusFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_my_requests_status, container, false)
 
+        noRequests = view.findViewById(R.id.no_requests_text)
         requestStatusRecyclerView = view.findViewById(R.id.request_status_recyclerview)
 
         val adapter = RequestStatusAdapter(emptyList()) {
@@ -75,6 +78,9 @@ class MyRequestsStatusFragment : Fragment() {
 
                 if (list.isNotEmpty() && requestList.success) {
                     // 신청 목록이 있을 때
+                    requestStatusRecyclerView.visibility = View.VISIBLE
+                    noRequests.visibility = View.GONE
+
                     val items = list.map { item ->
                         val status = when (item.status) {
                             "REJECTED" -> RequestStatus.REJECTED
@@ -88,7 +94,8 @@ class MyRequestsStatusFragment : Fragment() {
                     adapter.updateItems(items)
                 } else {
                     // 신청 목록이 없을 때
-                    // todo 텍스트 뷰 추가해서 표시할 것
+                    requestStatusRecyclerView.visibility = View.GONE
+                    noRequests.visibility = View.VISIBLE
                 }
             }
         })

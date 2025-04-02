@@ -20,9 +20,9 @@ class TeamCheckViewModel(application: Application) : AndroidViewModel(applicatio
 
     // 팀 유무 조회
     fun hasTeam() {
-        val teamCheckService = RetrofitClient.getTeamCheckService(token)
+        val service = RetrofitClient.getTeamCheckService(token)
 
-        teamCheckService.checkUserHasTeam().enqueue(object : Callback<TeamCheckResponse> {
+        service.checkUserHasTeam().enqueue(object : Callback<TeamCheckResponse> {
             override fun onResponse(call: Call<TeamCheckResponse>, response: Response<TeamCheckResponse>) {
                 if (response.isSuccessful) {
                     _hasTeam.value = response.body()

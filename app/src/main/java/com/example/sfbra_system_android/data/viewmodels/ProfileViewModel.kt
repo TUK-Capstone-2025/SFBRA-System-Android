@@ -19,10 +19,10 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
     private val token: String = SharedPreferencesHelper.getToken(application).toString()
 
     // 사용자 정보 조회
-    fun fetchUserInfo() {
-        val userService = RetrofitClient.getUserInfoService(token) // retrofit 객체 생성
+    fun getUserInfo() {
+        val service = RetrofitClient.getUserInfoService(token) // retrofit 객체 생성
 
-        userService.getUserInfo().enqueue(object : Callback<ProfileResponse> {
+        service.getUserInfo().enqueue(object : Callback<ProfileResponse> {
             override fun onResponse(call: Call<ProfileResponse>, response: Response<ProfileResponse>) {
                 if (response.isSuccessful) {
                     _userInfo.value = response.body()

@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.sfbra_system_android.data.RetrofitClient
-import com.example.sfbra_system_android.data.services.PathRecordResponse
 import com.example.sfbra_system_android.data.services.TeamListResponse
 import retrofit2.Call
 import retrofit2.Callback
@@ -17,10 +16,11 @@ class TeamListViewModel {
     private val _message = MutableLiveData<String>() // 메시지 저장을 위한 LiveData
     val message: LiveData<String> get() = _message
 
+    // 팀 목록 조회
     fun getTeamList() {
-        val teamListService = RetrofitClient.getTeamListService()
+        val service = RetrofitClient.getTeamListService()
 
-        teamListService.getTeamList().enqueue(object : Callback<TeamListResponse> {
+        service.getTeamList().enqueue(object : Callback<TeamListResponse> {
             override fun onResponse(call: Call<TeamListResponse>, response: Response<TeamListResponse>) {
                 if (response.isSuccessful) {
                     _teamList.value = response.body()
