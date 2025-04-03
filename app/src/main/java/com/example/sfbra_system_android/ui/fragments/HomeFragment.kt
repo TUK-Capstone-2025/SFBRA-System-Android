@@ -29,6 +29,7 @@ import com.example.sfbra_system_android.data.BluetoothLEManager
 import com.example.sfbra_system_android.data.viewmodels.BluetoothViewModel
 import com.example.sfbra_system_android.ui.activities.MainActivity
 import com.example.sfbra_system_android.R
+import com.example.sfbra_system_android.data.services.LocationPoint
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.kakao.vectormap.KakaoMap
@@ -68,6 +69,8 @@ class HomeFragment : Fragment() {
     private var emergencyNumber = "01025376247" // 긴급 메시지를 보낼 전화번호 (테스트용 개발자 폰번호)
     private var emergencyMessage = "사용자에게 긴급 상황이 발생했습니다." // 보낼 메시지 내용
     private var isAccident = false // 사고 발생 유무
+    private var route: List<LocationPoint>? = null // 좌표 리스트
+    private var warningStatus: Int = 0 // 위험 요소 상태
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -330,7 +333,6 @@ class HomeFragment : Fragment() {
         Toast.makeText(requireContext(), "GPS 확인 완료. 주행을 시작합니다.", Toast.LENGTH_SHORT).show()
 
         locationHandler.post(updateLocationRunnable) // 3초 간격으로 위치 업데이트 시작
-        // todo 실시간 경로 그리기 + 현재 위치 점으로 표시
     }
 
     // 핸들러를 사용한 실시간 위치 갱신 함수
@@ -338,7 +340,8 @@ class HomeFragment : Fragment() {
     private val updateLocationRunnable = object : Runnable {
         override fun run() {
             updateCurrentLocation() // 현재 위치 업데이트
-            locationHandler.postDelayed(this, 3000) // 3초마다 위치 업데이트
+            // todo 실시간 경로 그리기 + 현재 위치 점으로 표시
+            locationHandler.postDelayed(this, 5000) // 5초마다 위치 업데이트
         }
     }
 
@@ -354,6 +357,9 @@ class HomeFragment : Fragment() {
             if (location != null) {
                 val addressText = getAddressFromLocation(location.latitude, location.longitude) // 현재 위치 좌표
                 (activity as? MainActivity)?.setTitleFromLocation(addressText) // 액션바 타이틀 수정
+                updateRoute(location.latitude, location.longitude, warningStatus) // 경로 리스트에 추가
+                warningStatus = 0 // 위험 요소 초기화
+                // todo 위험 요소 분석
 
                 // 현재 위치 좌표 가져오기
                 val currentLatLng = LatLng.from(location.latitude, location.longitude)
@@ -367,6 +373,13 @@ class HomeFragment : Fragment() {
         }
     }
 
+    // 경로 리스트 갱신 함수
+    private fun updateRoute(latitude: Double, longitude: Double, warning: Int) {
+        val locationPoint = LocationPoint(latitude, longitude, warning)
+        route = route?.plus(locationPoint) ?: listOf(locationPoint)
+    }
+
+    // 좌표값 -> 주소값 변환 함수
     private fun getAddressFromLocation(latitude: Double, longitude: Double): String {
         val geocoder = Geocoder(requireContext(), Locale.getDefault())
         return try {
@@ -405,12 +418,13 @@ class HomeFragment : Fragment() {
                         val warningValue = jsonObject.getDouble("WARNING")
                         Log.d("WarningMessage", "$warningValue")
 
-                        // -1이면 경고 숨김, 그 외에는 경고 표시
+                        // 0이면 경고 숨김, 그 외에는 경고 표시
                         requireActivity().runOnUiThread {
                             if (warningValue == 0.0) {
                                 blinkJob?.cancel()
                                 warningText.visibility = View.GONE
                             } else {
+                                warningStatus = 1 // 후방 주의 : 위험 요소 1
                                 warningText.visibility = View.VISIBLE
                                 startBlinkingWarningText()
                             }
@@ -419,7 +433,7 @@ class HomeFragment : Fragment() {
 
                     // 사고 발생
                     if (jsonObject.has("ACCIDENT")) {
-                        if (!isAccident) {
+                        if (!isAccident) { // 사고 발생 팝업 중복 방지
                             val accidentValue = jsonObject.getDouble("ACCIDENT")
                             Log.d("CrashMessage", "$accidentValue")
 
@@ -427,6 +441,7 @@ class HomeFragment : Fragment() {
                                 if (accidentValue == 1.0) {
                                     // 사고 관련 값 받을 시, 20초동안 반응 없을시 긴급 연락처로 메세지 발송
                                     isAccident = true
+                                    warningStatus = 2 // 사고 발생 : 위험 요소 2
                                     showAccidentAlert(requireContext())
                                 }
                             }
@@ -494,6 +509,9 @@ class HomeFragment : Fragment() {
         locationHandler.removeCallbacks(updateLocationRunnable) // 위치 업데이트 중지
         warningText.visibility = View.GONE // 후방 알림 비활성화
         speedText.visibility = View.GONE // 속도 텍스트 비활성화
+        // todo 서버로 시간, 좌표 리스트 전송
+        route = null // 좌표 리스트 초기화
+        warningStatus = 0 // 위험 요소 초기화
     }
 
     // 긴급 상황 시 팝업 알림 함
@@ -508,6 +526,7 @@ class HomeFragment : Fragment() {
             .setCancelable(false) // 뒤로 가기 버튼으로 닫히지 않도록 설정
             .setNegativeButton("취소") { _, _ ->
                 handler.removeCallbacksAndMessages(null) // 타이머 중단
+                isAccident = false
                 Toast.makeText(context, "메시지 전송이 취소되었습니다.", Toast.LENGTH_SHORT).show()
             }
             .create()
