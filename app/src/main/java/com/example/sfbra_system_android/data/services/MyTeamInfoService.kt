@@ -18,14 +18,14 @@ data class TeamInfoResponse(
 data class TeamInfoData(
     val teamId: Int,
     val name: String,
-    val leader: String,
+    val leader: Int,
     val description: String?,
     val memberCount: Int,
     val members: List<MemberData>
 )
 
 data class MemberData(
-    val userId: String,
+    val memberId: Int,
     val name: String,
     val nickname: String
 )

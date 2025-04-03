@@ -64,10 +64,17 @@ class TeamMemberAdapter(
     }
 
     override fun getItemCount(): Int = members.size
+
+    fun updateMembers(newMembers: List<TeamMember>) {
+        this.members = newMembers
+        notifyDataSetChanged()
+    }
+
 }
 
 
 data class TeamMember(
+    val userId: Int,
     val name: String,
     val isLeader: Boolean = false,
     val rank: Int = -1 // 1부터 시작 (0 이하이면 순위 없음 처리)

@@ -1,19 +1,30 @@
 package com.example.sfbra_system_android.ui.fragments
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.TextView
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sfbra_system_android.R
 import com.example.sfbra_system_android.data.TeamMember
 import com.example.sfbra_system_android.data.TeamMemberAdapter
+import com.example.sfbra_system_android.data.viewmodels.MyTeamInfoViewModel
 
 // 팀이 있는 경우: 팀 정보 화면
 class MyTeamInfoFragment : Fragment() {
+    private val myTeamViewModel: MyTeamInfoViewModel = MyTeamInfoViewModel()
     private lateinit var memberRecyclerView: RecyclerView
+    private lateinit var teamName: TextView
+    private lateinit var teamIntro: TextView
+    private lateinit var failText: TextView
+    private lateinit var retryButton: Button
     private var teamId: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,21 +52,60 @@ class MyTeamInfoFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_my_team_info, container, false)
 
         memberRecyclerView = view.findViewById(R.id.team_member_recyclerview)
+        teamName = view.findViewById(R.id.team_name)
+        teamIntro = view.findViewById(R.id.team_intro)
+        failText = view.findViewById(R.id.fail_text)
+        retryButton = view.findViewById(R.id.retry_button)
 
-        val members = listOf(
-            TeamMember("홍길동", isLeader = true),
-            TeamMember("김철수", rank = 1),
-            TeamMember("이영희", rank = 2),
-            TeamMember("박현우", rank = 3),
-            TeamMember("최은지", rank = 4),
-            TeamMember("정민호", rank = 5)
-        )
-
-        val adapter = TeamMemberAdapter(members)
+        val adapter = TeamMemberAdapter(emptyList())
         memberRecyclerView.adapter = adapter
         memberRecyclerView.layoutManager = LinearLayoutManager(context)
 
+        getMyTeamInfo(adapter)
+
+        retryButton.setOnClickListener {
+            getMyTeamInfo(adapter)
+        }
 
         return view
+    }
+
+    private fun getMyTeamInfo(adapter: TeamMemberAdapter) {
+        myTeamViewModel.getTeamInfo(teamId)
+
+        myTeamViewModel.teamInfo.observe(viewLifecycleOwner, Observer { teamInfo ->
+            if (teamInfo != null && teamInfo.success) {
+                failText.visibility = View.GONE
+                memberRecyclerView.visibility = View.VISIBLE
+
+                teamName.text = teamInfo.data.name // 팀 이름 적용
+                teamIntro.text = teamInfo.data.description ?: "팀 소개가 없습니다." // 팀 소개 적용
+                val leaderId = teamInfo.data.leader
+                Log.d("MyTeamInfoFragment", "leaderId: $leaderId")
+
+                val sortedMembers = mutableListOf<TeamMember>()
+                var rank = 1
+
+                val leader = teamInfo.data.members.find { it.memberId == leaderId }
+                if (leader != null) {
+                    sortedMembers.add(TeamMember(leader.memberId, leader.nickname, isLeader = true)) // 리더 처음으로 추가
+                }
+
+                // 리더를 제외, 팀원 정렬 후 랭킹 매김
+                teamInfo.data.members
+                    .filter { it.memberId != leaderId }
+                    .forEach {
+                        sortedMembers.add(
+                            TeamMember(userId = it.memberId, name = it.nickname, isLeader = false, rank = rank++)
+                        )
+                    }
+
+                adapter.updateMembers(sortedMembers) // 어댑터에 멤버 리스트 업데이트
+            } else {
+                // 실패 처리
+                failText.visibility = View.VISIBLE
+                memberRecyclerView.visibility = View.GONE
+            }
+            })
     }
 }

@@ -31,7 +31,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- 주행 기록 없음 메시지 -->
+    <!-- 신청 목록 없음 메시지 -->
     <TextView
         android:id="@+id/no_requests_text"
         android:layout_width="match_parent"
