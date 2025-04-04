@@ -9,24 +9,25 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.sfbra_system_android.R
 
 class ApplicantAdapter(
-    private var applicants: List<String>,  // 간단히 이름만 사용하는 경우
-    private val onAcceptClick: (String) -> Unit,
-    private val onRejectClick: (String) -> Unit
+    private var applicants: List<Applicant>,
+    private val onAcceptClick: (Int) -> Unit, // id만 전달
+    private val onRejectClick: (Int) -> Unit
 ) : RecyclerView.Adapter<ApplicantAdapter.ApplicantViewHolder>() {
+
     inner class ApplicantViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val nameText: TextView = itemView.findViewById(R.id.applicant_name)
         private val acceptButton: Button = itemView.findViewById(R.id.accept_button)
         private val rejectButton: Button = itemView.findViewById(R.id.reject_button)
 
-        fun bind(name: String) {
-            nameText.text = name
+        fun bind(applicant: Applicant) {
+            nameText.text = applicant.nickname
 
             acceptButton.setOnClickListener {
-                onAcceptClick(name)
+                onAcceptClick(applicant.id)
             }
 
             rejectButton.setOnClickListener {
-                onRejectClick(name)
+                onRejectClick(applicant.id)
             }
         }
     }
@@ -42,8 +43,13 @@ class ApplicantAdapter(
 
     override fun getItemCount(): Int = applicants.size
 
-    fun updateItems(newItems: List<String>) {
+    fun updateItems(newItems: List<Applicant>) {
         applicants = newItems
         notifyDataSetChanged()
     }
 }
+
+data class Applicant(
+    val id: Int,
+    val nickname: String
+)

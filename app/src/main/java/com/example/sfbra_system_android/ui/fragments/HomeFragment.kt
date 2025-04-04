@@ -155,11 +155,6 @@ class HomeFragment : Fragment() {
             }
         }
 
-        val testButton:Button = view.findViewById(R.id.testButton)
-        testButton.setOnClickListener {
-            showAccidentAlert(requireContext())
-        }
-
         return view
     }
 

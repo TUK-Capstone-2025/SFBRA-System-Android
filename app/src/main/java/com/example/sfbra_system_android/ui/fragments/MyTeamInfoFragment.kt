@@ -7,20 +7,30 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sfbra_system_android.R
+import com.example.sfbra_system_android.data.Applicant
+import com.example.sfbra_system_android.data.ApplicantAdapter
 import com.example.sfbra_system_android.data.TeamMember
 import com.example.sfbra_system_android.data.TeamMemberAdapter
+import com.example.sfbra_system_android.data.viewmodels.ApplicantMemberViewModel
 import com.example.sfbra_system_android.data.viewmodels.MyTeamInfoViewModel
 
 // 팀이 있는 경우: 팀 정보 화면
 class MyTeamInfoFragment : Fragment() {
     private val myTeamViewModel: MyTeamInfoViewModel = MyTeamInfoViewModel()
+    private val applicantsViewModel: ApplicantMemberViewModel by viewModels()
+    private lateinit var memberAdapter: TeamMemberAdapter
+    private lateinit var applicantAdapter: ApplicantAdapter
     private lateinit var memberRecyclerView: RecyclerView
+    private lateinit var applicantRecyclerView: RecyclerView
+    private lateinit var applicantContainer: LinearLayout
     private lateinit var teamName: TextView
     private lateinit var teamIntro: TextView
     private lateinit var failText: TextView
@@ -51,25 +61,47 @@ class MyTeamInfoFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_my_team_info, container, false)
 
-        memberRecyclerView = view.findViewById(R.id.team_member_recyclerview)
-        teamName = view.findViewById(R.id.team_name)
-        teamIntro = view.findViewById(R.id.team_intro)
-        failText = view.findViewById(R.id.fail_text)
-        retryButton = view.findViewById(R.id.retry_button)
+        memberRecyclerView = view.findViewById(R.id.team_member_recyclerview) // 멤버 리사이클러뷰
+        applicantRecyclerView = view.findViewById(R.id.applicant_recyclerview) // 신청 멤버 리사이클러뷰
+        applicantContainer = view.findViewById(R.id.applicant_container) // 신청 멤버 컨테이너
+        teamName = view.findViewById(R.id.team_name) // 팀 이름
+        teamIntro = view.findViewById(R.id.team_intro) // 팀 소개
+        failText = view.findViewById(R.id.fail_text) // 불러오기 실패 시 텍스트
+        retryButton = view.findViewById(R.id.retry_button) // 재시도 버튼
 
-        val adapter = TeamMemberAdapter(emptyList())
-        memberRecyclerView.adapter = adapter
+        // 팀 멤버 어댑터
+        memberAdapter = TeamMemberAdapter(emptyList())
+        memberRecyclerView.adapter = memberAdapter
         memberRecyclerView.layoutManager = LinearLayoutManager(context)
 
-        getMyTeamInfo(adapter)
+        // 팀 신청 멤버 어댑터
+        applicantAdapter = ApplicantAdapter(emptyList(),
+            onAcceptClick = { applicantId ->
+                Log.d("ApplicantAdapter", "수락: $applicantId")
+                acceptApplicant(applicantId) // 수락 요청
+            },
+            onRejectClick = { applicantId ->
+                Log.d("ApplicantAdapter", "거절: $applicantId")
+                rejectApplicant(applicantId) // 거절 요청
+            }
+        )
+        applicantRecyclerView.adapter = applicantAdapter
+        applicantRecyclerView.layoutManager = LinearLayoutManager(context)
 
+        getMyTeamInfo(memberAdapter) // 팀 멤버 목록 불러오기
+        getApplicantMember(applicantAdapter) // 지원자 목록 불러오기
+
+        // 재시도 버튼 클릭
         retryButton.setOnClickListener {
-            getMyTeamInfo(adapter)
+            // 다시 불러오기 요청
+            getMyTeamInfo(memberAdapter)
+            getApplicantMember(applicantAdapter)
         }
 
         return view
     }
 
+    // 팀 정보 불러오기 함수
     private fun getMyTeamInfo(adapter: TeamMemberAdapter) {
         myTeamViewModel.getTeamInfo(teamId)
 
@@ -106,6 +138,63 @@ class MyTeamInfoFragment : Fragment() {
                 failText.visibility = View.VISIBLE
                 memberRecyclerView.visibility = View.GONE
             }
-            })
+        })
+    }
+
+    // 신청자 정보 불러오기 함수
+    private fun getApplicantMember(adapter: ApplicantAdapter) {
+        applicantsViewModel.getApplicantMemberList()
+
+        applicantsViewModel.applicantMemberList.observe(viewLifecycleOwner, Observer { applicantList ->
+            if (applicantList != null && applicantList.success) {
+                // 신청자 목록
+                val applicants = applicantList.data.map { applicant ->
+                    Applicant(id = applicant.memberId, nickname = applicant.nickname)
+                }
+
+                if (applicants.isNotEmpty()) {
+                    applicantContainer.visibility = View.VISIBLE
+                    applicantRecyclerView.visibility = View.VISIBLE
+                    adapter.updateItems(applicants)
+                } else {
+                    // 리스트가 비어있을 때
+                    applicantContainer.visibility = View.GONE
+                    applicantRecyclerView.visibility = View.GONE
+                }
+            } else {
+                applicantContainer.visibility = View.GONE
+                applicantRecyclerView.visibility = View.GONE
+            }
+        })
+    }
+
+    // 수락 요청 함수
+    private fun acceptApplicant(applicantId: Int) {
+        applicantsViewModel.acceptApplicant(applicantId)
+
+        applicantsViewModel.acceptApplicantResponse.observe(viewLifecycleOwner, Observer { response ->
+            if (response != null && response.success) {
+                // 다시 불러오기
+                getMyTeamInfo(memberAdapter)
+                getApplicantMember(applicantAdapter)
+            } else {
+                Toast.makeText(requireContext(),"수락을 실패했습니다.\n다시 시도해주십시오.", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    // 거절 요청 함수
+    private fun rejectApplicant(applicantId: Int) {
+        applicantsViewModel.rejectApplicant(applicantId)
+
+        applicantsViewModel.rejectApplicantResponse.observe(viewLifecycleOwner, Observer { response ->
+            if (response != null && response.success) {
+                // 다시 불러오기
+                getMyTeamInfo(memberAdapter)
+                getApplicantMember(applicantAdapter)
+            } else {
+                Toast.makeText(requireContext(),"거절을 실패했습니다.\n다시 시도해주십시오.", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 }

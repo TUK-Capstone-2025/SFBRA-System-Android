@@ -24,6 +24,7 @@ data class ApplicantMemberResponse (
 
 data class ApplicantMemberData (
     val memberId: Int,
+    val userId: String,
     val name: String,
     val nickname: String
 )
