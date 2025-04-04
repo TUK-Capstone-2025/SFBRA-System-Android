@@ -25,6 +25,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.preference.PreferenceManager
 import com.example.sfbra_system_android.data.BluetoothLEManager
 import com.example.sfbra_system_android.data.viewmodels.BluetoothViewModel
 import com.example.sfbra_system_android.ui.activities.MainActivity
@@ -77,6 +78,16 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
+
+        // 긴급 연락처 임시로 개발자 번호 사용
+        val sharedPrefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        val choice = sharedPrefs.getString("emergency_number_choice", "01025376247")
+        val customNumber = sharedPrefs.getString("custom_emergency_number", "")
+        emergencyNumber = if (choice == "custom" && !customNumber.isNullOrEmpty()) {
+            customNumber
+        } else {
+            choice ?: "01025376247"
+        }
 
         warningText = view.findViewById(R.id.warningText) // 텍스트 뷰 id로 매칭
         speedText = view.findViewById(R.id.speedText) // 속도 텍스트

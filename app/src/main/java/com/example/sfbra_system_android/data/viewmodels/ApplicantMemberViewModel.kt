@@ -18,4 +18,6 @@ class ApplicantMemberViewModel(application: Application) : AndroidViewModel(appl
     val rejectApplicantResponse: LiveData<AcceptApplicantResponse> get() = _rejectApplicantResponse
 
     private val token: String = SharedPreferencesHelper.getToken(application).toString()
+
+    // todo 나중에 함수 추가할 것
 }

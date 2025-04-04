@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="emergency_numbers_entries">
+        <item>119</item>
+        <item>112</item>
+        <item>사용자 지정</item>
+    </string-array>
+    <string-array name="emergency_numbers_values">
+        <item>119</item>
+        <item>112</item>
+        <item>custom</item>
+    </string-array>
+</resources>
