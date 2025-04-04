@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="12dp"
+    android:layout_marginBottom="8dp"
+    android:background="@android:color/white"
+    android:elevation="1dp">
+
+    <TextView
+        android:id="@+id/applicant_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="지원자 닉네임"
+        android:textSize="20sp"
+        android:textColor="@android:color/black"
+        android:gravity="center_vertical" />
+
+    <Button
+        android:id="@+id/accept_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="수락"
+        android:textSize="14sp"
+        android:textColor="@android:color/white"
+        android:backgroundTint="#28A745"
+        android:layout_marginEnd="8dp" />
+
+    <Button
+        android:id="@+id/reject_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="거절"
+        android:textSize="14sp"
+        android:textColor="@android:color/white"
+        android:backgroundTint="#C0392B" />
+
+</LinearLayout>

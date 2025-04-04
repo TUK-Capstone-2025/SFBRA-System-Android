@@ -359,7 +359,6 @@ class HomeFragment : Fragment() {
                 (activity as? MainActivity)?.setTitleFromLocation(addressText) // 액션바 타이틀 수정
                 updateRoute(location.latitude, location.longitude, warningStatus) // 경로 리스트에 추가
                 warningStatus = 0 // 위험 요소 초기화
-                // todo 위험 요소 분석
 
                 // 현재 위치 좌표 가져오기
                 val currentLatLng = LatLng.from(location.latitude, location.longitude)

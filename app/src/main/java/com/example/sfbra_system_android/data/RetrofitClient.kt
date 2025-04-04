@@ -1,5 +1,6 @@
 package com.example.sfbra_system_android.data
 
+import com.example.sfbra_system_android.data.services.ApplicantMemberService
 import com.example.sfbra_system_android.data.services.CreateTeamService
 import com.example.sfbra_system_android.data.services.DeleteRequestService
 import com.example.sfbra_system_android.data.services.JoinTeamService
@@ -82,4 +83,8 @@ object RetrofitClient {
         getRetrofitInstance(token).create(DeleteRequestService::class.java)
 
     fun getMyTeamInfoService(): MyTeamInfoService = getRetrofitInstance().create(MyTeamInfoService::class.java)
+
+    fun getApplicantMemberService(token: String): ApplicantMemberService =
+        getRetrofitInstance(token).create(ApplicantMemberService::class.java)
+
 }
