@@ -46,6 +46,8 @@ import kotlinx.coroutines.Job
 import org.json.JSONObject
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Runnable
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 // 홈 화면
@@ -72,6 +74,9 @@ class HomeFragment : Fragment() {
     private var isAccident = false // 사고 발생 유무
     private var route: List<LocationPoint>? = null // 좌표 리스트
     private var warningStatus: Int = 0 // 위험 요소 상태
+    private val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()) // 시간 형식 포맷
+    private var startTime: String? = null // 시작 시간 기록용 변수
+    private var endTime: String? = null // 종료 시간 기록용 변수
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -332,6 +337,7 @@ class HomeFragment : Fragment() {
 
     // 주행 시작 함수
     private fun startDriving() {
+        startTime = getCurrentTime()
         startButton.text = getString(R.string.finish_drive)
         isDriving = true
         updateCurrentLocation() // 현재 위치 업데이트(초기화)
@@ -507,6 +513,7 @@ class HomeFragment : Fragment() {
 
     // todo 주행 정지 함수
     private fun stopDriving() {
+        endTime = getCurrentTime()
         startButton.text = getString(R.string.start_drive)
         isDriving = false
         isAccident = false
@@ -517,7 +524,11 @@ class HomeFragment : Fragment() {
         // todo 서버로 시간, 좌표 리스트 전송
         route = null // 좌표 리스트 초기화
         warningStatus = 0 // 위험 요소 초기화
+        startTime = null
+        endTime = null // 출발, 도착 시간 초기화
     }
+
+    private fun getCurrentTime(): String = sdf.format(Date()) // 현재 시간 가져오는 함수
 
     // 긴급 상황 시 팝업 알림 함
     fun showAccidentAlert(context: Context) {
