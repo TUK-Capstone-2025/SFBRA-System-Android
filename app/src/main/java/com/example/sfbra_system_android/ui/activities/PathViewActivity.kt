@@ -1,19 +1,36 @@
 package com.example.sfbra_system_android.ui.activities
 
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.example.sfbra_system_android.R
+import com.example.sfbra_system_android.data.services.LocationPoint
 import com.example.sfbra_system_android.databinding.ActivityPathViewBinding
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
 import com.kakao.vectormap.LatLng
+import com.kakao.vectormap.LatLngBounds
 import com.kakao.vectormap.MapLifeCycleCallback
 import com.kakao.vectormap.MapOverlay
 import com.kakao.vectormap.MapView
 import com.kakao.vectormap.camera.CameraUpdate
 import com.kakao.vectormap.camera.CameraUpdateFactory
+import com.kakao.vectormap.label.Label
+import com.kakao.vectormap.label.LabelManager
+import com.kakao.vectormap.label.LabelOptions
+import com.kakao.vectormap.label.LabelStyle
+import com.kakao.vectormap.label.LabelStyles
+import com.kakao.vectormap.label.LabelTextBuilder
+import com.kakao.vectormap.route.RouteLine
+import com.kakao.vectormap.route.RouteLineManager
+import com.kakao.vectormap.route.RouteLineOptions
+import com.kakao.vectormap.route.RouteLineSegment
+import com.kakao.vectormap.route.RouteLineStyle
+import com.kakao.vectormap.route.RouteLineStyles
+import com.kakao.vectormap.route.RouteLineStylesSet
 
 // 주행기록 경로 화면
 class PathViewActivity : AppCompatActivity() {
@@ -61,5 +78,62 @@ class PathViewActivity : AppCompatActivity() {
                 kakaoMap.showOverlay(MapOverlay.BICYCLE_ROAD)
             }
         })
+
+        val routePoints = getRouteToLatLng()
+        drawRouteLine(routePoints)
+        addStartEndLabels(routePoints)
+        moveCameraToFitRoute(routePoints)
     }
+
+    // LocationPoint 리스트를 LatLng 리스트로 변환하는 함수
+    private fun getRouteToLatLng(): List<LatLng> {
+        return listOf(
+            LocationPoint(37.340179, 126.733591, 0),
+            LocationPoint(37.340300, 126.733700, 0),
+            LocationPoint(37.340450, 126.733850, 1),
+            LocationPoint(37.340600, 126.734000, 0),
+            LocationPoint(37.340750, 126.734150, 2) // 더미데이터
+        ).map { LatLng.from(it.latitude, it.longitude) }
+    }
+
+    // 카카오맵의 RouteLine으로 경로 그리기 함수
+    private fun drawRouteLine(routePoints: List<LatLng>) {
+        val routeLineManager: RouteLineManager = kakaoMap?.getRouteLineManager()!! // 경로 매니저
+        val routeLineLayer = routeLineManager.getLayer() // 레이어
+
+        val styles = RouteLineStyles.from(RouteLineStyle.from(16.0f, Color.BLUE)) // 스타일
+        val stylesSet = RouteLineStylesSet.from(styles)
+        val segment = RouteLineSegment.from(routePoints, styles)
+
+        val routeLine: RouteLine = routeLineLayer.addRouteLine(RouteLineOptions.from(segment).setStylesSet(stylesSet))
+    }
+
+    // 시작/종료 라벨 추가 함수
+    private fun addStartEndLabels(routePoints: List<LatLng>) {
+        if (routePoints.isEmpty()) return
+
+        val labelManager: LabelManager = kakaoMap?.getLabelManager()!!
+        val labelLayer = labelManager.getLayer()
+
+        val labelStyle = LabelStyle.from().setTextStyles(32, R.color.red)
+
+        val startLabel: Label? = labelLayer?.addLabel(
+            LabelOptions.from(routePoints.first())
+                .setStyles(labelStyle)
+                .setTexts(LabelTextBuilder().setTexts("출발"))
+        )
+
+        val endLabel: Label? = labelLayer?.addLabel(
+            LabelOptions.from(routePoints.last())
+                .setStyles(labelStyle)
+                .setTexts(LabelTextBuilder().setTexts("도착"))
+        )
+    }
+
+    // 전체 경로가 보이도록 카메라 조정하는 함수
+    private fun moveCameraToFitRoute(routePoints: List<LatLng>) {
+        // todo 카메라 잘 움직이기
+    }
+
+
 }
