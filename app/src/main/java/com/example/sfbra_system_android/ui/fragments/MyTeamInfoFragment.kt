@@ -1,5 +1,6 @@
 package com.example.sfbra_system_android.ui.fragments
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -26,21 +27,17 @@ import com.example.sfbra_system_android.data.viewmodels.MyTeamInfoViewModel
 class MyTeamInfoFragment : Fragment() {
     private val myTeamViewModel: MyTeamInfoViewModel = MyTeamInfoViewModel()
     private val applicantsViewModel: ApplicantMemberViewModel by viewModels()
-    private lateinit var memberAdapter: TeamMemberAdapter
-    private lateinit var applicantAdapter: ApplicantAdapter
-    private lateinit var memberRecyclerView: RecyclerView
-    private lateinit var applicantRecyclerView: RecyclerView
+    private lateinit var memberAdapter: TeamMemberAdapter // 멤버 목록 어댑터
+    private lateinit var applicantAdapter: ApplicantAdapter // 신청자 목록 어댑터
+    private lateinit var memberRecyclerView: RecyclerView // 멤버 리사이클러뷰
+    private lateinit var applicantRecyclerView: RecyclerView // 신청 멤버 리사이클러뷰
     private lateinit var applicantContainer: LinearLayout
-    private lateinit var teamName: TextView
-    private lateinit var teamIntro: TextView
+    private lateinit var teamName: TextView // 팀 이름
+    private lateinit var teamIntro: TextView // 팀 소개
     private lateinit var failText: TextView
     private lateinit var retryButton: Button
-    private var teamId: Int = -1
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        teamId = arguments?.getInt(ARG_TEAM_ID) ?: -1 // 프래그먼트 생성 시 전달받은 teamId 가져오기
-    }
+    private var teamId: Int = -1 // 팀 id
+    private var currentUserIsLeader = false
 
     companion object {
         private const val ARG_TEAM_ID = "team_id" // teamId를 전달받기 위한 키
@@ -53,6 +50,11 @@ class MyTeamInfoFragment : Fragment() {
             fragment.arguments = args // 번들을 프래그먼트에 설정
             return fragment // 프래그먼트 반환
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        teamId = arguments?.getInt(ARG_TEAM_ID) ?: -1 // 프래그먼트 생성 시 전달받은 teamId 가져오기
     }
 
     override fun onCreateView(
@@ -69,11 +71,6 @@ class MyTeamInfoFragment : Fragment() {
         failText = view.findViewById(R.id.fail_text) // 불러오기 실패 시 텍스트
         retryButton = view.findViewById(R.id.retry_button) // 재시도 버튼
 
-        // 팀 멤버 어댑터
-        memberAdapter = TeamMemberAdapter(emptyList())
-        memberRecyclerView.adapter = memberAdapter
-        memberRecyclerView.layoutManager = LinearLayoutManager(context)
-
         // 팀 신청 멤버 어댑터
         applicantAdapter = ApplicantAdapter(emptyList(),
             onAcceptClick = { applicantId ->
@@ -88,8 +85,29 @@ class MyTeamInfoFragment : Fragment() {
         applicantRecyclerView.adapter = applicantAdapter
         applicantRecyclerView.layoutManager = LinearLayoutManager(context)
 
-        getMyTeamInfo(memberAdapter) // 팀 멤버 목록 불러오기
         getApplicantMember(applicantAdapter) // 지원자 목록 불러오기
+
+        // 팀 멤버 어댑터
+        memberAdapter = TeamMemberAdapter(
+            members = emptyList(),
+            onViewProfile = { memberId ->
+                // 프로필 보기
+                showMemberProfile(memberId)
+            },
+            onViewRecord = { member ->
+                // 주행 기록 보기
+                navigateToMemberRecord(member)
+            },
+            onKickMember = { member ->
+                // 퇴출
+                confirmKickMember(member)
+            },
+            currentUserIsLeader = currentUserIsLeader // 현재 사용자가 팀장인 경우
+        )
+        memberRecyclerView.adapter = memberAdapter
+        memberRecyclerView.layoutManager = LinearLayoutManager(context)
+
+        getMyTeamInfo(memberAdapter) // 팀 멤버 목록 불러오기
 
         // 재시도 버튼 클릭
         retryButton.setOnClickListener {
@@ -141,6 +159,40 @@ class MyTeamInfoFragment : Fragment() {
         })
     }
 
+    private fun showMemberProfile(memberId: Int) {
+        Toast.makeText(requireContext(), "프로필 보기: $memberId", Toast.LENGTH_SHORT).show()
+    }
+
+    // 멤버 주행기록 프래그먼트로 전환 함수
+    private fun navigateToMemberRecord(member: TeamMember) {
+        val fragment = RidingPathFragment.newInstance(member.userId, member.name)
+        replaceFragment(fragment)
+    }
+
+    // 자식 프래그먼트 교체 함수
+    private fun replaceFragment(fragment: Fragment) {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container2, fragment) // 프래그먼트 교체, 메인 액티비티 프래그먼트 컨테이너 id
+            .addToBackStack(null) // 뒤로가기 눌렀을 시 이전 프래그먼트로 돌아가기
+            .commit()
+    }
+
+    // 퇴출 확인 함수
+    private fun confirmKickMember(member: TeamMember) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("팀원 강퇴")
+            .setMessage("${member.name}님을 정말로 강퇴하시겠습니까?")
+            .setPositiveButton("강퇴") { _, _ ->
+                kickMember(member.userId)
+            }
+            .setNegativeButton("취소", null)
+            .show()
+    }
+
+    private fun kickMember(memberId: Int) {
+        Toast.makeText(requireContext(), "강퇴: $memberId", Toast.LENGTH_SHORT).show()
+    }
+
     // 신청자 정보 불러오기 함수
     private fun getApplicantMember(adapter: ApplicantAdapter) {
         applicantsViewModel.getApplicantMemberList()
@@ -151,6 +203,7 @@ class MyTeamInfoFragment : Fragment() {
                 val applicants = applicantList.data.map { applicant ->
                     Applicant(id = applicant.memberId, nickname = applicant.nickname)
                 }
+                currentUserIsLeader = true
 
                 if (applicants.isNotEmpty()) {
                     applicantContainer.visibility = View.VISIBLE
@@ -162,6 +215,7 @@ class MyTeamInfoFragment : Fragment() {
                     applicantRecyclerView.visibility = View.GONE
                 }
             } else {
+                currentUserIsLeader = false
                 applicantContainer.visibility = View.GONE
                 applicantRecyclerView.visibility = View.GONE
             }

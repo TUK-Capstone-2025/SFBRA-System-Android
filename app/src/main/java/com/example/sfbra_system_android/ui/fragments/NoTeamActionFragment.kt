@@ -13,10 +13,6 @@ class NoTeamActionFragment : Fragment() {
     private lateinit var CreateTeamButton: Button
     private lateinit var JoinTeamButton: Button
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

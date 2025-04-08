@@ -4,15 +4,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sfbra_system_android.R
 
 class TeamMemberAdapter(
-    private var members: List<TeamMember>
+    private var members: List<TeamMember>,
+    private val onViewProfile: (Int) -> Unit,
+    private val onViewRecord: (TeamMember) -> Unit,
+    private val onKickMember: (TeamMember) -> Unit,
+    private val currentUserIsLeader: Boolean
 ) : RecyclerView.Adapter<TeamMemberAdapter.TeamMemberViewHolder>() {
 
     inner class TeamMemberViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val more_button = itemView.findViewById<ImageView>(R.id.more_button)
         val leaderIcon: ImageView = view.findViewById(R.id.leader_icon)
         val topNumber: TextView = view.findViewById(R.id.top_number)
         val normalNumber: TextView = view.findViewById(R.id.nomal_number)
@@ -61,6 +67,36 @@ class TeamMemberAdapter(
                 holder.normalNumber.setBackgroundResource(R.drawable.bg_rank_normal_number)
             }
         }
+
+        holder.more_button.setOnClickListener { view ->
+            val popup = PopupMenu(view.context, view)
+            popup.menuInflater.inflate(R.menu.member_options_menu, popup.menu)
+
+            // 팀장만 강퇴 버튼 보이게
+            if (!currentUserIsLeader) {
+                popup.menu.findItem(R.id.action_kick).isVisible = false
+            }
+
+            popup.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.action_view_profile -> {
+                        onViewProfile(member.userId)
+                        true
+                    }
+                    R.id.action_view_record -> {
+                        onViewRecord(member)
+                        true
+                    }
+                    R.id.action_kick -> {
+                        onKickMember(member)
+                        true
+                    }
+                    else -> false
+                }
+            }
+            popup.show()
+        }
+
     }
 
     override fun getItemCount(): Int = members.size
@@ -69,9 +105,7 @@ class TeamMemberAdapter(
         this.members = newMembers
         notifyDataSetChanged()
     }
-
 }
-
 
 data class TeamMember(
     val userId: Int,

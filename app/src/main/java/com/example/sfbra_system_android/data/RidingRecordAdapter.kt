@@ -24,7 +24,7 @@ class RidingRecordAdapter(private var records: List<RidingRecord>) :
 
     override fun onBindViewHolder(holder: RecordViewHolder, position: Int) {
         val record = records[position]
-        holder.recordId.text = record.id
+        holder.recordId.text = record.index
         holder.recordDate.text = record.date
     }
 
@@ -36,5 +36,4 @@ class RidingRecordAdapter(private var records: List<RidingRecord>) :
     }
 }
 
-data class RidingRecord(val id: String, val date: String)
-// todo 나중에 PathRecordData로 사용하고 RidingRecord은 지울것. 어댑터 내부에서 string으로 변경하면 됨.
+data class RidingRecord(val id: Int, val index: String, val date: String)
