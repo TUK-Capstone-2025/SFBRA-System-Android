@@ -48,8 +48,7 @@
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@id/top_divider"
+        app:layout_constraintTop_toBottomOf="@id/team_intro"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -69,8 +68,7 @@
                 android:background="@color/applicant_background"
                 android:padding="5dp"
                 android:visibility="gone"
-                android:layout_marginTop="16dp"
-                android:layout_marginHorizontal="25dp"
+                android:layout_marginTop="15dp"
                 android:elevation="2dp"
                 android:clipToPadding="false"
                 android:clipChildren="false"
@@ -111,7 +109,6 @@
                 android:text="재시도"
                 android:textSize="16sp"
                 android:layout_marginTop="10dp"
-                android:layout_marginHorizontal="25dp"
                 android:visibility="gone"
                 app:layout_constraintTop_toBottomOf="@id/fail_text"
                 app:layout_constraintBottom_toTopOf="@+id/team_member_recyclerview"
@@ -123,8 +120,8 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/team_member_recyclerview"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_margin="25dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:overScrollMode="ifContentScrolls"
                 android:visibility="visible"
                 android:nestedScrollingEnabled="false"
