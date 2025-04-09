@@ -14,7 +14,7 @@ class TeamMemberAdapter(
     private val onViewProfile: (Int) -> Unit,
     private val onViewRecord: (TeamMember) -> Unit,
     private val onKickMember: (TeamMember) -> Unit,
-    private val currentUserIsLeader: Boolean
+    private var currentUserIsLeader: Boolean
 ) : RecyclerView.Adapter<TeamMemberAdapter.TeamMemberViewHolder>() {
 
     inner class TeamMemberViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -104,6 +104,12 @@ class TeamMemberAdapter(
     fun updateMembers(newMembers: List<TeamMember>) {
         this.members = newMembers
         notifyDataSetChanged()
+    }
+
+    // 리더 상태 동적 갱신 함수
+    fun updateLeaderStatus(isLeader: Boolean) {
+        currentUserIsLeader = isLeader
+        notifyDataSetChanged() // 모든 아이템 갱신
     }
 }
 

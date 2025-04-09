@@ -204,6 +204,7 @@ class MyTeamInfoFragment : Fragment() {
                     Applicant(id = applicant.memberId, nickname = applicant.nickname)
                 }
                 currentUserIsLeader = true
+                memberAdapter.updateLeaderStatus(true) // 동적으로 리더 상태 업데이트
 
                 if (applicants.isNotEmpty()) {
                     applicantContainer.visibility = View.VISIBLE
