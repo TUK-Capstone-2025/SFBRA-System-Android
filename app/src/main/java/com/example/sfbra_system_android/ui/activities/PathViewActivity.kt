@@ -138,6 +138,7 @@ class PathViewActivity : AppCompatActivity() {
         }
     }
 
+    // 경로 가져오기 함수
     private fun getRecordRoute(recordId: Int) {
         pathRecordRouteViewModel.getRecordRoute(recordId)
 
@@ -147,10 +148,10 @@ class PathViewActivity : AppCompatActivity() {
                 val endTime = response.data.endTime
                 val route = response.data.route
 
-                val routePoints = getRouteToLatLng(route)
-                changeZoomLevel(routePoints)
+                val routePoints = setMinimumRoutePoints(getRouteToLatLng(route))
                 drawRouteLine(routePoints)
                 addStartEndLabels(routePoints)
+                changeZoomLevel(routePoints)
                 // todo 시작,종료 시간 ui에 띄우기
             } else {
                 // 불러오기 실패
@@ -159,6 +160,7 @@ class PathViewActivity : AppCompatActivity() {
         }
     }
 
+    // 팀원 경로 가져오기 함수
     private fun getMemberRecordRoute(recordId: Int) {
         pathRecordRouteViewModel.getMemberRecordRoute(recordId)
 
@@ -168,15 +170,24 @@ class PathViewActivity : AppCompatActivity() {
                 val endTime = response.data.endTime
                 val route = response.data.route
 
-                val routePoints = getRouteToLatLng(route)
-                changeZoomLevel(routePoints)
+                val routePoints = setMinimumRoutePoints(getRouteToLatLng(route))
                 drawRouteLine(routePoints)
                 addStartEndLabels(routePoints)
+                changeZoomLevel(routePoints)
                 // todo 시작,종료 시간 ui에 띄우기
             } else {
                 // 불러오기 실패
                 Toast.makeText(this,"좌표 목록 불러오기 실패", Toast.LENGTH_SHORT).show()
             }
+        }
+    }
+
+    // 좌표 개수 최소값 맞춰주는 함수
+    private fun setMinimumRoutePoints(points: List<LatLng>): List<LatLng> {
+        return when {
+            points.size >= 2 -> points
+            points.size == 1 -> listOf(points[0], points[0]) // 동일 좌표 두 번
+            else -> emptyList()
         }
     }
 
