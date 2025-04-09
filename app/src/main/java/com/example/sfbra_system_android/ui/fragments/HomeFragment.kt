@@ -25,6 +25,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.preference.PreferenceManager
 import com.example.sfbra_system_android.data.BluetoothLEManager
@@ -165,6 +166,36 @@ class HomeFragment : Fragment() {
         }
 
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        pathRecordRouteViewModel.pathRecordUploadResponse.observe(viewLifecycleOwner, Observer { response ->
+            if (response.success) {
+                Toast.makeText(requireContext(), "주행 기록을 성공적으로 전송했습니다.", Toast.LENGTH_SHORT).show()
+
+                route = null // 좌표 리스트 초기화
+                warningStatus = 0 // 위험 요소 초기화
+                startTime = null
+                endTime = null // 출발, 도착 시간 초기화
+            } else {
+                AlertDialog.Builder(requireContext())
+                    .setTitle("전송 실패")
+                    .setMessage("주행 기록 전송에 실패했습니다.\n다시 시도하시겠습니까?")
+                    .setPositiveButton("재시도") { _, _ ->
+                        postPathRecord(startTime!!, endTime!!, route!!)
+                    }
+                    .setNegativeButton("취소") { dialog, _ ->
+                        route = null // 좌표 리스트 초기화
+                        warningStatus = 0 // 위험 요소 초기화
+                        startTime = null
+                        endTime = null // 출발, 도착 시간 초기화
+                        dialog.dismiss() // 다이얼로그 닫기
+                    }
+                    .show()
+            }
+        })
     }
 
     override fun onResume() {
@@ -527,11 +558,7 @@ class HomeFragment : Fragment() {
         speedText.visibility = View.GONE // 속도 텍스트 비활성화
 
         postPathRecord(startTime!!, endTime!!, route!!) // 서버로 주행 데이터 전송
-        // todo 여기서 초기화할지 성공 후에 초기화할지 생각
-        route = null // 좌표 리스트 초기화
-        warningStatus = 0 // 위험 요소 초기화
-        startTime = null
-        endTime = null // 출발, 도착 시간 초기화
+        // 전송 성공 시 데이터 초기화
     }
 
     private fun getCurrentTime(): String = sdf.format(Date()) // 현재 시간 가져오는 함수
@@ -540,9 +567,6 @@ class HomeFragment : Fragment() {
     private fun postPathRecord(startTime: String, endTime: String, route: List<LocationPoint>) {
         val pathRecord = PathRecord(startTime, endTime, route)
         pathRecordRouteViewModel.postRecord(pathRecord)
-
-        // todo 라이브데이터로 확인해야 함
-        // 실패하면 재시도
     }
 
     // 긴급 상황 시 팝업 알림 함

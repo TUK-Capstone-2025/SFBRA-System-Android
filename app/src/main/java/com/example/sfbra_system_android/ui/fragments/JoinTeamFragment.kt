@@ -90,7 +90,6 @@ class JoinTeamFragment : Fragment() {
                 joinTeamViewModel.clearJoinTeamResponse()
             }
         })
-
     }
 
     // 자식 프래그먼트 교체 함수
