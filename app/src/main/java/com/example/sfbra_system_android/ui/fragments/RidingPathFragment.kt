@@ -120,7 +120,7 @@ class RidingPathFragment : Fragment() {
                 recyclerView.visibility = View.VISIBLE
                 var index = 1
 
-                adapter.updateRecords(records.map { RidingRecord(it.id, "주행기록 ${index}", it.startTime) })
+                adapter.updateRecords(records.map { RidingRecord(it.id, "주행기록 ${index++}", it.startTime) })
             } else {
                 noRecordsText.visibility = View.VISIBLE
                 recyclerView.visibility = View.GONE
@@ -150,7 +150,7 @@ class RidingPathFragment : Fragment() {
                 recyclerView.visibility = View.VISIBLE
                 var index = 1
 
-                adapter.updateRecords(records.map { RidingRecord(it.id, "주행기록 ${index}", it.startTime) })
+                adapter.updateRecords(records.map { RidingRecord(it.id, "주행기록 ${index++}", it.startTime) })
             } else {
                 noRecordsText.visibility = View.VISIBLE
                 recyclerView.visibility = View.GONE

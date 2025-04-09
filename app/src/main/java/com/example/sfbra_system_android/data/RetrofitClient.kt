@@ -6,6 +6,7 @@ import com.example.sfbra_system_android.data.services.DeleteRequestService
 import com.example.sfbra_system_android.data.services.JoinTeamService
 import com.example.sfbra_system_android.data.services.LoginService
 import com.example.sfbra_system_android.data.services.MyTeamInfoService
+import com.example.sfbra_system_android.data.services.PathRecordRouteService
 import com.example.sfbra_system_android.data.services.PathRecordService
 import com.example.sfbra_system_android.data.services.ProfileService
 import com.example.sfbra_system_android.data.services.ProfileUpdateService
@@ -87,4 +88,6 @@ object RetrofitClient {
     fun getApplicantMemberService(token: String): ApplicantMemberService =
         getRetrofitInstance(token).create(ApplicantMemberService::class.java)
 
+    fun getPathRecordRouteService(token: String): PathRecordRouteService =
+        getRetrofitInstance(token).create(PathRecordRouteService::class.java)
 }

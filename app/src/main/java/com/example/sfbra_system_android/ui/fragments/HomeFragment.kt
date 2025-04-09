@@ -24,6 +24,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.preference.PreferenceManager
 import com.example.sfbra_system_android.data.BluetoothLEManager
@@ -31,6 +32,8 @@ import com.example.sfbra_system_android.data.viewmodels.BluetoothViewModel
 import com.example.sfbra_system_android.ui.activities.MainActivity
 import com.example.sfbra_system_android.R
 import com.example.sfbra_system_android.data.services.LocationPoint
+import com.example.sfbra_system_android.data.services.PathRecord
+import com.example.sfbra_system_android.data.viewmodels.PathRecordRouteViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.kakao.vectormap.KakaoMap
@@ -77,6 +80,7 @@ class HomeFragment : Fragment() {
     private val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()) // 시간 형식 포맷
     private var startTime: String? = null // 시작 시간 기록용 변수
     private var endTime: String? = null // 종료 시간 기록용 변수
+    private val pathRecordRouteViewModel: PathRecordRouteViewModel by viewModels() // 기록 업로드용 뷰 모델
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -521,7 +525,9 @@ class HomeFragment : Fragment() {
         locationHandler.removeCallbacks(updateLocationRunnable) // 위치 업데이트 중지
         warningText.visibility = View.GONE // 후방 알림 비활성화
         speedText.visibility = View.GONE // 속도 텍스트 비활성화
-        // todo 서버로 시간, 좌표 리스트 전송
+
+        postPathRecord(startTime!!, endTime!!, route!!) // 서버로 주행 데이터 전송
+        // todo 여기서 초기화할지 성공 후에 초기화할지 생각
         route = null // 좌표 리스트 초기화
         warningStatus = 0 // 위험 요소 초기화
         startTime = null
@@ -529,6 +535,15 @@ class HomeFragment : Fragment() {
     }
 
     private fun getCurrentTime(): String = sdf.format(Date()) // 현재 시간 가져오는 함수
+
+    // 서버로 주행 데이터 전송 함수
+    private fun postPathRecord(startTime: String, endTime: String, route: List<LocationPoint>) {
+        val pathRecord = PathRecord(startTime, endTime, route)
+        pathRecordRouteViewModel.postRecord(pathRecord)
+
+        // todo 라이브데이터로 확인해야 함
+        // 실패하면 재시도
+    }
 
     // 긴급 상황 시 팝업 알림 함
     fun showAccidentAlert(context: Context) {
