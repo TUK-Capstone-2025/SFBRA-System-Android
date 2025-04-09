@@ -82,16 +82,25 @@ class PathViewActivity : AppCompatActivity() {
                 kakaoMap.showOverlay(MapOverlay.BICYCLE_ROAD)
 
                 // todo 더미데이터 삭제할 것
+                /*
                 val routePoints = getRouteToLatLng2()
-                moveCenterLatLng(routePoints)
                 changeZoomLevel(routePoints)
                 drawRouteLine(routePoints)
                 addStartEndLabels(routePoints)
                 moveCameraToFitRoute(routePoints)
+                 */
 
                 val recordId = intent.getIntExtra("recordId", 0)
                 Log.d("PathViewActivity", "recordId: $recordId")
-                //getRecordRoute(recordId)
+                val memberId = intent.getIntExtra("memberId", -1)
+                Log.d("PathViewActivity", "memberId: $memberId")
+
+                if (memberId != -1) {
+                    getMemberRecordRoute(recordId)
+                } else {
+                    getRecordRoute(recordId)
+                }
+
             }
         })
     }
@@ -139,11 +148,30 @@ class PathViewActivity : AppCompatActivity() {
                 val route = response.data.route
 
                 val routePoints = getRouteToLatLng(route)
-                moveCenterLatLng(routePoints)
                 changeZoomLevel(routePoints)
                 drawRouteLine(routePoints)
                 addStartEndLabels(routePoints)
-                moveCameraToFitRoute(routePoints)
+                // todo 시작,종료 시간 ui에 띄우기
+            } else {
+                // 불러오기 실패
+                Toast.makeText(this,"좌표 목록 불러오기 실패", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun getMemberRecordRoute(recordId: Int) {
+        pathRecordRouteViewModel.getMemberRecordRoute(recordId)
+
+        pathRecordRouteViewModel.pathRecordRoute.observe(this) { response ->
+            if (response != null && response.success) {
+                val startTime = response.data.startTime
+                val endTime = response.data.endTime
+                val route = response.data.route
+
+                val routePoints = getRouteToLatLng(route)
+                changeZoomLevel(routePoints)
+                drawRouteLine(routePoints)
+                addStartEndLabels(routePoints)
                 // todo 시작,종료 시간 ui에 띄우기
             } else {
                 // 불러오기 실패
@@ -168,26 +196,7 @@ class PathViewActivity : AppCompatActivity() {
         ).map { LatLng.from(it.latitude, it.longitude) }
     }
 
-    // 경로 중간으로 카메라 이동
-    fun moveCenterLatLng(points: List<LatLng>) {
-        if (points.isEmpty()) {
-            throw IllegalArgumentException("points 리스트가 비어 있습니다.")
-        }
-
-        val (sumLat, sumLng) = points.fold(0.0 to 0.0) { acc, point ->
-            (acc.first + point.latitude) to (acc.second + point.longitude)
-        }
-
-        val point =  LatLng.from(
-            sumLat / points.size,
-            sumLng / points.size
-        )
-
-        val cameraUpdate: CameraUpdate = CameraUpdateFactory.newCenterPosition(point, 14)
-        kakaoMap?.moveCamera(cameraUpdate) // 카메라 이동
-    }
-
-    // 경로에 맞춰 줌 레벨 변경
+    // 경로에 맞춰 줌 레벨 변경, 카메라 이동
     fun changeZoomLevel(points: List<LatLng>) {
         val boundsBuilder = LatLngBounds.Builder()
         for (point in points) {
@@ -197,7 +206,7 @@ class PathViewActivity : AppCompatActivity() {
 
         val padding = 200 // px 단위의 패딩 설정
         val cameraUpdate = CameraUpdateFactory.fitMapPoints(bounds, padding)
-        kakaoMap?.moveCamera(cameraUpdate) // 줌 변경
+        kakaoMap?.moveCamera(cameraUpdate) // 줌 변경, 카메라 이동
     }
 
     // 카카오맵의 RouteLine으로 경로 그리기 함수
@@ -232,10 +241,5 @@ class PathViewActivity : AppCompatActivity() {
                 .setStyles(labelStyle)
                 .setTexts(LabelTextBuilder().setTexts("도착"))
         )
-    }
-
-    // 전체 경로가 보이도록 카메라 조정하는 함수
-    private fun moveCameraToFitRoute(routePoints: List<LatLng>) {
-        // todo 카메라 잘 움직이기
     }
 }

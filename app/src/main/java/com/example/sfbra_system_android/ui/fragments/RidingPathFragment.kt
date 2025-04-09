@@ -99,6 +99,7 @@ class RidingPathFragment : Fragment() {
             Log.d("RidingPathFragment", "recordId: $recordId")
             val intent = Intent(requireContext(), PathViewActivity::class.java).apply {
                 putExtra("recordId", recordId) // 값 넘기기
+                putExtra("memberId", memberId) // 본인인지 아닌지 넘길 값
             }
             startActivity(intent)
         }

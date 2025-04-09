@@ -73,4 +73,36 @@ class PathRecordRouteViewModel(application: Application) : AndroidViewModel(appl
             }
         })
     }
+
+    fun getMemberRecordRoute(recordId: Int) {
+        val service = RetrofitClient.getPathRecordRouteService(token)
+
+        service.getMemberRecordDetail(recordId).enqueue(object : Callback<PathRecordDetailResponse> {
+            override fun onResponse(call: Call<PathRecordDetailResponse>, response: Response<PathRecordDetailResponse>) {
+                if (response.isSuccessful) {
+                    _pathRecordRoute.value = response.body()
+                } else {
+                    _pathRecordRoute.value = null
+                    // 주행기록 상세 조회 실패: errorBody에서 메시지 읽기
+                    try {
+                        val errorResponse = response.errorBody()?.string()
+
+                        // errorBody를 통해 받은 에러 메시지를 ApiResponse로 변환하여 저장
+                        _pathRecordRoute.value = PathRecordDetailResponse(
+                            false, errorResponse ?: "불러오기 실패", PathRecord("","", emptyList()))
+
+                        Log.e("PathRecordViewModel", "주행기록 상세 조회 실패: $errorResponse")
+                    } catch (e: Exception) {
+                        Log.e("PathRecordViewModel", "주행기록 상세 조회 실패: ${e.message}")
+                    }
+
+                }
+            }
+
+            override fun onFailure(call: Call<PathRecordDetailResponse>, t: Throwable) {
+                _pathRecordRoute.value = null
+                Log.e("PathRecordRouteViewModel", "네트워크 오류: ${t.message}")
+            }
+        })
+    }
 }

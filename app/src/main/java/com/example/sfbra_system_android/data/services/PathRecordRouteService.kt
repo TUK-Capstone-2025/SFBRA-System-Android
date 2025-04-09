@@ -12,6 +12,9 @@ interface PathRecordRouteService {
 
     @GET("record/my/route/{recordId}")
     fun getPathRecordDetail(@Path("recordId") recordId: Int): Call<PathRecordDetailResponse>
+
+    @GET("record/other/route/{recordId}")
+    fun getMemberRecordDetail(@Path("recordId") recordId: Int): Call<PathRecordDetailResponse>
 }
 
 data class PathRecordUploadResponse(
