@@ -22,6 +22,6 @@ data class PathRecordResponse(
 
 // 주행기록 목록 형식
 data class PathRecordData(
-    val id: Int,
-    val startTime: String
+    val startTime: String,
+    val recordId: Int,
 )

@@ -1,5 +1,6 @@
 package com.example.sfbra_system_android.ui.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -18,6 +19,7 @@ import com.example.sfbra_system_android.data.RidingRecord
 import com.example.sfbra_system_android.data.RidingRecordAdapter
 import com.example.sfbra_system_android.data.TeamMember
 import com.example.sfbra_system_android.data.viewmodels.PathRecordViewModel
+import com.example.sfbra_system_android.ui.activities.PathViewActivity
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 
@@ -92,7 +94,14 @@ class RidingPathFragment : Fragment() {
         )
         recyclerView.addItemDecoration(dividerItemDecoration)
 
-        val adapter = RidingRecordAdapter(emptyList()) // 초기 데이터 비워두기
+        // 초기 어댑터 비워두기
+        val adapter = RidingRecordAdapter(emptyList()) { recordId ->
+            Log.d("RidingPathFragment", "recordId: $recordId")
+            val intent = Intent(requireContext(), PathViewActivity::class.java).apply {
+                putExtra("recordId", recordId) // 값 넘기기
+            }
+            startActivity(intent)
+        }
         recyclerView.adapter = adapter
 
         // 내 기록인지 멤버 기록인지 구분하여 내용 변경
@@ -118,9 +127,11 @@ class RidingPathFragment : Fragment() {
             if (records.isNotEmpty() && pathRecords.success) {
                 noRecordsText.visibility = View.GONE
                 recyclerView.visibility = View.VISIBLE
-                var index = 1
 
-                adapter.updateRecords(records.map { RidingRecord(it.id, "주행기록 ${index++}", it.startTime) })
+                adapter.updateRecords(records.mapIndexed { i, it ->
+                    val index = records.size - i
+                    RidingRecord(it.recordId, "주행기록 $index", it.startTime)
+                })
             } else {
                 noRecordsText.visibility = View.VISIBLE
                 recyclerView.visibility = View.GONE
@@ -138,6 +149,7 @@ class RidingPathFragment : Fragment() {
         })
     }
 
+    // 팀 멤버 주행기록 불러오기
     private fun getMemberRecords(adapter: RidingRecordAdapter, memberId: Int) {
         pathRecordViewModel.getMemberPathRecords(memberId)
 
@@ -148,9 +160,11 @@ class RidingPathFragment : Fragment() {
             if (records.isNotEmpty() && pathRecords.success) {
                 noRecordsText.visibility = View.GONE
                 recyclerView.visibility = View.VISIBLE
-                var index = 1
 
-                adapter.updateRecords(records.map { RidingRecord(it.id, "주행기록 ${index++}", it.startTime) })
+                adapter.updateRecords(records.mapIndexed { i, it ->
+                    val index = records.size - i
+                    RidingRecord(it.recordId, "주행기록 $index", it.startTime)
+                })
             } else {
                 noRecordsText.visibility = View.VISIBLE
                 recyclerView.visibility = View.GONE

@@ -172,7 +172,7 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         pathRecordRouteViewModel.pathRecordUploadResponse.observe(viewLifecycleOwner, Observer { response ->
-            if (response.success) {
+            if (response != null && response.success) {
                 Toast.makeText(requireContext(), "주행 기록을 성공적으로 전송했습니다.", Toast.LENGTH_SHORT).show()
 
                 route = null // 좌표 리스트 초기화
@@ -546,7 +546,7 @@ class HomeFragment : Fragment() {
         }
     }
 
-    // todo 주행 정지 함수
+    // 주행 종료 함수
     private fun stopDriving() {
         endTime = getCurrentTime()
         startButton.text = getString(R.string.start_drive)
