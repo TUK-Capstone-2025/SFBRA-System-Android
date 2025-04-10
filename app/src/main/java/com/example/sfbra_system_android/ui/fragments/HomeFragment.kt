@@ -99,10 +99,10 @@ class HomeFragment : Fragment() {
             choice ?: "01025376247"
         }
 
-        warningText = view.findViewById(R.id.warningText) // 텍스트 뷰 id로 매칭
-        speedText = view.findViewById(R.id.speedText) // 속도 텍스트
+        warningText = view.findViewById(R.id.warning_text) // 텍스트 뷰 id로 매칭
+        speedText = view.findViewById(R.id.speed_text) // 속도 텍스트
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext()) // 위치 서비스 초기화
-        mapView = view.findViewById(R.id.mapView) // 맵뷰
+        mapView = view.findViewById(R.id.map_view) // 맵뷰
         bluetoothViewModel = ViewModelProvider(requireActivity()).get(BluetoothViewModel::class.java)
 
         // 카카오 맵 api로 지도 띄우기
@@ -137,7 +137,7 @@ class HomeFragment : Fragment() {
             requestSmsPermission(requireContext())
         }
 
-        connectButton = view.findViewById(R.id.connectButton) // 연결버튼
+        connectButton = view.findViewById(R.id.connect_button) // 연결버튼
         connectButton.setOnClickListener {
             if (isBluetoothConnected) {
                 // 연결해제버튼 상태일 때 클릭 시 블루투스 연결 해제
@@ -148,7 +148,7 @@ class HomeFragment : Fragment() {
             }
         }
 
-        startButton = view.findViewById(R.id.startButton) // 주행시작 버튼
+        startButton = view.findViewById(R.id.start_button) // 주행시작 버튼
         startButton.setOnClickListener {
             // 주행시작 or 주행종료 버튼 클릭 시
             if (!isBluetoothConnected) {
@@ -163,6 +163,11 @@ class HomeFragment : Fragment() {
                 // 주행 중이 아니면 주행 시작, 주행 시작 전에 GPS 및 권한 확인
                 checkGPSAndRequestPermission()
             }
+        }
+
+        val testButton = view.findViewById<Button>(R.id.test_button)
+        testButton.setOnClickListener {
+            isBluetoothConnected = true
         }
 
         return view

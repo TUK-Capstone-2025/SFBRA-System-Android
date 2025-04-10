@@ -38,7 +38,7 @@ class BicycleLockFragment : Fragment() {
 
         lockButton = view.findViewById(R.id.lock_button) as ImageButton
         lockStatusText = view.findViewById(R.id.lock_status_text) as TextView
-        warningText = view.findViewById(R.id.warningText) as TextView
+        warningText = view.findViewById(R.id.warning_text) as TextView
         bluetoothViewModel = ViewModelProvider(requireActivity()).get(BluetoothViewModel::class.java)
 
         // 자물쇠 버튼 클릭 시
