@@ -32,11 +32,13 @@ class PathRecordRouteViewModel(application: Application) : AndroidViewModel(appl
                 if (response.isSuccessful) {
                     _pathRecordUploadResponse.value = response.body()
                 } else {
+                    _pathRecordUploadResponse.value = PathRecordUploadResponse(false, "주행기록 업로드에 실패했습니다", "")
                     Log.e("PathRecordRouteViewModel", "주행기록 업로드 실패: ${response.message()}")
                 }
             }
 
             override fun onFailure(call: Call<PathRecordUploadResponse>, t: Throwable) {
+                _pathRecordUploadResponse.value = PathRecordUploadResponse(false, "주행기록 업로드에 실패했습니다", "")
                 Log.e("PathRecordRouteViewModel", "네트워크 오류: ${t.message}")
             }
         })

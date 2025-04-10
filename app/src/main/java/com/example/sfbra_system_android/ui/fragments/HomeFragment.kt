@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothAdapter
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Geocoder
+import android.location.Location
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
@@ -36,7 +37,11 @@ import com.example.sfbra_system_android.data.services.LocationPoint
 import com.example.sfbra_system_android.data.services.PathRecord
 import com.example.sfbra_system_android.data.viewmodels.PathRecordRouteViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
 import com.kakao.vectormap.LatLng
@@ -63,6 +68,8 @@ class HomeFragment : Fragment() {
     private lateinit var startButton: Button
     private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
     private lateinit var fusedLocationClient: FusedLocationProviderClient // 위치 클라이언트
+    private lateinit var locationCallback: LocationCallback
+    private lateinit var locationRequest: LocationRequest
     private var isBluetoothConnected = false // 블루투스 연결 상태
     private lateinit var warningText: TextView // 후방 위험 문구
     private lateinit var speedText: TextView // 속도 텍스트
@@ -78,7 +85,7 @@ class HomeFragment : Fragment() {
     private var isAccident = false // 사고 발생 유무
     private var route: List<LocationPoint>? = null // 좌표 리스트
     private var warningStatus: Int = 0 // 위험 요소 상태
-    private val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()) // 시간 형식 포맷
+    private val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()) // 시간 형식 포맷
     private var startTime: String? = null // 시작 시간 기록용 변수
     private var endTime: String? = null // 종료 시간 기록용 변수
     private val pathRecordRouteViewModel: PathRecordRouteViewModel by viewModels() // 기록 업로드용 뷰 모델
@@ -165,6 +172,24 @@ class HomeFragment : Fragment() {
             }
         }
 
+        // 위치 요청 설정
+        locationRequest = LocationRequest.create().apply {
+            interval = 5000 // 위치 갱신 주기
+            fastestInterval = 2000
+            priority = Priority.PRIORITY_HIGH_ACCURACY
+        }
+
+        // 위치 콜백 정의
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult) {
+                val location = locationResult.lastLocation
+                if (location != null && isDriving) {
+                    updateCurrentLocation(location)
+                }
+            }
+        }
+
+        // 테스트 버튼
         val testButton = view.findViewById<Button>(R.id.test_button)
         testButton.setOnClickListener {
             isBluetoothConnected = true
@@ -206,11 +231,21 @@ class HomeFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         mapView.resume() // 오류 방지를 위한 resume()
+
+        // 위치 갱신 시작
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED
+        ) {
+            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
+        }
     }
 
     override fun onPause() {
         super.onPause()
         mapView.pause() // 오류 방지를 위한 pause()
+
+        // 위치 갱신 중지
+        fusedLocationClient.removeLocationUpdates(locationCallback)
     }
 
     override fun onDestroy() {
@@ -380,14 +415,15 @@ class HomeFragment : Fragment() {
         startTime = getCurrentTime()
         startButton.text = getString(R.string.finish_drive)
         isDriving = true
-        updateCurrentLocation() // 현재 위치 업데이트(초기화)
+        //updateCurrentLocation() // 현재 위치 업데이트(초기화)
         speedText.visibility = View.VISIBLE // 속도 텍스트 표시
         Toast.makeText(requireContext(), "GPS 확인 완료. 주행을 시작합니다.", Toast.LENGTH_SHORT).show()
 
-        locationHandler.post(updateLocationRunnable) // 3초 간격으로 위치 업데이트 시작
+        //locationHandler.post(updateLocationRunnable) // 5초 간격으로 위치 업데이트 시작
     }
 
     // 핸들러를 사용한 실시간 위치 갱신 함수
+    /*
     private val locationHandler = Handler(Looper.getMainLooper())
     private val updateLocationRunnable = object : Runnable {
         override fun run() {
@@ -395,34 +431,20 @@ class HomeFragment : Fragment() {
             // todo 실시간 경로 그리기 + 현재 위치 점으로 표시
             locationHandler.postDelayed(this, 5000) // 5초마다 위치 업데이트
         }
-    }
+    } */
 
     // 현재 위치 업데이트, 지도 수정 함수
-    private fun updateCurrentLocation() {
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED
-        ) {
-            return // 권한 없으면 실행 안 함
-        }
+    private fun updateCurrentLocation(location: Location) {
+        val addressText = getAddressFromLocation(location.latitude, location.longitude) // 현재 위치 주소
+        (activity as? MainActivity)?.setTitleFromLocation(addressText) // 액션바 타이틀 수정
+        updateRoute(location.latitude, location.longitude, warningStatus) // 경로 리스트에 추가
+        warningStatus = 0 // 위험 요소 초기화
 
-        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-            if (location != null) {
-                val addressText = getAddressFromLocation(location.latitude, location.longitude) // 현재 위치 좌표
-                (activity as? MainActivity)?.setTitleFromLocation(addressText) // 액션바 타이틀 수정
-                updateRoute(location.latitude, location.longitude, warningStatus) // 경로 리스트에 추가
-                warningStatus = 0 // 위험 요소 초기화
-
-                // 현재 위치 좌표 가져오기
-                val currentLatLng = LatLng.from(location.latitude, location.longitude)
-
-                val cameraUpdate = CameraUpdateFactory.newCenterPosition(currentLatLng, 16)
-                // 카메라를 현재 위치로 이동(애니메이션 효과 포함)
-                kakaoMap?.moveCamera(cameraUpdate, CameraAnimation.from(1000, true, true))
-            } else {
-                Toast.makeText(requireContext(), "현재 위치를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show()
-            }
-        }
+        val currentLatLng = LatLng.from(location.latitude, location.longitude)
+        val cameraUpdate = CameraUpdateFactory.newCenterPosition(currentLatLng, 16)
+        kakaoMap?.moveCamera(cameraUpdate, CameraAnimation.from(1000, true, true))
     }
+
 
     // 경로 리스트 갱신 함수
     private fun updateRoute(latitude: Double, longitude: Double, warning: Int) {
@@ -558,7 +580,8 @@ class HomeFragment : Fragment() {
         isDriving = false
         isAccident = false
         blinkJob?.cancel() // 깜빡임 중지
-        locationHandler.removeCallbacks(updateLocationRunnable) // 위치 업데이트 중지
+        //locationHandler.removeCallbacks(updateLocationRunnable) // 위치 업데이트 중지
+        fusedLocationClient.removeLocationUpdates(locationCallback)
         warningText.visibility = View.GONE // 후방 알림 비활성화
         speedText.visibility = View.GONE // 속도 텍스트 비활성화
 
@@ -571,6 +594,8 @@ class HomeFragment : Fragment() {
     // 서버로 주행 데이터 전송 함수
     private fun postPathRecord(startTime: String, endTime: String, route: List<LocationPoint>) {
         val pathRecord = PathRecord(startTime, endTime, route)
+        Log.d("PostPathRecord","$startTime, $endTime")
+
         pathRecordRouteViewModel.postRecord(pathRecord)
     }
 
