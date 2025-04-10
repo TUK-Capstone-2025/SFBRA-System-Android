@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sfbra_system_android.R
 import com.example.sfbra_system_android.data.TeamListAdapter
-import com.example.sfbra_system_android.data.services.JoinTeamResponse
 import com.example.sfbra_system_android.data.services.TeamListItem
 import com.example.sfbra_system_android.data.viewmodels.JoinTeamViewModel
 import com.example.sfbra_system_android.data.viewmodels.TeamListViewModel

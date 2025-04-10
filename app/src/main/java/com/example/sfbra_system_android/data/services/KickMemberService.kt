@@ -5,7 +5,7 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface KickMemberService {
-    @POST("time/kick/{memberId}")
+    @POST("team/kick/{memberId}")
     fun kickMember(@Path("memberId") memberId: Int): Call<KickMemberResponse>
 }
 

@@ -21,12 +21,14 @@ import com.example.sfbra_system_android.data.ApplicantAdapter
 import com.example.sfbra_system_android.data.TeamMember
 import com.example.sfbra_system_android.data.TeamMemberAdapter
 import com.example.sfbra_system_android.data.viewmodels.ApplicantMemberViewModel
+import com.example.sfbra_system_android.data.viewmodels.KickMemberViewModel
 import com.example.sfbra_system_android.data.viewmodels.MyTeamInfoViewModel
 
 // 팀이 있는 경우: 팀 정보 화면
 class MyTeamInfoFragment : Fragment() {
     private val myTeamViewModel: MyTeamInfoViewModel = MyTeamInfoViewModel()
     private val applicantsViewModel: ApplicantMemberViewModel by viewModels()
+    private val kickMemberViewModel: KickMemberViewModel by viewModels()
     private lateinit var memberAdapter: TeamMemberAdapter // 멤버 목록 어댑터
     private lateinit var applicantAdapter: ApplicantAdapter // 신청자 목록 어댑터
     private lateinit var memberRecyclerView: RecyclerView // 멤버 리사이클러뷰
@@ -119,6 +121,22 @@ class MyTeamInfoFragment : Fragment() {
         return view
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        kickMemberViewModel.kickResult.observe(viewLifecycleOwner, Observer { response ->
+            if(response != null) {
+                if (response.success) {
+                    Toast.makeText(requireContext(), "해당 멤버를 퇴출시켰습니다.", Toast.LENGTH_SHORT).show()
+                    getMyTeamInfo(memberAdapter)
+                } else {
+                    Toast.makeText(requireContext(), "퇴출에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                }
+                kickMemberViewModel.clearKickMemberResponse()
+            }
+        })
+    }
+
     // 팀 정보 불러오기 함수
     private fun getMyTeamInfo(adapter: TeamMemberAdapter) {
         myTeamViewModel.getTeamInfo(teamId)
@@ -190,7 +208,7 @@ class MyTeamInfoFragment : Fragment() {
     }
 
     private fun kickMember(memberId: Int) {
-        Toast.makeText(requireContext(), "강퇴: $memberId", Toast.LENGTH_SHORT).show()
+        kickMemberViewModel.kickMember(memberId)
     }
 
     // 신청자 정보 불러오기 함수

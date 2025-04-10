@@ -13,8 +13,8 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class KickMemberViewModel(application: Application) : AndroidViewModel(application) {
-    private val _kickResult = MutableLiveData<KickMemberResponse>()
-    val kickResult: LiveData<KickMemberResponse> get() = _kickResult
+    private val _kickResult = MutableLiveData<KickMemberResponse?>()
+    val kickResult: LiveData<KickMemberResponse?> get() = _kickResult
 
     private val token: String = SharedPreferencesHelper.getToken(application).toString()
 
@@ -36,5 +36,9 @@ class KickMemberViewModel(application: Application) : AndroidViewModel(applicati
                 Log.e("KickMemberViewModel", "네트워크 오류: ${t.message}")
             }
         })
+    }
+
+    fun clearKickMemberResponse() {
+        _kickResult.value = null
     }
 }
