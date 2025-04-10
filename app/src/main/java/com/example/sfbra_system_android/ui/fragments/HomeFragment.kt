@@ -392,10 +392,13 @@ class HomeFragment : Fragment() {
             != PackageManager.PERMISSION_GRANTED) {
             // 권한 없는 경우 요청
             requestLocationPermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
             return
         }
 
         // 모든 조건 충족 시 주행 시작
+        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
+
         startDriving()
         return
     }
