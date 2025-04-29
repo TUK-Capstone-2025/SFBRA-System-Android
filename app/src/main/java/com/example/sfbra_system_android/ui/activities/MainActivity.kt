@@ -153,13 +153,18 @@ class MainActivity : AppCompatActivity() {
 
         val transaction = supportFragmentManager.beginTransaction()
 
-        // 기존 프래그먼트 숨기기
-        activeFragment?.let { transaction.hide(it) }
+        // 기존 프래그먼트 숨기기 전에 childFragmentManager 백스택 비우기
+        activeFragment?.let {
+            // 여기 추가
+            val childFragmentManager = it.childFragmentManager
+            if (childFragmentManager.backStackEntryCount > 0) {
+                childFragmentManager.popBackStackImmediate(null, androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE)
+            }
+            transaction.hide(it)
+        }
 
-        // 새 프래그먼트 가져오기 (기존 프래그먼트가 있으면 재사용)
         val newFragment = fragmentMap[tag] ?: fragment.also { fragmentMap[tag] = it }
 
-        // 프래그먼트 추가 또는 보여주기
         if (!newFragment.isAdded) {
             transaction.add(R.id.fragment_container, newFragment, tag)
         } else {
