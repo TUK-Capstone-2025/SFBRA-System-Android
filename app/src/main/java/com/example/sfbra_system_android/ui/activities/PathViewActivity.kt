@@ -139,10 +139,10 @@ class PathViewActivity : AppCompatActivity() {
                 val endTime = response.data.endTime
                 val route = response.data.route
 
-                val routePoints = setMinimumRoutePoints(getRouteToLatLng(route))
+                val routePoints = setMinimumRoutePoints(route)
                 drawRouteLine(routePoints)
-                addStartEndLabels(routePoints)
-                changeZoomLevel(routePoints)
+                addStartEndLabels(getRouteToLatLng(routePoints))
+                changeZoomLevel(getRouteToLatLng(routePoints))
 
                 // 시간 ui에 띄우기
                 binding.startTime.text = startTime
@@ -164,10 +164,10 @@ class PathViewActivity : AppCompatActivity() {
                 val endTime = response.data.endTime
                 val route = response.data.route
 
-                val routePoints = setMinimumRoutePoints(getRouteToLatLng(route))
+                val routePoints = setMinimumRoutePoints(route)
                 drawRouteLine(routePoints)
-                addStartEndLabels(routePoints)
-                changeZoomLevel(routePoints)
+                addStartEndLabels(getRouteToLatLng(routePoints))
+                changeZoomLevel(getRouteToLatLng(routePoints))
 
                 // 시간 ui에 띄우기
                 binding.startTime.text = startTime
@@ -180,7 +180,7 @@ class PathViewActivity : AppCompatActivity() {
     }
 
     // 좌표 개수 최소값 맞춰주는 함수
-    private fun setMinimumRoutePoints(points: List<LatLng>): List<LatLng> {
+    private fun setMinimumRoutePoints(points: List<LocationPoint>): List<LocationPoint> {
         return when {
             points.size >= 2 -> points
             points.size == 1 -> listOf(points[0], points[0]) // 동일 좌표 두 번
@@ -207,15 +207,44 @@ class PathViewActivity : AppCompatActivity() {
     }
 
     // 카카오맵의 RouteLine으로 경로 그리기 함수
-    private fun drawRouteLine(routePoints: List<LatLng>) {
-        val routeLineManager: RouteLineManager = kakaoMap?.getRouteLineManager()!! // 경로 매니저
-        val routeLineLayer = routeLineManager.getLayer() // 레이어
+    private fun drawRouteLine(routePoints: List<LocationPoint>) {
+        val routeLineManager: RouteLineManager = kakaoMap?.getRouteLineManager()!!
+        val routeLineLayer = routeLineManager.getLayer()
 
-        val styles = RouteLineStyles.from(RouteLineStyle.from(12.0f, Color.BLUE)) // 스타일
-        val stylesSet = RouteLineStylesSet.from(styles)
-        val segment = RouteLineSegment.from(routePoints, styles)
+        val blueStyle = RouteLineStyle.from(12.0f, Color.BLUE) // 기본 스타일
+        val yellowStyle = RouteLineStyle.from(12.0f, Color.YELLOW) // 후방주의 스타일
+        val redStyle = RouteLineStyle.from(12.0f, Color.RED) // 사고발생 스타일
 
-        val routeLine: RouteLine = routeLineLayer.addRouteLine(RouteLineOptions.from(segment).setStylesSet(stylesSet))
+        // 스타일 추가
+        val blueStyles = RouteLineStyles.from(blueStyle)
+        val yellowStyles = RouteLineStyles.from(yellowStyle)
+        val redStyles = RouteLineStyles.from(redStyle)
+
+        val segments = mutableListOf<RouteLineSegment>()
+
+        for (i in 1 until routePoints.size) {
+            val prev = routePoints[i - 1]
+            val curr = routePoints[i]
+            // LocationPoint -> LatLng으로 변경
+            val segmentPoints = listOf(
+                LatLng.from(prev.latitude, prev.longitude),
+                LatLng.from(curr.latitude, curr.longitude)
+            )
+
+            // 주의 여부에 따라 스타일 적용
+            val style = when (curr.warning) {
+                1 -> yellowStyles
+                2 -> redStyles
+                else -> blueStyles
+            }
+
+            segments.add(RouteLineSegment.from(segmentPoints, style))
+        }
+
+        // 하나의 RouteLine에 여러 Segment를 적용
+        val routeLine: RouteLine = routeLineLayer.addRouteLine(
+            RouteLineOptions.from(segments)
+        )
     }
 
     // 시작/종료 라벨 추가 함수
