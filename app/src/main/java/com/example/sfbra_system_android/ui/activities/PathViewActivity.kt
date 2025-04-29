@@ -81,15 +81,6 @@ class PathViewActivity : AppCompatActivity() {
                 kakaoMap.moveCamera(cameraUpdate) // 카메라 이동
                 kakaoMap.showOverlay(MapOverlay.BICYCLE_ROAD)
 
-                // todo 더미데이터 삭제할 것
-                /*
-                val routePoints = getRouteToLatLng2()
-                changeZoomLevel(routePoints)
-                drawRouteLine(routePoints)
-                addStartEndLabels(routePoints)
-                moveCameraToFitRoute(routePoints)
-                 */
-
                 val recordId = intent.getIntExtra("recordId", 0)
                 Log.d("PathViewActivity", "recordId: $recordId")
                 val memberId = intent.getIntExtra("memberId", -1)
@@ -152,7 +143,10 @@ class PathViewActivity : AppCompatActivity() {
                 drawRouteLine(routePoints)
                 addStartEndLabels(routePoints)
                 changeZoomLevel(routePoints)
-                // todo 시작,종료 시간 ui에 띄우기
+
+                // 시간 ui에 띄우기
+                binding.startTime.text = startTime
+                binding.endTime.text = endTime
             } else {
                 // 불러오기 실패
                 Toast.makeText(this,"좌표 목록 불러오기 실패", Toast.LENGTH_SHORT).show()
@@ -174,7 +168,10 @@ class PathViewActivity : AppCompatActivity() {
                 drawRouteLine(routePoints)
                 addStartEndLabels(routePoints)
                 changeZoomLevel(routePoints)
-                // todo 시작,종료 시간 ui에 띄우기
+
+                // 시간 ui에 띄우기
+                binding.startTime.text = startTime
+                binding.endTime.text = endTime
             } else {
                 // 불러오기 실패
                 Toast.makeText(this,"좌표 목록 불러오기 실패", Toast.LENGTH_SHORT).show()
@@ -194,17 +191,6 @@ class PathViewActivity : AppCompatActivity() {
     // LocationPoint 리스트를 LatLng 리스트로 변환하는 함수
     private fun getRouteToLatLng(route: List<LocationPoint>): List<LatLng> {
         return route.map { LatLng.from(it.latitude, it.longitude) }
-    }
-
-    // todo 더미데이터 삭제예정
-    private fun getRouteToLatLng2(): List<LatLng> {
-        return listOf(
-            LocationPoint(37.340179, 126.733591, 0),
-            LocationPoint(37.340300, 126.733700, 0),
-            LocationPoint(37.340450, 126.733850, 1),
-            LocationPoint(37.340600, 126.734000, 0),
-            LocationPoint(37.340750, 126.734150, 2) // 더미데이터
-        ).map { LatLng.from(it.latitude, it.longitude) }
     }
 
     // 경로에 맞춰 줌 레벨 변경, 카메라 이동
