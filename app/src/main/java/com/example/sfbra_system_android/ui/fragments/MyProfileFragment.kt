@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.viewModels
@@ -29,6 +30,7 @@ class MyProfileFragment : Fragment() {
     private lateinit var name: TextView
     private lateinit var nickname: TextView
     private lateinit var id: TextView
+    private lateinit var profileImage: ImageView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,6 +51,7 @@ class MyProfileFragment : Fragment() {
         name = view.findViewById(R.id.name_text)
         nickname = view.findViewById(R.id.nickname_text)
         id = view.findViewById(R.id.id_text)
+        profileImage = view.findViewById(R.id.profile_image)
 
         getInformation()
 

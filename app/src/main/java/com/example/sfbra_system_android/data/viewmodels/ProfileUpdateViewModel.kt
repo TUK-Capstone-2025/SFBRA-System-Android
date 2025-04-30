@@ -29,6 +29,8 @@ class ProfileUpdateViewModel(application: Application) : AndroidViewModel(applic
     val changeIdResponse: MutableLiveData<ChangeUserIdResponse?> get() = _changeIdResponse
     private val _changePassResponse = MutableLiveData<ChangePasswordResponse?>()
     val changePassResponse: MutableLiveData<ChangePasswordResponse?> get() = _changePassResponse
+    private val _changeAvatarResponse = MutableLiveData<ChangeAvatarResponse?>()
+    val changeAvatarResponse: MutableLiveData<ChangeAvatarResponse?> get() = _changeAvatarResponse
 
     // 저장된 사용자 토큰
     private val token: String = SharedPreferencesHelper.getToken(application).toString()
@@ -111,7 +113,49 @@ class ProfileUpdateViewModel(application: Application) : AndroidViewModel(applic
             })
     }
 
+    // 프로필 사진 변경 (이미지 업로드)
     fun changeAvatar(uri: Uri) {
+        val context = getApplication<Application>()
+        val contentResolver = context.contentResolver
 
+        try {
+            // contentResolver로 URI에서 이미지 파일 읽기
+            val inputStream = contentResolver.openInputStream(uri)
+            val tempFile = File(context.cacheDir, "profile_upload_temp.png")
+
+            // 임시 파일로 복사
+            tempFile.outputStream().use {
+                inputStream?.copyTo(it)
+            }
+
+            // Multipart 형식으로 파일 준비
+            val requestFile = tempFile.asRequestBody("image/*".toMediaTypeOrNull())
+            val body = MultipartBody.Part.createFormData("file", tempFile.name, requestFile)
+
+            // Retrofit 서비스 호출
+            val service = RetrofitClient.getProfileUpdateService(token)
+            service.changeAvatar(body).enqueue(object : Callback<ChangeAvatarResponse> {
+                override fun onResponse(
+                    call: Call<ChangeAvatarResponse>,
+                    response: Response<ChangeAvatarResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        Log.d("ProfileUpdateViewModel", "프로필 사진 업로드 성공: ${response.body()?.message}")
+                        _changeAvatarResponse.value = response.body()
+                    } else {
+                        Log.e("ProfileUpdateViewModel", "프로필 사진 업로드 실패: ${response.message()}")
+                        _changeAvatarResponse.value = ChangeAvatarResponse(false, "프로필 사진 업로드 실패", "")
+                    }
+                }
+
+                override fun onFailure(call: Call<ChangeAvatarResponse>, t: Throwable) {
+                    Log.e("ProfileUpdateViewModel", "프로필 사진 업로드 네트워크 오류: ${t.message}")
+                    _changeAvatarResponse.value = ChangeAvatarResponse(false, "프로필 사진 업로드 네트워크 오류", "")
+                }
+            })
+
+        } catch (e: Exception) {
+            Log.e("ProfileUpdateViewModel", "프로필 이미지 처리 중 오류: ${e.message}")
+        }
     }
 }
