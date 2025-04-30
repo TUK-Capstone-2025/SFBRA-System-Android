@@ -17,6 +17,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import com.bumptech.glide.Glide
 import com.example.sfbra_system_android.R
 import com.example.sfbra_system_android.data.viewmodels.ProfileUpdateViewModel
 import com.example.sfbra_system_android.data.SharedPreferencesHelper
@@ -72,6 +73,7 @@ class MyProfileFragment : Fragment() {
         startActivityForResult(intent, REQUEST_IMAGE_PICK)
     }
 
+    // 이미지 선택 결과 처리
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -97,9 +99,6 @@ class MyProfileFragment : Fragment() {
                     val resultUri = UCrop.getOutput(data)
                     if (resultUri != null) {
                         imageUri = resultUri
-
-                        // 미리보기 (선택사항)
-                        //binding.profileImageView.setImageURI(imageUri)
 
                         // 서버로 전송
                         changeAvatar()
@@ -127,6 +126,7 @@ class MyProfileFragment : Fragment() {
         profileUpdateViewModel.changeAvatarResponse.observe(viewLifecycleOwner, Observer { response ->
             if (response != null && response.success) {
                 Toast.makeText(requireContext(), "프로필 사진을 변경하였습니다.", Toast.LENGTH_SHORT).show()
+                getInformation()
             }
             else {
                 Toast.makeText(requireContext(), "프로필 사진 변경에 실패했습니다.", Toast.LENGTH_SHORT).show()
@@ -244,12 +244,23 @@ class MyProfileFragment : Fragment() {
                 name.text = user.data.name
                 nickname.text = user.data.nickname
                 id.text = "id: ${user.data.userId}"
+
+                val profileUrl = user.data.profileImageUrl
+                if (!profileUrl.isNullOrEmpty()) {
+                    Glide.with(this)
+                        .load(profileUrl)
+                        .circleCrop()
+                        .placeholder(R.drawable.ic_user)
+                        .error(R.drawable.ic_user)
+                        .into(profileImage)
+                }
             } else {
                 Toast.makeText(requireContext(), "사용자 정보를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show()
             }
         })
     }
 
+    /*
     fun <T> LiveData<T>.observeOnce(owner: LifecycleOwner, observer: Observer<T>) {
         observe(owner, object : Observer<T> {
             override fun onChanged(value: T) {
@@ -258,4 +269,5 @@ class MyProfileFragment : Fragment() {
             }
         })
     }
+    */
 }

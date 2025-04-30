@@ -20,5 +20,6 @@ data class ProfileResponse(
 data class UserData(
     val name: String,
     val nickname: String,
-    val userId: String
+    val userId: String,
+    val profileImageUrl: String
 )
