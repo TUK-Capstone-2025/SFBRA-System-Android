@@ -1,8 +1,11 @@
 package com.example.sfbra_system_android.data.services
 
+import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.http.Body
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
 
 // 사용자 프로필 변경 api 호출 인터페이스
 interface ProfileUpdateService {
@@ -15,6 +18,9 @@ interface ProfileUpdateService {
     @POST("member/changePass") // 비밀번호 변경 엔드포인트
     fun changePassword(@Body request: ChangePasswordRequest): Call<ChangePasswordResponse>
 
+    @Multipart
+    @POST("member/uploadProfile") // 프로필 사진 변경 엔드포인트
+    fun changeAvatar(@Part file: MultipartBody.Part): Call<ChangeAvatarResponse>
 }
 
 // 프로필 변경 요청 데이터 클래스
@@ -27,3 +33,4 @@ data class ChangePasswordRequest(val currentPassword: String, val newPassword: S
 data class ChangeNicknameResponse(val success: Boolean, val message: String, val data: String)
 data class ChangeUserIdResponse(val success: Boolean, val message: String, val data: String)
 data class ChangePasswordResponse(val success: Boolean, val message: String, val data: String)
+data class ChangeAvatarResponse(val success: Boolean, val message: String, val data: String)
