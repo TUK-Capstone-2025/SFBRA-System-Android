@@ -2,6 +2,7 @@ package com.example.sfbra_system_android.ui.fragments
 
 import android.app.AlertDialog
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -31,6 +32,7 @@ class MyProfileFragment : Fragment() {
     private lateinit var nickname: TextView
     private lateinit var id: TextView
     private lateinit var profileImage: ImageView
+    private var imageUri: Uri? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,8 +62,24 @@ class MyProfileFragment : Fragment() {
 
     // 프로필 사진 변경 함수
     private fun changeAvatar() {
-        Toast.makeText(requireContext(), "프로필 사진 변경 클릭", Toast.LENGTH_SHORT).show()
-        // todo 프로필 사진 변경 구현
+
+
+        // 이미지 URI가 설정되지 않은 경우 처리
+        if (imageUri == null) {
+            Toast.makeText(requireContext(), "이미지를 먼저 선택해주세요.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        profileUpdateViewModel.changeAvatar(imageUri!!)
+
+        profileUpdateViewModel.changeAvatarResponse.observe(viewLifecycleOwner, Observer { response ->
+            if (response != null && response.success) {
+                Toast.makeText(requireContext(), "프로필 사진을 변경하였습니다.", Toast.LENGTH_SHORT).show()
+            }
+            else {
+                Toast.makeText(requireContext(), "프로필 사진 변경에 실패했습니다.", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     // 닉네임 변경 함수
