@@ -1,5 +1,6 @@
 package com.example.sfbra_system_android.ui.fragments
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
@@ -23,6 +24,8 @@ import com.example.sfbra_system_android.data.viewmodels.ProfileViewModel
 import com.example.sfbra_system_android.ui.activities.LoginActivity
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import com.yalantis.ucrop.UCrop
+import java.io.File
 
 // 내 프로필 화면
 class MyProfileFragment : Fragment() {
@@ -33,6 +36,8 @@ class MyProfileFragment : Fragment() {
     private lateinit var id: TextView
     private lateinit var profileImage: ImageView
     private var imageUri: Uri? = null
+    private val REQUEST_IMAGE_PICK = 1001
+    private val REQUEST_CROP_IMAGE = UCrop.REQUEST_CROP
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,7 +50,7 @@ class MyProfileFragment : Fragment() {
         val changeId = view.findViewById<TextView>(R.id.change_id)
         val changePassword = view.findViewById<TextView>(R.id.change_password)
 
-        changeAvatar.setOnClickListener { changeAvatar() }
+        changeAvatar.setOnClickListener { pickImage() }
         changeNickname.setOnClickListener { changeNickname() }
         changeId.setOnClickListener { changeLoginID() }
         changePassword.setOnClickListener { changePassword() }
@@ -60,10 +65,57 @@ class MyProfileFragment : Fragment() {
         return view
     }
 
+    // 이미지 선택 함수
+    private fun pickImage() {
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        startActivityForResult(intent, REQUEST_IMAGE_PICK)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        when (requestCode) {
+            REQUEST_IMAGE_PICK -> {
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    val sourceUri = data.data
+                    if (sourceUri != null) {
+                        // 크롭용 임시 파일 생성
+                        val destinationUri = Uri.fromFile(File(requireContext().cacheDir, "cropped_profile_image.jpg"))
+
+                        // uCrop 실행
+                        UCrop.of(sourceUri, destinationUri)
+                            .withAspectRatio(1f, 1f) // 1:1 비율
+                            .withMaxResultSize(512, 512)
+                            .start(requireContext(), this)
+                    }
+                }
+            }
+
+            REQUEST_CROP_IMAGE -> {
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    val resultUri = UCrop.getOutput(data)
+                    if (resultUri != null) {
+                        imageUri = resultUri
+
+                        // 미리보기 (선택사항)
+                        //binding.profileImageView.setImageURI(imageUri)
+
+                        // 서버로 전송
+                        changeAvatar()
+                    }
+                } else if (resultCode == UCrop.RESULT_ERROR) {
+                    val cropError = UCrop.getError(data!!)
+                    cropError?.printStackTrace()
+                    Toast.makeText(requireContext(), "이미지 자르기 실패", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+
     // 프로필 사진 변경 함수
     private fun changeAvatar() {
-
-
         // 이미지 URI가 설정되지 않은 경우 처리
         if (imageUri == null) {
             Toast.makeText(requireContext(), "이미지를 먼저 선택해주세요.", Toast.LENGTH_SHORT).show()
