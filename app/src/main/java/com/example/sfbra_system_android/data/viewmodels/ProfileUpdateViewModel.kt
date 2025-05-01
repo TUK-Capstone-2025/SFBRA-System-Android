@@ -48,12 +48,14 @@ class ProfileUpdateViewModel(application: Application) : AndroidViewModel(applic
                     } else {
                         // 닉네임 변경 실패
                         Log.e("ProfileUpdateViewModel", "닉네임 변경 실패: ${response.message()}")
+                        _changeNickResponse.value = ChangeNicknameResponse(false, "닉네임 변경 실패", "")
                     }
                 }
 
                 override fun onFailure(call: Call<ChangeNicknameResponse>, t: Throwable) {
                     // 네트워크 오류
                     Log.e("ProfileUpdateViewModel", "네트워크 오류: ${t.message}")
+                    _changeNickResponse.value = ChangeNicknameResponse(false, "닉네임 변경 실패", "")
                 }
             })
     }
@@ -85,6 +87,7 @@ class ProfileUpdateViewModel(application: Application) : AndroidViewModel(applic
                 override fun onFailure(call: Call<ChangeUserIdResponse>, t: Throwable) {
                     // 네트워크 오류
                     Log.e("ProfileUpdateViewModel", "네트워크 오류: ${t.message}")
+                    _changeIdResponse.value = ChangeUserIdResponse(false, "아이디 변경 실패", "")
                 }
             })
     }
@@ -103,12 +106,14 @@ class ProfileUpdateViewModel(application: Application) : AndroidViewModel(applic
                     else {
                         // 비밀번호 변경 실패
                         Log.e("ProfileUpdateViewModel", "비밀번호 변경 실패: ${response.message()}")
+                        _changePassResponse.value = ChangePasswordResponse(false, "비밀번호 변경 실패", "")
                     }
                 }
 
                 override fun onFailure(call: Call<ChangePasswordResponse>, t: Throwable) {
                     // 네트워크 오류
                     Log.e("ProfileUpdateViewModel", "네트워크 오류: ${t.message}")
+                    _changePassResponse.value = ChangePasswordResponse(false, "비밀번호 변경 실패", "")
                 }
             })
     }
@@ -157,5 +162,12 @@ class ProfileUpdateViewModel(application: Application) : AndroidViewModel(applic
         } catch (e: Exception) {
             Log.e("ProfileUpdateViewModel", "프로필 이미지 처리 중 오류: ${e.message}")
         }
+    }
+
+    fun clearLiveData() {
+        _changeNickResponse.value = null
+        _changeIdResponse.value = null
+        _changePassResponse.value = null
+        _changeAvatarResponse.value = null
     }
 }

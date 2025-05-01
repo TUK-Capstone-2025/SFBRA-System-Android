@@ -125,9 +125,11 @@ class MyProfileFragment : Fragment() {
             if (response != null && response.success) {
                 Toast.makeText(requireContext(), "프로필 사진을 변경하였습니다.", Toast.LENGTH_SHORT).show()
                 getInformation()
+                profileUpdateViewModel.clearLiveData()
             }
-            else {
+            else if (response != null){
                 Toast.makeText(requireContext(), "프로필 사진 변경에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                profileUpdateViewModel.clearLiveData()
             }
         })
     }
@@ -149,8 +151,10 @@ class MyProfileFragment : Fragment() {
                     if (response != null && response.success) {
                         Toast.makeText(requireContext(), "닉네임을 변경하였습니다.", Toast.LENGTH_SHORT).show()
                         getInformation()
-                    } else {
+                        profileUpdateViewModel.clearLiveData()
+                    } else if (response != null) {
                         Toast.makeText(requireContext(), "닉네임 변경에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                        profileUpdateViewModel.clearLiveData()
                     }
                 })
             }
@@ -178,12 +182,13 @@ class MyProfileFragment : Fragment() {
                         SharedPreferencesHelper.clearToken(requireContext()) // 토큰 초기화
                         startActivity(Intent(requireContext(), LoginActivity::class.java)) // 로그인 화면으로 이동
                         activity?.finish() // 액티비티 종료
-                    } else {
+                    } else if (response != null) {
                         val gson = Gson()
-                        val jsonObject = gson.fromJson(response?.message, JsonObject::class.java)
+                        val jsonObject = gson.fromJson(response.message, JsonObject::class.java)
 
                         val errorMessage = jsonObject.get("message").asString
                         Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+                        profileUpdateViewModel.clearLiveData()
                     }
                 })
             }
@@ -222,8 +227,10 @@ class MyProfileFragment : Fragment() {
                 profileUpdateViewModel.changePassResponse.observe(viewLifecycleOwner, Observer { response ->
                     if (response != null && response.success) {
                         Toast.makeText(requireContext(), "비밀번호를 변경하였습니다.", Toast.LENGTH_SHORT).show()
-                    } else {
+                        profileUpdateViewModel.clearLiveData()
+                    } else if (response != null) {
                         Toast.makeText(requireContext(), "비밀번호 변경에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                        profileUpdateViewModel.clearLiveData()
                     }
                 })
                 dialog.dismiss()  // 비밀번호 변경 완료 후 다이얼로그 닫음
