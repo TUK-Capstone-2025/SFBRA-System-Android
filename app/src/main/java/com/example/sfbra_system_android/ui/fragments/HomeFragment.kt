@@ -418,23 +418,9 @@ class HomeFragment : Fragment() {
         startTime = getCurrentTime()
         startButton.text = getString(R.string.finish_drive)
         isDriving = true
-        //updateCurrentLocation() // 현재 위치 업데이트(초기화)
         speedText.visibility = View.VISIBLE // 속도 텍스트 표시
         Toast.makeText(requireContext(), "GPS 확인 완료. 주행을 시작합니다.", Toast.LENGTH_SHORT).show()
-
-        //locationHandler.post(updateLocationRunnable) // 5초 간격으로 위치 업데이트 시작
     }
-
-    // 핸들러를 사용한 실시간 위치 갱신 함수
-    /*
-    private val locationHandler = Handler(Looper.getMainLooper())
-    private val updateLocationRunnable = object : Runnable {
-        override fun run() {
-            updateCurrentLocation() // 현재 위치 업데이트
-            // todo 실시간 경로 그리기 + 현재 위치 점으로 표시
-            locationHandler.postDelayed(this, 5000) // 5초마다 위치 업데이트
-        }
-    } */
 
     // 현재 위치 업데이트, 지도 수정 함수
     private fun updateCurrentLocation(location: Location) {
@@ -605,7 +591,7 @@ class HomeFragment : Fragment() {
     // 긴급 상황 시 팝업 알림 함
     fun showAccidentAlert(context: Context) {
         val handler = Handler(Looper.getMainLooper()) // 카운트다운을 위한 핸들러
-        var countdown = 5 // 20초 카운트다운, but 임시로 5초
+        var countdown = 20 // 20초 카운트다운, but 임시로 5초
 
         // 다이얼로그 생성
         val dialog = AlertDialog.Builder(context)
@@ -616,6 +602,7 @@ class HomeFragment : Fragment() {
                 handler.removeCallbacksAndMessages(null) // 타이머 중단
                 isAccident = false
                 Toast.makeText(context, "메시지 전송이 취소되었습니다.", Toast.LENGTH_SHORT).show()
+                stopDriving()
             }
             .create()
         dialog.show()
@@ -695,5 +682,6 @@ class HomeFragment : Fragment() {
                 Toast.makeText(context, "현재 위치를 제외한 메시지를 전송했습니다.", Toast.LENGTH_SHORT).show()
             }
         }
+        stopDriving()
     }
 }

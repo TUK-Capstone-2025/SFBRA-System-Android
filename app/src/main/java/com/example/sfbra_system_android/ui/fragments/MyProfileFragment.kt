@@ -14,8 +14,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
 import com.example.sfbra_system_android.R
@@ -259,15 +257,4 @@ class MyProfileFragment : Fragment() {
             }
         })
     }
-
-    /*
-    fun <T> LiveData<T>.observeOnce(owner: LifecycleOwner, observer: Observer<T>) {
-        observe(owner, object : Observer<T> {
-            override fun onChanged(value: T) {
-                removeObserver(this) // 한 번 호출 후 제거
-                observer.onChanged(value)
-            }
-        })
-    }
-    */
 }

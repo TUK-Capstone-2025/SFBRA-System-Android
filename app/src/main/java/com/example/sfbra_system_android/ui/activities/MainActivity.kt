@@ -153,9 +153,8 @@ class MainActivity : AppCompatActivity() {
 
         val transaction = supportFragmentManager.beginTransaction()
 
-        // 기존 프래그먼트 숨기기 전에 childFragmentManager 백스택 비우기
+        // 기존 프래그먼트 숨기기 전에 childFragmentManager 백스택 비우기(팀원 주행기록 목록용)
         activeFragment?.let {
-            // 여기 추가
             val childFragmentManager = it.childFragmentManager
             if (childFragmentManager.backStackEntryCount > 0) {
                 childFragmentManager.popBackStackImmediate(null, androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE)
