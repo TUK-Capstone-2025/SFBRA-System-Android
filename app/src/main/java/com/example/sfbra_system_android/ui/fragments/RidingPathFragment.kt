@@ -62,7 +62,7 @@ class RidingPathFragment : Fragment() {
         // 뒤로가기 시 이전 프래그먼트로 돌아가기
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                val fragmentManager = parentFragmentManager
+                val fragmentManager = requireActivity().supportFragmentManager
                 if (fragmentManager.backStackEntryCount > 0) {
                     fragmentManager.popBackStack()
                 } else {
@@ -112,6 +112,17 @@ class RidingPathFragment : Fragment() {
         } else {
             titleText.text = "나의 주행기록"
             getRidingRecords(adapter)
+        }
+
+        // 백스택 체크 확인용
+        val backStackButton = view.findViewById<TextView>(R.id.back_stack)
+        backStackButton.setOnClickListener{
+            val count = requireActivity().supportFragmentManager.backStackEntryCount
+            Log.d("BackStack", "Fragment back stack count: $count")
+            for (i in 0 until count) {
+                val name = requireActivity().supportFragmentManager.getBackStackEntryAt(i).name
+                Log.d("BackStack", "Entry $i: $name")
+            }
         }
 
         return view

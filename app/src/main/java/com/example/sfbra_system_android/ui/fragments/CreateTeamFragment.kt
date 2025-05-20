@@ -44,7 +44,7 @@ class CreateTeamFragment : Fragment() {
         // 뒤로가기 시 이전 프래그먼트로 돌아가기
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                val fragmentManager = parentFragmentManager
+                val fragmentManager = requireActivity().supportFragmentManager
                 if (fragmentManager.backStackEntryCount > 0) {
                     fragmentManager.popBackStack()
                 } else {
@@ -67,7 +67,7 @@ class CreateTeamFragment : Fragment() {
         createTeamViewModel.createTeamResponse.observe(viewLifecycleOwner, Observer { response ->
             if (response != null && response.success) {
                 // 팀 생성 성공
-                parentFragmentManager.popBackStack() // 현재 프래그먼트 제거(백스텍 제거)
+                requireActivity().supportFragmentManager.popBackStack() // 현재 프래그먼트 제거(백스텍 제거)
 
                 (parentFragment as? MyTeamFragment)?.switchFragment(MyTeamInfoFragment(), "MY_TEAM") // 프래그먼트 교체
             }

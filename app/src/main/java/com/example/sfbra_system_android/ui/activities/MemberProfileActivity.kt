@@ -1,11 +1,18 @@
 package com.example.sfbra_system_android.ui.activities
 
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import com.example.sfbra_system_android.R
 import com.example.sfbra_system_android.data.RetrofitClient
 import com.example.sfbra_system_android.data.SharedPreferencesHelper
 import com.example.sfbra_system_android.data.services.MemberProfileResponse
@@ -26,6 +33,50 @@ class MemberProfileActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // 시스템 내비게이션 바 버튼 색상 변경
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+        }
+
+        setupActionBar()
+
+        val memberId = intent.getIntExtra("memberId", -1)
+        Log.d("PathViewActivity", "memberId: $memberId")
+        if (memberId != -1) {
+            getMemberProfile(memberId)
+        } else {
+            Log.d("PathViewActivity", "memberId가 유효하지 않습니다.")
+            onBackPressedDispatcher.onBackPressed()
+        }
+    }
+
+    // 액션바 색깔 수정 함수
+    private fun setupActionBar() {
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setBackgroundDrawable(ContextCompat.getDrawable(this@MemberProfileActivity, R.color.my_primary))
+
+            val titleText = SpannableString("멤버 프로필")
+            titleText.setSpan(ForegroundColorSpan(Color.WHITE), 0, titleText.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            title = titleText
+
+            // 뒤로가기 아이콘 색상 변경
+            val upArrow = ContextCompat.getDrawable(this@MemberProfileActivity, R.drawable.ic_arrow_back)
+            upArrow?.setTint(Color.WHITE)
+            setHomeAsUpIndicator(upArrow)
+        }
+
+        // API 레벨 26 이상에서만 실행
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // 시스템 내비게이션 바 버튼 색상 변경
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressedDispatcher.onBackPressed() // 또는 finish()(종료)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 

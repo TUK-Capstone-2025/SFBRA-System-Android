@@ -55,7 +55,7 @@ class MyRequestsStatusFragment : Fragment() {
         // 뒤로가기 시 이전 프래그먼트로 돌아가기
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                val fragmentManager = parentFragmentManager
+                val fragmentManager = requireActivity().supportFragmentManager
                 if (fragmentManager.backStackEntryCount > 0) {
                     fragmentManager.popBackStack()
                 } else {
@@ -121,7 +121,7 @@ class MyRequestsStatusFragment : Fragment() {
         deleteRequestViewModel.deleteRequestResponse.observe(viewLifecycleOwner, Observer { deleteResponse ->
             if (deleteResponse != null && deleteResponse.success) {
                 Toast.makeText(context, "신청이 취소되었습니다.", Toast.LENGTH_SHORT).show()
-                parentFragmentManager.popBackStack()
+                requireActivity().supportFragmentManager.popBackStack()
             } else {
                 Toast.makeText(context, "신청 취소에 실패했습니다.", Toast.LENGTH_SHORT).show()
             }

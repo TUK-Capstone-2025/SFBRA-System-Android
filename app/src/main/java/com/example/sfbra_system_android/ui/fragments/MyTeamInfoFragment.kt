@@ -1,6 +1,7 @@
 package com.example.sfbra_system_android.ui.fragments
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -23,6 +24,8 @@ import com.example.sfbra_system_android.data.TeamMemberAdapter
 import com.example.sfbra_system_android.data.viewmodels.ApplicantMemberViewModel
 import com.example.sfbra_system_android.data.viewmodels.KickMemberViewModel
 import com.example.sfbra_system_android.data.viewmodels.MyTeamInfoViewModel
+import com.example.sfbra_system_android.ui.activities.MemberProfileActivity
+import com.example.sfbra_system_android.ui.activities.PathViewActivity
 
 // 팀이 있는 경우: 팀 정보 화면
 class MyTeamInfoFragment : Fragment() {
@@ -177,8 +180,12 @@ class MyTeamInfoFragment : Fragment() {
         })
     }
 
+    // 멤버 프로필 액티비티로 전환 함수
     private fun showMemberProfile(memberId: Int) {
-        Toast.makeText(requireContext(), "프로필 보기: $memberId", Toast.LENGTH_SHORT).show()
+        val intent = Intent(requireContext(), MemberProfileActivity::class.java).apply {
+            putExtra("memberId", memberId) // 멤버 아이디 전달
+        }
+        startActivity(intent)
     }
 
     // 멤버 주행기록 프래그먼트로 전환 함수
@@ -189,7 +196,7 @@ class MyTeamInfoFragment : Fragment() {
 
     // 자식 프래그먼트 교체 함수
     private fun replaceFragment(fragment: Fragment) {
-        parentFragmentManager.beginTransaction()
+        requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container2, fragment) // 프래그먼트 교체, 메인 액티비티 프래그먼트 컨테이너 id
             .addToBackStack(null) // 뒤로가기 눌렀을 시 이전 프래그먼트로 돌아가기
             .commit()

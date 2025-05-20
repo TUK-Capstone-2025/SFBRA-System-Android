@@ -49,7 +49,7 @@ class JoinTeamFragment : Fragment() {
             val bottomSheet = TeamDetailBottomSheetDialogFragment(team) { teamId ->
                 joinTeam(teamId)
             }
-            bottomSheet.show(parentFragmentManager, "TEAM_DETAIL")
+            bottomSheet.show(requireActivity().supportFragmentManager, "TEAM_DETAIL")
         }
 
         teamListRecyclerView.adapter = adapter
@@ -66,7 +66,7 @@ class JoinTeamFragment : Fragment() {
         // 뒤로가기 시 이전 프래그먼트로 돌아가기
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                val fragmentManager = parentFragmentManager
+                val fragmentManager = requireActivity().supportFragmentManager
                 if (fragmentManager.backStackEntryCount > 0) {
                     fragmentManager.popBackStack()
                 } else {
@@ -93,7 +93,7 @@ class JoinTeamFragment : Fragment() {
 
     // 자식 프래그먼트 교체 함수
     private fun replaceFragment(fragment: Fragment) {
-        parentFragmentManager.beginTransaction()
+        requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container2, fragment) // 프래그먼트 교체, 메인 액티비티 프래그먼트 컨테이너 id
             .addToBackStack(null) // 뒤로가기 눌렀을 시 이전 프래그먼트로 돌아가기
             .commit()
