@@ -8,7 +8,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="사용자1"
+        android:text="Memu"
         android:gravity="center_vertical"
         android:layout_marginLeft="20dp"
         android:textColor="#000000"
