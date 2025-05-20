@@ -12,6 +12,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.bumptech.glide.Glide
 import com.example.sfbra_system_android.R
 import com.example.sfbra_system_android.data.RetrofitClient
 import com.example.sfbra_system_android.data.SharedPreferencesHelper
@@ -92,6 +93,16 @@ class MemberProfileActivity : AppCompatActivity() {
                     if (memberProfileResponse != null && memberProfileResponse.success) {
                         val memberProfile = memberProfileResponse.data
                         // todo: UI 업데이트
+                        binding.nicknameText.text = memberProfile.nickname
+                        val profileUrl = memberProfile.profileImageUrl
+                        if (!profileUrl.isNullOrEmpty()) {
+                            Glide.with(this@MemberProfileActivity)
+                                .load(profileUrl)
+                                .circleCrop()
+                                .placeholder(R.drawable.ic_user)
+                                .error(R.drawable.ic_user)
+                                .into(binding.profileImage)
+                        }
                     }
                     else {
                         Log.d("MemberProfileActivity","프로필 조회 실패: ${response.message()}")
