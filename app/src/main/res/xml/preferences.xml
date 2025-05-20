@@ -16,5 +16,4 @@
             android:dialogTitle="번호 입력"
             android:inputType="phone" />
     </PreferenceCategory>
-
 </PreferenceScreen>

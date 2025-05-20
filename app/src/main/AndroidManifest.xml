@@ -8,22 +8,19 @@
     <uses-permission
         android:name="android.permission.BLUETOOTH_SCAN"
         android:usesPermissionFlags="neverForLocation" />
-
     <!-- 위치 권한 -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-
     <uses-permission android:name="android.permission.INTERNET" /> <!-- 인터넷 권한 -->
     <uses-permission android:name="android.permission.VIBRATE" /> <!-- 진동 권한 -->
     <uses-permission android:name="android.permission.SEND_SMS" /> <!-- 메시지 권한 -->
-
     <!-- 파일 권한 -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 
     <uses-feature
         android:name="android.hardware.telephony"
-        android:required="false" /> <!-- 메시지 기능 없는 기기 다운 가능(플레이스토어) -->
+        android:required="false" />
 
     <application
         android:name=".app.SfbraApplication"
@@ -37,9 +34,12 @@
         android:theme="@style/Theme.SFBRASystemAndroid"
         tools:targetApi="31">
         <activity
+            android:name=".ui.activities.MemberProfileActivity"
+            android:exported="false" />
+        <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/> <!-- uCrop용 액티비티 -->
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" /> <!-- uCrop용 액티비티 -->
         <activity
             android:name=".ui.activities.PathViewActivity"
             android:exported="false" />

@@ -72,11 +72,11 @@ class LoginActivity : AppCompatActivity() {
                         startActivity(intent) // 메인 액티비티로 이동
                         finish() // 로그인 액티비티 종료
                     } else {
-                        Toast.makeText(this@LoginActivity, "로그인 실패", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@LoginActivity, "로그인 실패: ${loginResponse?.message}", Toast.LENGTH_SHORT).show()
                         Log.d("Login", "로그인 실패: ${loginResponse?.message}")
                     }
                 } else {
-                    Toast.makeText(this@LoginActivity, "로그인 실패: 서버 오류", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@LoginActivity, "로그인 실패: ${response.code()}에러", Toast.LENGTH_SHORT).show()
                     Log.d("Login", "서버 오류: ${response.code()}")
                 }
             }

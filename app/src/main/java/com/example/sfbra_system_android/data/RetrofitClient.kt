@@ -6,6 +6,7 @@ import com.example.sfbra_system_android.data.services.DeleteRequestService
 import com.example.sfbra_system_android.data.services.JoinTeamService
 import com.example.sfbra_system_android.data.services.KickMemberService
 import com.example.sfbra_system_android.data.services.LoginService
+import com.example.sfbra_system_android.data.services.MemberProfileService
 import com.example.sfbra_system_android.data.services.MyTeamInfoService
 import com.example.sfbra_system_android.data.services.PathRecordRouteService
 import com.example.sfbra_system_android.data.services.PathRecordService
@@ -94,4 +95,7 @@ object RetrofitClient {
 
     fun getKickMemberService(token: String): KickMemberService =
         getRetrofitInstance(token).create(KickMemberService::class.java)
+
+    fun getMemberProfileService(token: String): MemberProfileService =
+        getRetrofitInstance(token).create(MemberProfileService::class.java)
 }
