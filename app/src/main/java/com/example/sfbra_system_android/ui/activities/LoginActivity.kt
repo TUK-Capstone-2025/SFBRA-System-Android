@@ -12,6 +12,7 @@ import com.example.sfbra_system_android.data.services.LoginResponse
 import com.example.sfbra_system_android.data.RetrofitClient
 import com.example.sfbra_system_android.data.SharedPreferencesHelper
 import com.example.sfbra_system_android.databinding.ActivityLoginBinding
+import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -73,17 +74,26 @@ class LoginActivity : AppCompatActivity() {
                         finish() // 로그인 액티비티 종료
                     } else {
                         Toast.makeText(this@LoginActivity, "로그인 실패: ${loginResponse?.message}", Toast.LENGTH_SHORT).show()
-                        Log.d("Login", "로그인 실패: ${loginResponse?.message}")
+                        Log.e("Login", "로그인 실패: ${loginResponse?.message}")
                     }
                 } else {
-                    Toast.makeText(this@LoginActivity, "로그인 실패: ${response.code()}에러", Toast.LENGTH_SHORT).show()
+                    try {
+                        val errorResponse = response.errorBody()?.string()
+                        val gson = Gson()
+                        val loginResponse = gson.fromJson(errorResponse, LoginResponse::class.java)
+                        Toast.makeText(this@LoginActivity, loginResponse.message, Toast.LENGTH_SHORT).show()
+
+                        Log.e("Login", loginResponse.message)
+                    } catch (e: Exception) {
+                        Log.e("Login", "로그인 실패: ${e.message}")
+                    }
                     Log.d("Login", "서버 오류: ${response.code()}")
                 }
             }
 
             override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
                 Toast.makeText(this@LoginActivity, "로그인 실패: 네트워크 오류", Toast.LENGTH_SHORT).show()
-                Log.d("Login", "네트워크 오류: ${t.message}")
+                Log.e("Login", "네트워크 오류: ${t.message}")
             }
         })
     }

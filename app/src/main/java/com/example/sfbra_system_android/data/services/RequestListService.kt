@@ -4,7 +4,7 @@ import retrofit2.Call
 import retrofit2.http.GET
 
 interface RequestListService {
-    @GET("member/applyList")
+    @GET("member/applyStatus")
     fun getRequestList(): Call<RequestListResponse>
 }
 
