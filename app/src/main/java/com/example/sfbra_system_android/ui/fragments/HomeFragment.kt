@@ -6,6 +6,7 @@ import android.app.AlertDialog
 import android.bluetooth.BluetoothAdapter
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
@@ -51,6 +52,12 @@ import com.kakao.vectormap.MapView
 import com.kakao.vectormap.camera.CameraAnimation
 import com.kakao.vectormap.camera.CameraUpdate
 import com.kakao.vectormap.camera.CameraUpdateFactory
+import com.kakao.vectormap.route.RouteLine
+import com.kakao.vectormap.route.RouteLineManager
+import com.kakao.vectormap.route.RouteLineOptions
+import com.kakao.vectormap.route.RouteLineSegment
+import com.kakao.vectormap.route.RouteLineStyle
+import com.kakao.vectormap.route.RouteLineStyles
 import kotlinx.coroutines.Job
 import org.json.JSONObject
 import kotlinx.coroutines.*
@@ -427,6 +434,7 @@ class HomeFragment : Fragment() {
         val addressText = getAddressFromLocation(location.latitude, location.longitude) // 현재 위치 주소
         (activity as? MainActivity)?.setTitleFromLocation(addressText) // 액션바 타이틀 수정
         updateRoute(location.latitude, location.longitude, warningStatus) // 경로 리스트에 추가
+        updateRouteLine(route!!) // 경로 그림 업데이트
         warningStatus = 0 // 위험 요소 초기화
 
         val currentLatLng = LatLng.from(location.latitude, location.longitude)
@@ -434,6 +442,48 @@ class HomeFragment : Fragment() {
         kakaoMap?.moveCamera(cameraUpdate, CameraAnimation.from(1000, true, true))
     }
 
+    private fun updateRouteLine(routePoints: List<LocationPoint>) {
+        // todo: 경로 그림 그리기
+        val routeLineManager: RouteLineManager = kakaoMap?.getRouteLineManager()!!
+        val routeLineLayer = routeLineManager.getLayer()
+
+        routeLineLayer.removeAll() // 기존 경로 삭제
+
+        val blueStyle = RouteLineStyle.from(12.0f, Color.BLUE) // 기본 스타일
+        val yellowStyle = RouteLineStyle.from(12.0f, Color.YELLOW) // 후방경고 스타일
+        val redStyle = RouteLineStyle.from(12.0f, Color.RED) // 사고발생 스타일
+
+        // 스타일 추가
+        val blueStyles = RouteLineStyles.from(blueStyle)
+        val yellowStyles = RouteLineStyles.from(yellowStyle)
+        val redStyles = RouteLineStyles.from(redStyle)
+
+        val segments = mutableListOf<RouteLineSegment>()
+
+        for (i in 1 until routePoints.size) {
+            val prev = routePoints[i - 1]
+            val curr = routePoints[i]
+            // LocationPoint -> LatLng으로 변경
+            val segmentPoints = listOf(
+                LatLng.from(prev.latitude, prev.longitude),
+                LatLng.from(curr.latitude, curr.longitude)
+            )
+
+            // 경고에 따라 스타일 변경
+            val style = when (curr.warning) {
+                1 -> yellowStyles
+                2 -> redStyles
+                else -> blueStyles
+            }
+
+            segments.add(RouteLineSegment.from(segmentPoints, style))
+        }
+
+        // 하나의 RouteLine에 여러 Segment를 적용
+        val routeLine: RouteLine = routeLineLayer.addRouteLine(
+            RouteLineOptions.from(segments)
+        )
+    }
 
     // 경로 리스트 갱신 함수
     private fun updateRoute(latitude: Double, longitude: Double, warning: Int) {

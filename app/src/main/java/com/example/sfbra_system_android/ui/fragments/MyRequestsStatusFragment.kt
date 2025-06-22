@@ -2,6 +2,7 @@ package com.example.sfbra_system_android.ui.fragments
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -82,10 +83,11 @@ class MyRequestsStatusFragment : Fragment() {
                     noRequests.visibility = View.GONE
 
                     val items = list.map { item ->
+                        //Log.d("MyRequestsStatusFragment", "status: ${item.status}")
                         val status = when (item.status) {
-                            "REJECTED" -> RequestStatus.REJECTED
-                            "WAITING" -> RequestStatus.WAITING
-                            "ACCEPTED" -> RequestStatus.ACCEPTED
+                            "REJECT" -> RequestStatus.REJECTED
+                            "PENDING" -> RequestStatus.WAITING
+                            "APPROVE" -> RequestStatus.ACCEPTED
                             else -> RequestStatus.WAITING // 기본값으로 처리
                         }
                         RequestStatusItem(item.teamName, status)

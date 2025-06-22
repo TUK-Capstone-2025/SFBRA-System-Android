@@ -212,7 +212,7 @@ class PathViewActivity : AppCompatActivity() {
         val routeLineLayer = routeLineManager.getLayer()
 
         val blueStyle = RouteLineStyle.from(12.0f, Color.BLUE) // 기본 스타일
-        val yellowStyle = RouteLineStyle.from(12.0f, Color.YELLOW) // 후방주의 스타일
+        val yellowStyle = RouteLineStyle.from(12.0f, Color.YELLOW) // 후방경고 스타일
         val redStyle = RouteLineStyle.from(12.0f, Color.RED) // 사고발생 스타일
 
         // 스타일 추가
