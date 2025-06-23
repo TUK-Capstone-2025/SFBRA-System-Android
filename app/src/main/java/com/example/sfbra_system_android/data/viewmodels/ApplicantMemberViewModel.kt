@@ -27,7 +27,6 @@ class ApplicantMemberViewModel(application: Application) : AndroidViewModel(appl
 
     private val token: String = SharedPreferencesHelper.getToken(application).toString()
 
-    // todo 나중에 함수 추가할 것
     // 멤버 조회
     fun getApplicantMemberList() {
         val service = RetrofitClient.getApplicantMemberService(token)

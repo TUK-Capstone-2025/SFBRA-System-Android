@@ -21,11 +21,13 @@ data class TeamInfoData(
     val leader: Int,
     val description: String?,
     val memberCount: Int,
-    val members: List<MemberData>
+    val members: List<MemberData>,
+    val sortedMembersByDistance: List<MemberData>
 )
 
 data class MemberData(
     val memberId: Int,
-    val name: String,
-    val nickname: String
+    val userId: String,
+    val nickname: String,
+    val totalDistance: Double
 )

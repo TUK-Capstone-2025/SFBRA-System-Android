@@ -157,13 +157,13 @@ class MyTeamInfoFragment : Fragment() {
                 val sortedMembers = mutableListOf<TeamMember>()
                 var rank = 1
 
-                val leader = teamInfo.data.members.find { it.memberId == leaderId }
+                val leader = teamInfo.data.sortedMembersByDistance.find { it.memberId == leaderId }
                 if (leader != null) {
                     sortedMembers.add(TeamMember(leader.memberId, leader.nickname, isLeader = true)) // 리더 처음으로 추가
                 }
 
                 // 리더를 제외, 팀원 정렬 후 랭킹 매김
-                teamInfo.data.members
+                teamInfo.data.sortedMembersByDistance
                     .filter { it.memberId != leaderId }
                     .forEach {
                         sortedMembers.add(
