@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         android:text="블루투스 상태 1"
         android:layout_marginTop="100dp"
-        android:visibility="gone" />
+        android:visibility="visible" />
 
     <!-- 속도 텍스트 -->
     <TextView

@@ -444,6 +444,9 @@ class HomeFragment : Fragment() {
 
     private fun updateRouteLine(routePoints: List<LocationPoint>) {
         // todo: 경로 그림 그리기
+        // 경로가 최소 2개 이상이어야 그리기
+        if (routePoints.size < 2) return
+
         val routeLineManager: RouteLineManager = kakaoMap?.getRouteLineManager()!!
         val routeLineLayer = routeLineManager.getLayer()
 
