@@ -93,7 +93,8 @@ class MemberProfileActivity : AppCompatActivity() {
 
                     if (memberProfileResponse != null && memberProfileResponse.success) {
                         val memberProfile = memberProfileResponse.data
-                        // todo: UI 업데이트
+                        val formatted = String.format("%.3f", memberProfile.totalDistance).trimEnd('0').trimEnd('.')
+                        binding.distanceText.text = formatted
                         binding.nicknameText.text = memberProfile.nickname
                         val profileUrl = memberProfile.profileImageUrl
                         if (!profileUrl.isNullOrEmpty()) {

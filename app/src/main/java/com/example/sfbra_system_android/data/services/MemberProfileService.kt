@@ -18,4 +18,5 @@ data class MemberProfileResponse(
 data class MemberProfile(
     val nickname: String,
     val profileImageUrl: String?,
+    val totalDistance: Double
 )
