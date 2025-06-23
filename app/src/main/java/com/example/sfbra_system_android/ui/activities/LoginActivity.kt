@@ -34,6 +34,7 @@ class LoginActivity : AppCompatActivity() {
 
         // 로그인 버튼 클릭 리스너
         binding.loginButton.setOnClickListener {
+            binding.loginButton.isEnabled = false // 요청 시작 전에 비활성화
             login()
         }
 
@@ -62,6 +63,7 @@ class LoginActivity : AppCompatActivity() {
                 call: Call<LoginResponse>,
                 response: Response<LoginResponse>
             ) {
+                binding.loginButton.isEnabled = true  // 응답 후 다시 활성화
                 if (response.isSuccessful) {
                     val loginResponse = response.body()
                     if (loginResponse != null && loginResponse.success) { // 로그인 성공
@@ -79,19 +81,31 @@ class LoginActivity : AppCompatActivity() {
                 } else {
                     try {
                         val errorResponse = response.errorBody()?.string()
-                        val gson = Gson()
-                        val loginResponse = gson.fromJson(errorResponse, LoginResponse::class.java)
-                        Toast.makeText(this@LoginActivity, loginResponse.message, Toast.LENGTH_SHORT).show()
+                        Log.e("Login", "에러 응답 바디: $errorResponse")
 
-                        Log.e("Login", loginResponse.message)
+                        val gson = Gson()
+                        val loginResponse = try {
+                            gson.fromJson(errorResponse, LoginResponse::class.java)
+                        } catch (jsonEx: Exception) {
+                            null
+                        }
+
+                        if (loginResponse != null) {
+                            Toast.makeText(this@LoginActivity, loginResponse.message, Toast.LENGTH_SHORT).show()
+                            Log.e("Login", loginResponse.message)
+                        } else {
+                            Toast.makeText(this@LoginActivity, "서버 오류: ${response.code()}", Toast.LENGTH_SHORT).show()
+                            Log.e("Login", "JSON 파싱 실패. 응답: $errorResponse")
+                        }
                     } catch (e: Exception) {
+                        Toast.makeText(this@LoginActivity, "로그인 실패: ${e.message}", Toast.LENGTH_SHORT).show()
                         Log.e("Login", "로그인 실패: ${e.message}")
                     }
-                    Log.d("Login", "서버 오류: ${response.code()}")
                 }
             }
 
             override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                binding.loginButton.isEnabled = true  // 응답 후 다시 활성화
                 Toast.makeText(this@LoginActivity, "로그인 실패: 네트워크 오류", Toast.LENGTH_SHORT).show()
                 Log.e("Login", "네트워크 오류: ${t.message}")
             }

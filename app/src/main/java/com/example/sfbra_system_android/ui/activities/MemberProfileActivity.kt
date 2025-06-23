@@ -71,6 +71,7 @@ class MemberProfileActivity : AppCompatActivity() {
         }
     }
 
+    // 뒤로가기
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {

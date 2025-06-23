@@ -2,6 +2,7 @@ package com.example.sfbra_system_android.ui.fragments
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -66,9 +67,30 @@ class MyProfileFragment : Fragment() {
 
     // 이미지 선택 함수
     private fun pickImage() {
-        val intent = Intent(Intent.ACTION_PICK)
-        intent.type = "image/*"
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "image/*"
+        }
         startActivityForResult(intent, REQUEST_IMAGE_PICK)
+    }
+
+    // UCrop 사용을 위한 content:// -> 실제 파일로 복사하기
+    private fun copyUriToFile(context: Context, uri: Uri): File? {
+        return try {
+            val inputStream = context.contentResolver.openInputStream(uri)
+            val file = File.createTempFile("upload_", ".jpg", context.cacheDir)
+            val outputStream = file.outputStream()
+
+            inputStream?.copyTo(outputStream)
+
+            inputStream?.close()
+            outputStream.close()
+
+            file
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
     }
 
     // 이미지 선택 결과 처리
@@ -80,14 +102,19 @@ class MyProfileFragment : Fragment() {
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     val sourceUri = data.data
                     if (sourceUri != null) {
-                        // 크롭용 임시 파일 생성
-                        val destinationUri = Uri.fromFile(File(requireContext().cacheDir, "cropped_profile_image.jpg"))
+                        val copiedFile = copyUriToFile(requireContext(), sourceUri)
+                        if (copiedFile != null) {
+                            val copiedUri = Uri.fromFile(copiedFile)
+                            // 크롭용 임시 파일 생성
+                            val destinationUri = Uri.fromFile(File(requireContext().cacheDir, "cropped_profile_image.jpg"))
 
-                        // uCrop 실행
-                        UCrop.of(sourceUri, destinationUri)
-                            .withAspectRatio(1f, 1f) // 1:1 비율
-                            .withMaxResultSize(512, 512)
-                            .start(requireContext(), this)
+                            UCrop.of(copiedUri, destinationUri)
+                                .withAspectRatio(1f, 1f)
+                                .withMaxResultSize(512, 512)
+                                .start(requireContext(), this)
+                        } else {
+                            Toast.makeText(requireContext(), "이미지를 가져오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
             }
