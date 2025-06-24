@@ -629,10 +629,8 @@ class HomeFragment : Fragment() {
 
         // route가 비어있으면 서버 전송을 건너뛰거나, 빈 리스트로 보내기
         if (!route.isNullOrEmpty() && startTime != null) {
-            postPathRecord(startTime!!, endTime!!, route!!)
+            postPathRecord(startTime!!, endTime!!, route!!) // 서버로 주행 데이터 전송
         }
-
-        postPathRecord(startTime!!, endTime!!, route!!) // 서버로 주행 데이터 전송
         // 전송 성공 시 데이터 초기화
     }
 
