@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group>
+        <!-- todo 통계 만들게 된다면 다시 살릴 것 -->
         <item
             android:id="@+id/edit_profile"
-            android:title="사용자 통계" />
+            android:title="사용자 통계"
+            android:visible="false"/>
 
         <item
             android:id="@+id/setting"

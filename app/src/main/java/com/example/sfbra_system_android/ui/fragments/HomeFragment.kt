@@ -423,6 +423,7 @@ class HomeFragment : Fragment() {
     // 주행 시작 함수
     private fun startDriving() {
         startTime = getCurrentTime()
+        route = emptyList()
         startButton.text = getString(R.string.finish_drive)
         isDriving = true
         speedText.visibility = View.VISIBLE // 속도 텍스트 표시
@@ -625,6 +626,11 @@ class HomeFragment : Fragment() {
         fusedLocationClient.removeLocationUpdates(locationCallback)
         warningText.visibility = View.GONE // 후방 알림 비활성화
         speedText.visibility = View.GONE // 속도 텍스트 비활성화
+
+        // route가 비어있으면 서버 전송을 건너뛰거나, 빈 리스트로 보내기
+        if (!route.isNullOrEmpty() && startTime != null) {
+            postPathRecord(startTime!!, endTime!!, route!!)
+        }
 
         postPathRecord(startTime!!, endTime!!, route!!) // 서버로 주행 데이터 전송
         // 전송 성공 시 데이터 초기화
