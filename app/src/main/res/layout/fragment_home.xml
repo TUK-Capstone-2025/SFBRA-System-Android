@@ -81,4 +81,13 @@
         android:textColor="#FFFFFF"
         android:padding="20dp"/>
 
+    <Button
+        android:id="@+id/test_button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="accident"
+        android:textColor="#FFFFFF"
+        android:visibility="gone"/>
+
 </FrameLayout>

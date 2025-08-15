@@ -200,6 +200,13 @@ class HomeFragment : Fragment() {
         val testButton = view.findViewById<Button>(R.id.test_button)
         testButton.setOnClickListener {
             isBluetoothConnected = true
+            testButton.visibility = View.GONE
+        }
+
+        val testButton2 = view.findViewById<Button>(R.id.test_button2)
+        testButton2.setOnClickListener {
+            showAccidentAlert(requireContext())
+            testButton2.visibility = View.GONE
         }
 
         return view
